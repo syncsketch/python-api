@@ -3,7 +3,7 @@
 # @Author: floepi
 # @Date:   2015-06-04 17:42:44
 # @Last Modified by:   yafes
-# @Last Modified time: 2019-03-01 01:03:04
+# @Last Modified time: 2019-03-01 01:05:50
 #!/usr/local/bin/python
 
 import json
@@ -468,6 +468,7 @@ class SyncSketchAPI:
             itemId,
         )
         r = requests.get(url, params=dict(self.apiParams))
+
 
         if r.status_code == 200:
             data = r.json()
