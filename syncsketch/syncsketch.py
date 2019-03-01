@@ -3,7 +3,7 @@
 # @Author: floepi
 # @Date:   2015-06-04 17:42:44
 # @Last Modified by:   yafes
-# @Last Modified time: 2019-03-01 01:05:50
+# @Last Modified time: 2019-03-01 01:16:59
 #!/usr/local/bin/python
 
 import json
@@ -472,7 +472,6 @@ class SyncSketchAPI:
 
         if r.status_code == 200:
             data = r.json()
-            if not homedir:
             local_filename = '/tmp/%s.zip' % data['fileName']
             if homedir:
                 local_filename = os.path.join(homedir,data['fileName'])
