@@ -3,12 +3,13 @@
 # @Author: floepi
 # @Date:   2015-06-04 17:42:44
 # @Last Modified by:   yafes
-# @Last Modified time: 2019-03-01 01:16:59
+# @Last Modified time: 2019-03-01 01:29:09
 #!/usr/local/bin/python
 
 import json
 import urllib
 import requests
+import os
 
 # NOTE - PLEASE INSTALL THE REQUEST MODUL FOR UPLOADING MEDIA
 # http://docs.python-requests.org/en/latest/user/install/#install
