@@ -2,14 +2,13 @@
 """Summary"""
 # @Author: floepi
 # @Date:   2015-06-04 17:42:44
-# @Last Modified by:   Philip Floetotto
-# @Last Modified time: 2018-06-29 11:30:25
+# @Last Modified by:   yafes
+# @Last Modified time: 2019-03-01 01:03:04
 #!/usr/local/bin/python
 
 import json
 import urllib
 import requests
-
 
 # NOTE - PLEASE INSTALL THE REQUEST MODUL FOR UPLOADING MEDIA
 # http://docs.python-requests.org/en/latest/user/install/#install
@@ -448,7 +447,7 @@ class SyncSketchAPI:
         r = requests.get(url, params=params)
         return r.status_code == 200
 
-    def getGreasePencilOverlays(self, reviewId, itemId):
+    def getGreasePencilOverlays(self, reviewId, itemId, homedir=None):
         """Download overlay sketches for Maya Greasepencil.
 
         Download overlay sketches for Maya Greasepencil. Function will download
@@ -472,7 +471,10 @@ class SyncSketchAPI:
 
         if r.status_code == 200:
             data = r.json()
+            if not homedir:
             local_filename = '/tmp/%s.zip' % data['fileName']
+            if homedir:
+                local_filename = os.path.join(homedir,data['fileName'])
             r = requests.get(data['s3Path'], stream=True)
             with open(local_filename, 'wb') as f:
                 for chunk in r.iter_content(chunk_size=1024):
