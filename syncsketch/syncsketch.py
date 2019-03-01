@@ -3,7 +3,7 @@
 # @Author: floepi
 # @Date:   2015-06-04 17:42:44
 # @Last Modified by:   yafes
-# @Last Modified time: 2019-03-01 01:29:09
+# @Last Modified time: 2019-03-01 01:59:05
 #!/usr/local/bin/python
 
 import json
@@ -475,7 +475,7 @@ class SyncSketchAPI:
             data = r.json()
             local_filename = '/tmp/%s.zip' % data['fileName']
             if homedir:
-                local_filename = os.path.join(homedir,data['fileName'])
+                local_filename = os.path.join(homedir, "{}.zip".format(data['fileName']))
             r = requests.get(data['s3Path'], stream=True)
             with open(local_filename, 'wb') as f:
                 for chunk in r.iter_content(chunk_size=1024):
