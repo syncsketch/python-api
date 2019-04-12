@@ -62,12 +62,14 @@ We can now add a Review to our newly created Project using it's `id`
 
 ##### Upload a review-item
 
-You can upload a file to the created review with the review id.
+You can upload a file to the created review with the review id, we provided one example file in this repo under `examples/test.webm` for testing.
 
-    itemData = s.addMedia(review['id'],'test.webm')
+    itemData = s.addMedia(review['id'],'examples/test.webm')
 
 
+If all steps were successfull, you should see the following in the web-app. 
 
+![alt text](https://github.com/syncsketch/python-api/blob/documentation/examples/ressources/exampleResult.jpg?raw=true)
 
 ### Additional Examples
 
