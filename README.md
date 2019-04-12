@@ -24,7 +24,7 @@ Setting up a connection with your syncsketch project's is as easy as following.
     s = SyncSketchAPI('USERMAIL','API_KEY')]
     s.isConnected()
 
-If you got a `200` as a response, you successfully connected to the syncsketch server! You can proceed with the next examples. We will skip the setup code for the next examples and the snippets will rely on each other, so make sure you run them one by one.
+If you got a `200` response, you successfully connected to the syncsketch server! You can proceed with the next examples. We will skip the setup code for the next examples and the snippets will rely on each other, so make sure you run them one by one.
 
 
 
