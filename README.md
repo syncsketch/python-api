@@ -9,9 +9,7 @@ This package provides method's to communicate with the syncsketch servers and wr
 
     pip install git+git:github.com/syncsketch/python-api.git
 
-### Usage:
 
-Interacting with the syncsketch-api is very easy and we provide convenient method's like  `addProject`, `addMedia`, `addReview`. 
 
 ### Basic Examples
 
