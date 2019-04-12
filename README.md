@@ -1,5 +1,5 @@
 # Syncsketch-API
-This package provides method's to communicate with the syncsketch servers and wraps CRUD method's to interact with Reviews.
+This package provides method's to communicate with the syncsketch servers and wraps CRUD (create, reade, update, delete) method's to interact with Reviews.
 
 ### Getting Started
 
@@ -9,21 +9,29 @@ This package provides method's to communicate with the syncsketch servers and wr
 
     pip install git+git:github.com/syncsketch/python-api.git
 
-#### Authentication
-To connect with our syncsketch-servers you need to get an `API_KEY` which you can obtain from your syncsketch [settings page]([http://dummylink](https://syncsketch.com/pro/#userProfile/settingsTab)). Follow the given link, login and scroll down to the bottom headline `Developer Options` to see your 40 character API-Key.
+### Usage:
 
-
+Interacting with the syncsketch-api is very easy and we provide convenient method's like  `addProject`, `addMedia`, `addReview`. 
 
 ### Basic Examples
 
 
-Let's make sure you can **setup** a connection to our syncsketch servers using the credentials you obtained from the settings page.
+#### Authentication
+Before we can start working, we need to get an `API_KEY` which you can obtain from the syncsketch [settings page](https://syncsketch.com/pro/#userProfile/settingsTab). Follow the given link, login and scroll down to the bottom headline `Developer Options` to see your 40 character API-Key.
+
+
+Setting up a connection with your syncsketch project's is as easy as following. 
 
     from syncsketch import SyncSketchAPI
     s = SyncSketchAPI('USERMAIL','API_KEY')]
     s.isConnected()
 
 If you got a `200` as a response, you successfully connected to the syncsketch server! You can proceed with the next examples. We will skip the setup code for the next examples and the snippets will rely on each other, so make sure you run them one by one.
+
+
+
+
+
 
 ##### 1) Choose your Account
 
@@ -34,16 +42,16 @@ Before we can create/read/update/delete reviews, we need to select an account
 
 ##### 2) Create A Project
 
-Let's create a project with the obtained account
+Let's create a project with the selected account
 
     project = s.addProject(firstAccount.id, 'DEV Example Project', 'DEV API Testing')
 
-This creates a new Review called `Dev Example Project` with the description `DEV API Testing`
+This creates a new Project called `Dev Example Project` with the description `DEV API Testing`
 
 
 ##### 3) Create a Review
 
-We can easily create add a Review to our Project using it's `id`
+We can now add a Review to our newly created Project using it's `id`
 
     review = s.addReview(project['id'],'DEV Review (api)','DEV Syncsketch API Testing')
 
@@ -56,7 +64,7 @@ We can easily create add a Review to our Project using it's `id`
 
 ##### Upload a review-item
 
-You can upload a file to the created review with the reviewpid
+You can upload a file to the created review with the review id.
 
     itemData = s.addMedia(review['id'],'test.webm')
 
@@ -70,7 +78,13 @@ You can upload a file to the created review with the reviewpid
     print(addedUser)
 
 
-##### Get All Projects
+##### Traverse all Reviews
     projects = s.getProjects()
     for project in projects['objects']:
         print(project)
+
+
+## Production Examples
+
+
+You might wan't to see some minimal examples on how an integration would work with a 3rd party AP. We are providing some examples to get you started.
