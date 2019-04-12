@@ -87,4 +87,6 @@ If all steps were successfull, you should see the following in the web-app.
 ## Production Examples
 
 
-You might wan't to see some minimal examples on how an integration would work with a 3rd party AP. We are providing some examples to get you started.
+You might wan't to see some minimal examples on how an integration would work with a 3rd party API. 
+
+ [1) Integrate Syncsketch into Shotgun with a column](https://github.com/syncsketch/python-api/tree/documentation/examples/SyncsketchColumnInShotgun)
