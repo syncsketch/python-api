@@ -57,21 +57,21 @@ class SyncSketchAPI:
             params.update(getData)
 
         if self.debug:
-            print "URL: %s, params: %s" % (url, params)
+            print("URL: %s, params: %s" % (url, params))
 
         if postData:
             r = requests.post(url,params=params,data=json.dumps(postData),headers=headers)
         elif patchData:
             r = requests.patch(url,params=params,data=json.dumps(patchData),headers=headers)
-        else:    
+        else:
             r = requests.get(url,params=params,headers=headers)
 
         try:
             return r.json()
-        except Exception, e:
+        except Exception as e:
             if self.debug:
-                print e
-                print "error %s" % (r.text)
+                print(e)
+                print("error %s" % (r.text))
 
             return {
                 'objects':[]
@@ -297,7 +297,7 @@ class SyncSketchAPI:
         try:
             return json.loads(r.text)
         except Exception:
-            print r.text
+            print(r.text)
 
     def addMediaByURL(self, reviewId, mediaURL, noConvertFlag=False):
         """
@@ -329,7 +329,7 @@ class SyncSketchAPI:
         try:
             return json.loads(r.text)
         except Exception:
-            print r.text
+            print(r.text)
 
     def addUsers(self,projectId,users):
         """Summary
@@ -342,7 +342,7 @@ class SyncSketchAPI:
             TYPE: Description
         """
         if not isinstance(users,list):
-            print "Please add users by list with user items e.g users=[{'email':'test@test.de','permission':'viewer'}]"
+            print("Please add users by list with user items e.g users=[{'email':'test@test.de','permission':'viewer'}]")
             return False
 
         getParams = {'users': json.dumps(users)}
@@ -430,7 +430,7 @@ class SyncSketchAPI:
             TYPE: item
         """
         if not isinstance(data,dict):
-            print "Please make sure you pass a dict as data"
+            print("Please make sure you pass a dict as data")
             return False
 
         return self._getJSONResponse('item/%s' % itemId, patchData=data)
