@@ -42,7 +42,7 @@ Before we can create/read/update/delete reviews, we need to select an account
 
 Let's create a project with the selected account
 
-    project = s.addProject(firstAccount.id, 'DEV Example Project', 'DEV API Testing')
+    project = s.addProject(firstAccount['id'], 'DEV Example Project', 'DEV API Testing')
 
 This creates a new Project called `Dev Example Project` with the description `DEV API Testing`
 
