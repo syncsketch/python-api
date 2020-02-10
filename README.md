@@ -7,8 +7,7 @@ This package provides method's to communicate with the syncsketch servers and wr
 
 #### Installation
 
-    pip install git+git:github.com/syncsketch/python-api.git
-
+    pip install git+https://github.com/syncsketch/python-api.git
 
 
 ### Basic Examples
