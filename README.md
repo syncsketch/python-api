@@ -7,8 +7,7 @@ This package provides method's to communicate with the syncsketch servers and wr
 
 #### Installation
 
-    pip install git+git:github.com/syncsketch/python-api.git
-
+    pip install git+https://github.com/syncsketch/python-api.git
 
 
 ### Basic Examples
@@ -21,14 +20,15 @@ Before we can start working, we need to get an `API_KEY` which you can obtain fr
 Setting up a connection with your syncsketch project's is as easy as following. 
 
     from syncsketch import SyncSketchAPI
-    s = SyncSketchAPI('USERMAIL','API_KEY')]
+    
+    username = "username"
+    api_key = "api-key-123"
+    
+    s = SyncSketchAPI(username, api_key)
+    
     s.isConnected()
 
 If you got a `200` response, you successfully connected to the syncsketch server! You can proceed with the next examples. We will skip the setup code for the next examples and the snippets will rely on each other, so make sure you run them one by one.
-
-
-
-
 
 
 ##### 1) Choose your Account

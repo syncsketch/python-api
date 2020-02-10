@@ -6,22 +6,34 @@
 # @Last Modified time: 2019-03-01 01:59:05
 #!/usr/local/bin/python
 
-import json
-import urllib
-import requests
+from __future__ import print_function
+
 import os
+import json
+import requests
+
+try:
+    # Python 2
+    from urllib import urlencode
+except:
+    # Python 3
+    from urllib.parse import urlencode
+
 
 # NOTE - PLEASE INSTALL THE REQUEST MODUL FOR UPLOADING MEDIA
 # http://docs.python-requests.org/en/latest/user/install/#install
+
 
 class SyncSketchAPI:
     """
     Convenience API to communicate with the SyncSketch Service for collaborative online reviews
     """
 
-    def __init__(self,email,api_key,host='https://www.syncsketch.com', useExpiringToken=False, debug = False, apiVersion = 'v1'):
+    def __init__(
+        self, email, api_key, host="https://www.syncsketch.com", useExpiringToken=False, debug=False, apiVersion="v1"
+    ):
         """Summary
-        
+
         Args:
             email (str): Your email
             api_key (str): Your SyncSketch API Key, found in the settings tab
@@ -32,26 +44,19 @@ class SyncSketchAPI:
         """
         # set initial values
         if useExpiringToken:
-            self.apiParams = {
-                'token': api_key,
-                'email': email
-            }
+            self.apiParams = {"token": api_key, "email": email}
         else:
-            self.apiParams = {
-                'api_key': api_key,
-                'username': email
-            }
+            self.apiParams = {"api_key": api_key, "username": email}
 
         self.apiVersion = apiVersion
         self.debug = debug
         self.HOST = host
-        self.baseURL = self.HOST + '/api/%s/' % self.apiVersion
+        self.baseURL = self.HOST + "/api/%s/" % self.apiVersion
 
-
-    def _getJSONResponse(self,entity,getData=False,postData=False,patchData=False):
-        url = '%s%s/' % (self.baseURL,entity)
+    def _getJSONResponse(self, entity, getData=False, postData=False, patchData=False):
+        url = "%s%s/" % (self.baseURL, entity)
         params = dict(self.apiParams)
-        headers={'Content-Type':'application/json'}
+        headers = {"Content-Type": "application/json"}
 
         if getData:
             params.update(getData)
@@ -60,11 +65,11 @@ class SyncSketchAPI:
             print("URL: %s, params: %s" % (url, params))
 
         if postData:
-            r = requests.post(url,params=params,data=json.dumps(postData),headers=headers)
+            r = requests.post(url, params=params, data=json.dumps(postData), headers=headers)
         elif patchData:
-            r = requests.patch(url,params=params,data=json.dumps(patchData),headers=headers)
+            r = requests.patch(url, params=params, data=json.dumps(patchData), headers=headers)
         else:
-            r = requests.get(url,params=params,headers=headers)
+            r = requests.get(url, params=params, headers=headers)
 
         try:
             return r.json()
@@ -73,19 +78,17 @@ class SyncSketchAPI:
                 print(e)
                 print("error %s" % (r.text))
 
-            return {
-                'objects':[]
-            }
+            return {"objects": []}
 
     # Get
-    def getTree(self, withItems = False):
+    def getTree(self, withItems=False):
         """
             get nested tree of account, projects, reviews and optionally items for the current user
         :param withItems:
         :return:
         """
-        getParams = {'fetchItems':1} if withItems else {}
-        return self._getJSONResponse('person/tree', getParams)
+        getParams = {"fetchItems": 1} if withItems else {}
+        return self._getJSONResponse("person/tree", getParams)
 
     def getAccounts(self):
         """Summary
@@ -93,8 +96,8 @@ class SyncSketchAPI:
         Returns:
             TYPE: Account
         """
-        getParams = {'active':1}
-        return self._getJSONResponse('account', getParams)
+        getParams = {"active": 1}
+        return self._getJSONResponse("account", getParams)
 
     def getProjects(self):
         """
@@ -103,52 +106,52 @@ class SyncSketchAPI:
         Returns:
             TYPE: Dict with meta information and an array of found projects
         """
-        getParams = {'active':1,'account__active':1}
-        return self._getJSONResponse('project', getParams)
+        getParams = {"active": 1, "account__active": 1}
+        return self._getJSONResponse("project", getParams)
 
-    def getProjectsByName(self,name):
+    def getProjectsByName(self, name):
         """
         Get a project by name regardless of status
-        
+
         Returns:
             TYPE: Dict with meta information and an array of found projects
         """
-        getParams = {'name': name}
-        return self._getJSONResponse('project',getParams)
+        getParams = {"name": name}
+        return self._getJSONResponse("project", getParams)
 
-    def getProjectById(self,projectId):
+    def getProjectById(self, projectId):
         """
         Get single project by id
         :param projectId: Number
         :return:
         """
-        return self._getJSONResponse('project/%s' % projectId)
+        return self._getJSONResponse("project/%s" % projectId)
 
-    def getReviewsByProjectId(self,projectId):
+    def getReviewsByProjectId(self, projectId):
         """
         Get list of reviews by project id.
         :param projectId: Number
         :return: Dict with meta information and an array of found projects
         """
-        getParams = {'project__id': projectId}
-        return self._getJSONResponse('review',getParams)
+        getParams = {"project__id": projectId}
+        return self._getJSONResponse("review", getParams)
 
-    def getReviewByName(self,name):
+    def getReviewByName(self, name):
         """
         Get reviews by name using a case insensitive startswith query
         :param name: String - Name of the review
         :return: Dict with meta information and an array of found projects
         """
-        getParams = {'name__istartswith': name}
-        return self._getJSONResponse('review',getParams)
+        getParams = {"name__istartswith": name}
+        return self._getJSONResponse("review", getParams)
 
-    def getReviewById(self,reviewId):
+    def getReviewById(self, reviewId):
         """
         Get single review by id.
         :param reviewId: Number
         :return: Review Dict
         """
-        return self._getJSONResponse('review/%s' % reviewId)
+        return self._getJSONResponse("review/%s" % reviewId)
 
     def getMedia(self, searchCriteria):
         """
@@ -182,12 +185,12 @@ class SyncSketchAPI:
 
         Args:
             searchCriteria (dict): dictionary
-        
+
         Returns:
             dict: search results
         """
 
-        return self._getJSONResponse('item', searchCriteria)
+        return self._getJSONResponse("item", searchCriteria)
 
     def getMediaByReviewId(self, reviewId):
         """Summary
@@ -198,10 +201,10 @@ class SyncSketchAPI:
         Returns:
             TYPE: Description
         """
-        getParams = {'reviews__id': reviewId, 'active': 1}
-        return self._getJSONResponse('item', getParams)
+        getParams = {"reviews__id": reviewId, "active": 1}
+        return self._getJSONResponse("item", getParams)
 
-    def getAnnotations(self,itemId,revisionId = False):
+    def getAnnotations(self, itemId, revisionId=False):
         """
         Get sketches and comments for an item. Frames have a revision id which signifies a "set of notes".
         When querying an item you'll get the available revisions for this item. If you wish to get only the latest
@@ -210,30 +213,29 @@ class SyncSketchAPI:
         :param (number) revisionId: Optional revisionId to narrow down the results
         :return: dict
         """
-        getParams = {'item__id': itemId,'active':1}
+        getParams = {"item__id": itemId, "active": 1}
 
         if revisionId:
-            getParams['revision__id'] = revisionId
+            getParams["revision__id"] = revisionId
 
-        return self._getJSONResponse('frame',getParams)
+        return self._getJSONResponse("frame", getParams)
 
-    def getUsersByName(self,name):
-        getParams = {'name__istartswith': name}
-        return self._getJSONResponse('simpleperson',getParams)
+    def getUsersByName(self, name):
+        getParams = {"name__istartswith": name}
+        return self._getJSONResponse("simpleperson", getParams)
 
-    def getUsersByProjectId(self,projectId):
-        getParams = {'projects__id': projectId}
-        return self._getJSONResponse('simpleperson',getParams)
+    def getUsersByProjectId(self, projectId):
+        getParams = {"projects__id": projectId}
+        return self._getJSONResponse("simpleperson", getParams)
 
-    def getUserById(self,userId):
-        return self._getJSONResponse('simpleperson/%s' % userId)
+    def getUserById(self, userId):
+        return self._getJSONResponse("simpleperson/%s" % userId)
 
     def getCurrentUser(self):
-        return self._getJSONResponse('simpleperson/currentUser')
-
+        return self._getJSONResponse("simpleperson/currentUser")
 
     # Add
-    def addProject(self, accountId, name, description='', data={}):
+    def addProject(self, accountId, name, description="", data={}):
         """
         Add a project to your account. Please make sure to pass the accountId which you can query using the getAccounts command.
 
@@ -244,54 +246,54 @@ class SyncSketchAPI:
         :return:
         """
         postData = {
-            "name":name,
-            "description":description,
-            "account":'/api/%s/account/%s/' % (self.apiVersion, accountId),
+            "name": name,
+            "description": description,
+            "account": "/api/%s/account/%s/" % (self.apiVersion, accountId),
         }
-        
-        postData.update(data)
-        
-        return self._getJSONResponse('project',postData=postData)
 
-    def addReview(self,projectId,name, description='',data={}):
+        postData.update(data)
+
+        return self._getJSONResponse("project", postData=postData)
+
+    def addReview(self, projectId, name, description="", data={}):
         postData = {
-            'project': '/api/%s/project/%s/' % (self.apiVersion, projectId),
-            'name':name,
-            'description':description
+            "project": "/api/%s/project/%s/" % (self.apiVersion, projectId),
+            "name": name,
+            "description": description,
         }
-        
-        postData.update(data)
-        
-        return self._getJSONResponse('review', postData=postData)
 
-    def addMedia(self, reviewId, filepath, noConvertFlag = False, itemParentId = False):
+        postData.update(data)
+
+        return self._getJSONResponse("review", postData=postData)
+
+    def addMedia(self, reviewId, filepath, noConvertFlag=False, itemParentId=False):
         """
             Convenience function to upload a file to a review. It will automatically create
             an Item and attach it to the review. NOTE - if you are hosting your own media, please
             use the addItem function and pass in the external_url and external_thumbnail_url
-        
+
         Args:
             reviewId (int): Required reviewId
             filepath (string): path for the file on disk e.g /tmp/movie.webm
             noConvertFlag (bool): the video you are uploading is already in a browser compatible format
-            itemParentId (int): set when you want to add a new version of an item. 
+            itemParentId (int): set when you want to add a new version of an item.
                                 itemParentId is the id of the item you want to upload a new version for
-            
-        
+
+
         Returns:
             TYPE: Description
         """
         getParams = self.apiParams.copy()
 
         if noConvertFlag:
-            getParams.update({'noConvertFlag':1})
+            getParams.update({"noConvertFlag": 1})
 
         if itemParentId:
-            getParams.update({'itemParentId':itemParentId})
+            getParams.update({"itemParentId": itemParentId})
 
-        uploadURL = '%s/items/uploadToReview/%s/?%s' % (self.HOST,reviewId,urllib.urlencode(getParams))
+        uploadURL = "%s/items/uploadToReview/%s/?%s" % (self.HOST, reviewId, urlencode(getParams))
 
-        files = {'reviewFile': open(filepath)}
+        files = {"reviewFile": open(filepath)}
         r = requests.post(uploadURL, files=files)
 
         try:
@@ -317,21 +319,21 @@ class SyncSketchAPI:
         getParams = self.apiParams.copy()
 
         if not reviewId or not mediaURL:
-            raise Exception('You need to pass a review id and a mediaURL')
+            raise Exception("You need to pass a review id and a mediaURL")
 
         if noConvertFlag:
-            getParams.update({'noConvertFlag': 1})
+            getParams.update({"noConvertFlag": 1})
 
-        uploadURL = '%s/items/uploadToReview/%s/?%s' % (self.HOST, reviewId, urllib.urlencode(getParams))
+        uploadURL = "%s/items/uploadToReview/%s/?%s" % (self.HOST, reviewId, urlencode(getParams))
 
-        r = requests.post(uploadURL, {'mediaURL': mediaURL})
+        r = requests.post(uploadURL, {"mediaURL": mediaURL})
 
         try:
             return json.loads(r.text)
         except Exception:
             print(r.text)
 
-    def addUsers(self,projectId,users):
+    def addUsers(self, projectId, users):
         """Summary
 
         Args:
@@ -341,12 +343,14 @@ class SyncSketchAPI:
         Returns:
             TYPE: Description
         """
-        if not isinstance(users,list):
-            print("Please add users by list with user items e.g users=[{'email':'test@test.de','permission':'viewer'}]")
+        if not isinstance(users, list):
+            print(
+                "Please add users by list with user items e.g users=[{'email':'test@test.de','permission':'viewer'}]"
+            )
             return False
 
-        getParams = {'users': json.dumps(users)}
-        return self._getJSONResponse('project/%s/addUsers' % projectId,getParams)
+        getParams = {"users": json.dumps(users)}
+        return self._getJSONResponse("project/%s/addUsers" % projectId, getParams)
 
     def addItem(self, reviewId, name, fps, additionalData):
         """
@@ -380,18 +384,16 @@ class SyncSketchAPI:
             TYPE: Item
         """
 
-
-
         postData = {
-            'reviews': ['/api/%s/review/%s/' % (self.apiVersion, reviewId)],
-            'status': 'done',
-            'fps': fps,
-            'name': name,
+            "reviews": ["/api/%s/review/%s/" % (self.apiVersion, reviewId)],
+            "status": "done",
+            "fps": fps,
+            "name": name,
         }
 
         postData.update(additionalData)
 
-        return self._getJSONResponse('item', postData=postData)
+        return self._getJSONResponse("item", postData=postData)
 
     def connectItemToReview(self, itemId, reviewId):
         """
@@ -406,20 +408,17 @@ class SyncSketchAPI:
             TYPE: Item
         """
 
-        itemData = self._getJSONResponse('item/%s' % itemId)
+        itemData = self._getJSONResponse("item/%s" % itemId)
 
-        if itemData['reviews']:
-            itemData['reviews'].append('/api/%s/review/%s/' % (self.apiVersion, reviewId))
+        if itemData["reviews"]:
+            itemData["reviews"].append("/api/%s/review/%s/" % (self.apiVersion, reviewId))
 
-        patchData = {
-            'reviews': itemData['reviews'],
-        }
+        patchData = {"reviews": itemData["reviews"]}
 
-        return self._getJSONResponse('item/%s' % itemId, patchData=patchData)
-
+        return self._getJSONResponse("item/%s" % itemId, patchData=patchData)
 
     # Setting Data
-    def updateItem(self,itemId,data):
+    def updateItem(self, itemId, data):
         """Summary
 
         Args:
@@ -429,12 +428,12 @@ class SyncSketchAPI:
         Returns:
             TYPE: item
         """
-        if not isinstance(data,dict):
+        if not isinstance(data, dict):
             print("Please make sure you pass a dict as data")
             return False
 
-        return self._getJSONResponse('item/%s' % itemId, patchData=data)
-    
+        return self._getJSONResponse("item/%s" % itemId, patchData=data)
+
     # Checking connectivity
     def isConnected(self):
         """
@@ -443,7 +442,7 @@ class SyncSketchAPI:
         and authorization error
         :return:
         """
-        url = '%s%s/' % (self.baseURL, 'person/connected')
+        url = "%s%s/" % (self.baseURL, "person/connected")
         params = self.apiParams
         r = requests.get(url, params=params)
         return r.status_code == 200
@@ -463,21 +462,16 @@ class SyncSketchAPI:
         PLEASE make sure that /tmp is writable
 
         """
-        url = '%s/manage/downloadGreasePencilFile/%s/%s/' % (
-            self.HOST,
-            reviewId,
-            itemId,
-        )
+        url = "%s/manage/downloadGreasePencilFile/%s/%s/" % (self.HOST, reviewId, itemId)
         r = requests.get(url, params=dict(self.apiParams))
-
 
         if r.status_code == 200:
             data = r.json()
-            local_filename = '/tmp/%s.zip' % data['fileName']
+            local_filename = "/tmp/%s.zip" % data["fileName"]
             if homedir:
-                local_filename = os.path.join(homedir, "{}.zip".format(data['fileName']))
-            r = requests.get(data['s3Path'], stream=True)
-            with open(local_filename, 'wb') as f:
+                local_filename = os.path.join(homedir, "{}.zip".format(data["fileName"]))
+            r = requests.get(data["s3Path"], stream=True)
+            with open(local_filename, "wb") as f:
                 for chunk in r.iter_content(chunk_size=1024):
                     if chunk:
                         f.write(chunk)
