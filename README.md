@@ -10,6 +10,12 @@ This package provides method's to communicate with the syncsketch servers and wr
     pip install git+https://github.com/syncsketch/python-api.git
 
 
+#### Compatibility
+This library was tested with and confirmed on python versions:
+- 2.7.14+
+- 3.6
+- 3.8
+
 ### Basic Examples
 
 
