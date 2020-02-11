@@ -20,7 +20,7 @@ except:
     from urllib.parse import urlencode
 
 
-# NOTE - PLEASE INSTALL THE REQUEST MODUL FOR UPLOADING MEDIA
+# NOTE - PLEASE INSTALL THE REQUEST MODULE FOR UPLOADING MEDIA
 # http://docs.python-requests.org/en/latest/user/install/#install
 
 
@@ -293,7 +293,7 @@ class SyncSketchAPI:
 
         uploadURL = "%s/items/uploadToReview/%s/?%s" % (self.HOST, reviewId, urlencode(getParams))
 
-        files = {"reviewFile": open(filepath)}
+        files = {"reviewFile": open(filepath, "rb")}
         r = requests.post(uploadURL, files=files)
 
         try:
@@ -444,6 +444,10 @@ class SyncSketchAPI:
         """
         url = "%s%s/" % (self.baseURL, "person/connected")
         params = self.apiParams
+
+        if self.debug:
+            print("URL: %s, params: %s" % (url, params))
+
         r = requests.get(url, params=params)
         return r.status_code == 200
 
