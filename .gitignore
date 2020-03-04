@@ -5,3 +5,6 @@
 .idea/modules.xml
 .idea/python-api.iml
 .idea/workspace.xml
+
+__pycache__/
+*.pyc

@@ -45,11 +45,14 @@ class SyncSketchAPI:
         self.apiVersion = apiVersion
         self.debug = debug
         self.HOST = host
-        self.baseURL = self.HOST + '/api/%s/' % self.apiVersion
 
+    def getBaseUrl(self, apiVersion=None):
+        if apiVersion:
+            return self.HOST + "/api/%s/" % apiVersion
+        return self.HOST + "/api/%s/" % self.apiVersion
 
-    def _getJSONResponse(self,entity,getData=False,postData=False,patchData=False):
-        url = '%s%s/' % (self.baseURL,entity)
+    def _getJSONResponse(self, entity, method=None, getData=None, postData=None, patchData=None, apiVersion=None):
+        url = self.getBaseUrl(apiVersion) + entity + "/"
         params = dict(self.apiParams)
         headers={'Content-Type':'application/json'}
 
@@ -59,10 +62,10 @@ class SyncSketchAPI:
         if self.debug:
             print("URL: %s, params: %s" % (url, params))
 
-        if postData:
-            r = requests.post(url,params=params,data=json.dumps(postData),headers=headers)
-        elif patchData:
-            r = requests.patch(url,params=params,data=json.dumps(patchData),headers=headers)
+        if postData or method == "post":
+            r = requests.post(url, params=params, data=json.dumps(postData), headers=headers)
+        elif patchData or method == "patch":
+            r = requests.patch(url, params=params, data=json.dumps(patchData), headers=headers)
         else:
             r = requests.get(url,params=params,headers=headers)
 
@@ -443,7 +446,7 @@ class SyncSketchAPI:
         and authorization error
         :return:
         """
-        url = '%s%s/' % (self.baseURL, 'person/connected')
+        url = "%s%s/" % (self.getBaseUrl(), "person/connected")
         params = self.apiParams
         r = requests.get(url, params=params)
         return r.status_code == 200
@@ -485,3 +488,54 @@ class SyncSketchAPI:
             return local_filename
         else:
             return False
+
+    def shotgun_get_projects(self, syncsketch_project_id):
+        url = "shotgun/get-projects/project/{}".format(syncsketch_project_id)
+
+        return self._getJSONResponse(url, method="get", apiVersion="v2")
+
+    def shotgun_get_playlists(self, syncsketch_project_id, shotgun_project_id):
+        url = "shotgun/get-playlists/project/{}".format(syncsketch_project_id)
+
+        data = {
+            "shotgun_project_id": shotgun_project_id
+        }
+        return self._getJSONResponse(url, method="get", getData=data, apiVersion="v2")
+
+    def shotgun_sync_review_notes(self, review_id):
+        """
+        Sync notes from SyncSketch review to the original shotgun playlist
+        """
+        url = "shotgun/sync-review-notes/review/{}".format(review_id)
+
+        return self._getJSONResponse(url, method="post", apiVersion="v2")
+
+    def get_shotgun_sync_review_notes_progress(self, task_id):
+        url = "shotgun/sync-review-notes/{}".format(task_id)
+
+        return self._getJSONResponse(url, method="get", apiVersion="v2")
+
+    def shotgun_sync_review_items(self, project_id, playlist_code, playlist_id, review_id=None):
+        """
+        Create or update SyncSketch review with shotgun playlist items
+
+        :param project_id
+        :param playlist_code
+        :param playlist_id
+        :param review_id (optional)
+        """
+        url = "shotgun/sync-review-items/project/{}".format(project_id)
+        if review_id:
+            url += "/review/{}".format(review_id)
+
+        data = {
+            "playlist_code": playlist_code,
+            "playlist_id": playlist_id
+        }
+
+        return self._getJSONResponse(url, method="post", postData=data, apiVersion="v2")
+
+    def get_shotgun_sync_review_items_progress(self, task_id):
+        url = "shotgun/sync-review-items/{}".format(task_id)
+
+        return self._getJSONResponse(url, method="get", apiVersion="v2")
