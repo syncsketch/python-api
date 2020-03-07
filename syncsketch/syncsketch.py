@@ -489,12 +489,23 @@ class SyncSketchAPI:
             return False
 
     def shotgun_get_projects(self, syncsketch_project_id):
-        url = "shotgun/get-projects/project/{}".format(syncsketch_project_id)
+        """
+        Returns list of Shotgun projects connected to your account
+
+        :param syncsketch_project_id: int
+        """
+        url = "shotgun/projects/{}".format(syncsketch_project_id)
 
         return self._getJSONResponse(url, method="get", apiVersion="v2")
 
     def shotgun_get_playlists(self, syncsketch_project_id, shotgun_project_id):
-        url = "shotgun/get-playlists/project/{}".format(syncsketch_project_id)
+        """
+        Returns list of Shotgun playlists modified in the last 120 days
+
+        :param syncsketch_project_id: int
+        :param shotgun_project_id: int
+        """
+        url = "shotgun/playlists/{}".format(syncsketch_project_id)
 
         data = {
             "shotgun_project_id": shotgun_project_id
@@ -504,12 +515,20 @@ class SyncSketchAPI:
     def shotgun_sync_review_notes(self, review_id):
         """
         Sync notes from SyncSketch review to the original shotgun playlist
+        Returns task id to use in get_shotgun_sync_review_notes_progress to get progress
+
+        :param review_id: int
         """
         url = "shotgun/sync-review-notes/review/{}".format(review_id)
 
         return self._getJSONResponse(url, method="post", apiVersion="v2")
 
     def get_shotgun_sync_review_notes_progress(self, task_id):
+        """
+        Returns status of review notes sync for the task id provided in shotgun_sync_review_notes
+
+        :param task_id: str/uuid
+        """
         url = "shotgun/sync-review-notes/{}".format(task_id)
 
         return self._getJSONResponse(url, method="get", apiVersion="v2")
@@ -517,6 +536,7 @@ class SyncSketchAPI:
     def shotgun_sync_review_items(self, project_id, playlist_code, playlist_id, review_id=None):
         """
         Create or update SyncSketch review with shotgun playlist items
+        Returns task id to use in get_shotgun_sync_review_items_progress to get progress
 
         :param project_id
         :param playlist_code
@@ -535,6 +555,11 @@ class SyncSketchAPI:
         return self._getJSONResponse(url, method="post", postData=data, apiVersion="v2")
 
     def get_shotgun_sync_review_items_progress(self, task_id):
+        """
+        Returns status of review items sync for the task id provided in shotgun_sync_review_items
+
+        :param task_id: str/uuid
+        """
         url = "shotgun/sync-review-items/{}".format(task_id)
 
         return self._getJSONResponse(url, method="get", apiVersion="v2")
