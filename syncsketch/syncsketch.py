@@ -92,7 +92,7 @@ class SyncSketchAPI:
         :return:
         """
         getParams = {"fetchItems": 1} if withItems else {}
-        return self._getJSONResponse("person/tree", getParams)
+        return self._getJSONResponse("person/tree", getData=getParams)
 
     def getAccounts(self):
         """Summary
@@ -101,7 +101,7 @@ class SyncSketchAPI:
             TYPE: Account
         """
         getParams = {"active": 1}
-        return self._getJSONResponse("account", getParams)
+        return self._getJSONResponse("account", getData=getParams)
 
     def getProjects(self):
         """
@@ -110,8 +110,8 @@ class SyncSketchAPI:
         Returns:
             TYPE: Dict with meta information and an array of found projects
         """
-        getParams = {"active": 1, "account__active": 1}
-        return self._getJSONResponse("project", getParams)
+        getParams = {"active": 1, "is_archived": 0, "account__active": 1}
+        return self._getJSONResponse("project", getData=getParams)
 
     def getProjectsByName(self, name):
         """
@@ -121,7 +121,7 @@ class SyncSketchAPI:
             TYPE: Dict with meta information and an array of found projects
         """
         getParams = {"name": name}
-        return self._getJSONResponse("project", getParams)
+        return self._getJSONResponse("project", getData=getParams)
 
     def getProjectById(self, projectId):
         """
@@ -137,8 +137,8 @@ class SyncSketchAPI:
         :param projectId: Number
         :return: Dict with meta information and an array of found projects
         """
-        getParams = {"project__id": projectId}
-        return self._getJSONResponse("review", getParams)
+        getParams = {"project__id": projectId, "project__active": 1, "project__is_archived": 0}
+        return self._getJSONResponse("review", getData=getParams)
 
     def getReviewByName(self, name):
         """
@@ -147,7 +147,7 @@ class SyncSketchAPI:
         :return: Dict with meta information and an array of found projects
         """
         getParams = {"name__istartswith": name}
-        return self._getJSONResponse("review", getParams)
+        return self._getJSONResponse("review", getData=getParams)
 
     def getReviewById(self, reviewId):
         """
@@ -194,7 +194,7 @@ class SyncSketchAPI:
             dict: search results
         """
 
-        return self._getJSONResponse("item", searchCriteria)
+        return self._getJSONResponse("item", getData=searchCriteria)
 
     def getMediaByReviewId(self, reviewId):
         """Summary
@@ -206,7 +206,7 @@ class SyncSketchAPI:
             TYPE: Description
         """
         getParams = {"reviews__id": reviewId, "active": 1}
-        return self._getJSONResponse("item", getParams)
+        return self._getJSONResponse("item", getData=getParams)
 
     def getAnnotations(self, itemId, revisionId=False):
         """
@@ -222,15 +222,15 @@ class SyncSketchAPI:
         if revisionId:
             getParams["revision__id"] = revisionId
 
-        return self._getJSONResponse("frame", getParams)
+        return self._getJSONResponse("frame", getData=getParams)
 
     def getUsersByName(self, name):
         getParams = {"name__istartswith": name}
-        return self._getJSONResponse("simpleperson", getParams)
+        return self._getJSONResponse("simpleperson", getData=getParams)
 
     def getUsersByProjectId(self, projectId):
         getParams = {"projects__id": projectId}
-        return self._getJSONResponse("simpleperson", getParams)
+        return self._getJSONResponse("simpleperson", getData=getParams)
 
     def getUserById(self, userId):
         return self._getJSONResponse("simpleperson/%s" % userId)
@@ -354,7 +354,7 @@ class SyncSketchAPI:
             return False
 
         getParams = {"users": json.dumps(users)}
-        return self._getJSONResponse("project/%s/addUsers" % projectId, getParams)
+        return self._getJSONResponse("project/%s/addUsers" % projectId, getData=getParams)
 
     def addItem(self, reviewId, name, fps, additionalData):
         """
