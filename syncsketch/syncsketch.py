@@ -103,14 +103,24 @@ class SyncSketchAPI:
         getParams = {"active": 1}
         return self._getJSONResponse("account", getData=getParams)
 
-    def getProjects(self):
+    def getProjects(self, include_deleted=False, include_archived=False):
         """
         Get a list of currently active projects
+
+        :param include_deleted: boolean: if true, include deleted projects
+        :param include_archived: boolean: if true, include archived projects
 
         Returns:
             TYPE: Dict with meta information and an array of found projects
         """
         getParams = {"active": 1, "is_archived": 0, "account__active": 1}
+
+        if include_deleted:
+            del getParams["active"]
+
+        if include_archived:
+            del getParams["is_archived"]
+
         return self._getJSONResponse("project", getData=getParams)
 
     def getProjectsByName(self, name):
