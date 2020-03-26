@@ -119,6 +119,7 @@ class SyncSketchAPI:
             del getParams["active"]
 
         if include_archived:
+            del getParams["active"]
             del getParams["is_archived"]
 
         return self._getJSONResponse("project", getData=getParams)
