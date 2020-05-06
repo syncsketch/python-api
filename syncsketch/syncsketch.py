@@ -503,7 +503,7 @@ class SyncSketchAPI:
         """
         Returns list of Shotgun projects connected to your account
 
-        :param syncsketch_project_id: int
+        :param syncsketch_project_id: <int>
         """
         url = "shotgun/projects/{}".format(syncsketch_project_id)
 
@@ -513,8 +513,8 @@ class SyncSketchAPI:
         """
         Returns list of Shotgun playlists modified in the last 120 days
 
-        :param syncsketch_project_id: int
-        :param shotgun_project_id: int
+        :param syncsketch_project_id: <int>
+        :param shotgun_project_id: <int>
         """
         url = "shotgun/playlists/{}".format(syncsketch_project_id)
 
@@ -528,7 +528,15 @@ class SyncSketchAPI:
         Sync notes from SyncSketch review to the original shotgun playlist
         Returns task id to use in get_shotgun_sync_review_notes_progress to get progress
 
-        :param review_id: int
+        :param review_id: <int>
+        :returns <dict>
+            message=<STR> "Shotgun review notes sync started"
+            status=<STR> processing/done/failed
+            progress_url=<STR> Full url to call for progress/results
+            task_id=<STR> task_ids *pass this value to the get_shotgun_sync_review_items_progress function
+            percent_complete=<INT> 0-100 value of percent complete
+            total_items=<INT> number of items being synced from shotgun
+            remaining_items=<INT> number of items not yet pulled from shotgun
         """
         url = "shotgun/sync-review-notes/review/{}".format(review_id)
 
@@ -538,7 +546,15 @@ class SyncSketchAPI:
         """
         Returns status of review notes sync for the task id provided in shotgun_sync_review_notes
 
-        :param task_id: str/uuid
+        :param task_id: <str/uuid>
+        :returns <dict>
+            message=<STR> "Shotgun review notes sync started"
+            status=<STR> processing/done/failed
+            progress_url=<STR> Full url to call for progress/results
+            task_id=<STR> task_ids *pass this value to the get_shotgun_sync_review_items_progress function
+            percent_complete=<INT> 0-100 value of percent complete
+            total_items=<INT> number of items being synced from shotgun
+            remaining_items=<INT> number of items not yet pulled from shotgun
         """
         url = "shotgun/sync-review-notes/{}".format(task_id)
 
@@ -553,6 +569,18 @@ class SyncSketchAPI:
         :param playlist_code
         :param playlist_id
         :param review_id (optional)
+        :returns <dict>
+            message=<STR> "Shotgun review item sync started",
+            status=<STR> processing/done/failed,
+            progress_url=<STR> Full url to call for progress/results,
+            task_id=<STR> task_ids *pass this value to the get_shotgun_sync_review_items_progress function,
+            percent_complete=<INT> 0-100 value of percent complete,
+            total_items=<INT> number of items being synced from shotgun,
+            remaining_items=<INT> number of items not yet pulled from shotgun,
+            data=<dict>
+                review_id=<INT> review.id,
+                review_link=<STR> url link to the syncsketch player with the review pulled from shotgun,
+        )
         """
         url = "shotgun/sync-review-items/project/{}".format(syncsketch_project_id)
         if review_id:
@@ -569,7 +597,16 @@ class SyncSketchAPI:
         """
         Returns status of review items sync for the task id provided in shotgun_sync_review_items
 
-        :param task_id: str/uuid
+        :param task_id: <str/uuid>
+        :returns <dict>
+            message=<STR> "Shotgun review item sync started",
+            status=<STR> processing/done/failed,
+            progress_url=<STR> Full url to call for progress/results,
+            task_id=<STR> task_ids *pass this value to the get_shotgun_sync_review_items_progress function,
+            percent_complete=<INT> 0-100 value of percent complete,
+            total_items=<INT> number of items being synced from shotgun,
+            remaining_items=<INT> number of items not yet pulled from shotgun,
+        )
         """
         url = "shotgun/sync-review-items/{}".format(task_id)
 
