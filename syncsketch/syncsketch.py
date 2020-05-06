@@ -544,17 +544,17 @@ class SyncSketchAPI:
 
         return self._getJSONResponse(url, method="get", apiVersion="v2")
 
-    def shotgun_sync_review_items(self, project_id, playlist_code, playlist_id, review_id=None):
+    def shotgun_sync_review_items(self, syncsketch_project_id, playlist_code, playlist_id, review_id=None):
         """
         Create or update SyncSketch review with shotgun playlist items
         Returns task id to use in get_shotgun_sync_review_items_progress to get progress
 
-        :param project_id
+        :param syncsketch_project_id
         :param playlist_code
         :param playlist_id
         :param review_id (optional)
         """
-        url = "shotgun/sync-review-items/project/{}".format(project_id)
+        url = "shotgun/sync-review-items/project/{}".format(syncsketch_project_id)
         if review_id:
             url += "/review/{}".format(review_id)
 
