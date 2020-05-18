@@ -92,7 +92,7 @@ If all steps were successfull, you should see the following in the web-app.
 
 
 ##### Traverse all Accounts 
-The fastest way to traverse al Reviews in all projects
+The fastest way to traverse all Accounts, Projects Reviews, and Items is to get the entire tree
 
     tree_data = s.getTree(withItems = True)
     
