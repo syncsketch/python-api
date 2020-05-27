@@ -79,7 +79,7 @@ class SyncSketchAPI:
         params = dict(self.apiParams)
 
         # Update headers with custom content-type
-        headers = self.headers
+        headers = self.headers.copy()
         headers["Content-Type"] = content_type
 
         if getData:
@@ -307,15 +307,16 @@ class SyncSketchAPI:
 
         return self._getJSONResponse("review", postData=postData)
 
-    def addMedia(self, reviewId, filepath, noConvertFlag=False, itemParentId=False):
+    def addMedia(self, review_id, filepath, artist_name="", noConvertFlag=False, itemParentId=False):
         """
             Convenience function to upload a file to a review. It will automatically create
             an Item and attach it to the review. NOTE - if you are hosting your own media, please
             use the addItem function and pass in the external_url and external_thumbnail_url
 
         Args:
-            reviewId (int): Required reviewId
+            review_id (int): Required review_id
             filepath (string): path for the file on disk e.g /tmp/movie.webm
+            artist_name (string): The name of the artist you want associated with this media file
             noConvertFlag (bool): the video you are uploading is already in a browser compatible format
             itemParentId (int): set when you want to add a new version of an item.
                                 itemParentId is the id of the item you want to upload a new version for
@@ -332,17 +333,17 @@ class SyncSketchAPI:
         if itemParentId:
             getParams.update({"itemParentId": itemParentId})
 
-        uploadURL = "%s/items/uploadToReview/%s/?%s" % (self.HOST, reviewId, urlencode(getParams))
+        uploadURL = "%s/items/uploadToReview/%s/?%s" % (self.HOST, review_id, urlencode(getParams))
 
         files = {"reviewFile": open(filepath, "rb")}
-        r = requests.post(uploadURL, files=files)
+        r = requests.post(uploadURL, files=files, data=dict(artist=artist_name), headers=self.headers)
 
         try:
             return json.loads(r.text)
         except Exception:
             print(r.text)
 
-    def addMediaByURL(self, reviewId, mediaURL, noConvertFlag=False):
+    def addMediaByURL(self, reviewId, mediaURL, artist_name="", noConvertFlag=False):
         """
             Convenience function to upload a mediaURl to a review. Please use this function when you already have your files in the cloud, e.g
             AWS, Dropbox, Shotgun, etc...
@@ -367,7 +368,7 @@ class SyncSketchAPI:
 
         uploadURL = "%s/items/uploadToReview/%s/?%s" % (self.HOST, reviewId, urlencode(getParams))
 
-        r = requests.post(uploadURL, {"mediaURL": mediaURL})
+        r = requests.post(uploadURL, {"mediaURL": mediaURL, "artist": artist_name}, headers=self.headers)
 
         try:
             return json.loads(r.text)
@@ -415,6 +416,7 @@ class SyncSketchAPI:
             additionalData (TYPE): dictionary with item info like {
                 width:1024
                 height:720
+                artist: "Brady Endres"
                 duration:3 (in seconds)
                 description: the description here
                 size: size in byte
@@ -508,7 +510,7 @@ class SyncSketchAPI:
 
         """
         url = "%s/manage/downloadGreasePencilFile/%s/%s/" % (self.HOST, reviewId, itemId)
-        r = requests.get(url, params=dict(self.apiParams))
+        r = requests.get(url, params=dict(self.apiParams), headers=self.headers)
 
         if r.status_code == 200:
             data = r.json()
