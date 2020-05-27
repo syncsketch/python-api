@@ -30,12 +30,12 @@ class SyncSketchAPI:
     """
 
     def __init__(
-        self, email, api_key, host="https://www.syncsketch.com", useExpiringToken=False, debug=False, apiVersion="v1"
+        self, auth, api_key, host="https://www.syncsketch.com", useExpiringToken=False, debug=False, api_version="v1"
     ):
         """Summary
 
         Args:
-            email (str): Your email
+            user_auth (str): Your email or username
             api_key (str): Your SyncSketch API Key, found in the settings tab
             host (str, optional): Used for testing or local installs
             useExpiringToken (bool, optional): When using the expiring tokens for authentication.
@@ -43,24 +43,44 @@ class SyncSketchAPI:
             which returns JSON when the authentication is successful
         """
         # set initial values
-        if useExpiringToken:
-            self.apiParams = {"token": api_key, "email": email}
-        else:
-            self.apiParams = {"api_key": api_key, "username": email}
+        self.user_auth = auth
+        self.api_key = api_key
+        self.apiParams = dict()
+        auth_type = "apikey"
 
-        self.apiVersion = apiVersion
+        if useExpiringToken:
+            auth_type = "token"
+
+        self.headers = {
+            "Authorization": "{auth_type} {auth}:{key}".format(
+                auth_type=auth_type, auth=self.user_auth, key=self.api_key
+            )
+        }
+
+        self.api_version = api_version
         self.debug = debug
         self.HOST = host
 
-    def getBaseUrl(self, apiVersion=None):
-        if apiVersion:
-            return self.HOST + "/api/%s/" % apiVersion
-        return self.HOST + "/api/%s/" % self.apiVersion
+    def get_api_base_url(self, api_version=None):
+        return self.HOST + "/api/{}/".format(api_version or self.api_version)
 
-    def _getJSONResponse(self, entity, method=None, getData=None, postData=None, patchData=None, apiVersion=None):
-        url = self.getBaseUrl(apiVersion) + entity + "/"
+    def _getJSONResponse(
+        self,
+        url,
+        method=None,
+        getData=None,
+        postData=None,
+        patchData=None,
+        api_version=None,
+        content_type="application/json",
+        raw_response=False
+    ):
+        url = self.get_api_base_url(api_version) + url + "/"
         params = dict(self.apiParams)
-        headers = {"Content-Type": "application/json"}
+
+        # Update headers with custom content-type
+        headers = self.headers
+        headers["Content-Type"] = content_type
 
         if getData:
             params.update(getData)
@@ -74,6 +94,10 @@ class SyncSketchAPI:
             r = requests.patch(url, params=params, data=json.dumps(patchData), headers=headers)
         else:
             r = requests.get(url, params=params, headers=headers)
+
+        if raw_response:
+            # Return the whole response object, not {"objects": []}
+            return r
 
         try:
             return r.json()
@@ -236,11 +260,13 @@ class SyncSketchAPI:
         return self._getJSONResponse("frame", getData=getParams)
 
     def getUsersByName(self, name):
-        getParams = {"name__istartswith": name}
+        # Uses a custom filter on SimplePersonResource
+        getParams = {"name": name}
         return self._getJSONResponse("simpleperson", getData=getParams)
 
-    def getUsersByProjectId(self, projectId):
-        getParams = {"projects__id": projectId}
+    def getUsersByProjectId(self, project_id):
+        # Uses a custom filter on SimplePersonResource
+        getParams = {"project_id": project_id}
         return self._getJSONResponse("simpleperson", getData=getParams)
 
     def getUserById(self, userId):
@@ -263,7 +289,7 @@ class SyncSketchAPI:
         postData = {
             "name": name,
             "description": description,
-            "account": "/api/%s/account/%s/" % (self.apiVersion, accountId),
+            "account": "/api/%s/account/%s/" % (self.api_version, accountId),
         }
 
         postData.update(data)
@@ -272,7 +298,7 @@ class SyncSketchAPI:
 
     def addReview(self, projectId, name, description="", data={}):
         postData = {
-            "project": "/api/%s/project/%s/" % (self.apiVersion, projectId),
+            "project": "/api/%s/project/%s/" % (self.api_version, projectId),
             "name": name,
             "description": description,
         }
@@ -400,7 +426,7 @@ class SyncSketchAPI:
         """
 
         postData = {
-            "reviews": ["/api/%s/review/%s/" % (self.apiVersion, reviewId)],
+            "reviews": ["/api/%s/review/%s/" % (self.api_version, reviewId)],
             "status": "done",
             "fps": fps,
             "name": name,
@@ -426,7 +452,7 @@ class SyncSketchAPI:
         itemData = self._getJSONResponse("item/%s" % itemId)
 
         if itemData["reviews"]:
-            itemData["reviews"].append("/api/%s/review/%s/" % (self.apiVersion, reviewId))
+            itemData["reviews"].append("/api/%s/review/%s/" % (self.api_version, reviewId))
 
         patchData = {"reviews": itemData["reviews"]}
 
@@ -457,13 +483,13 @@ class SyncSketchAPI:
         and authorization error
         :return:
         """
-        url = "%s%s/" % (self.getBaseUrl(), "person/connected")
+        url = "person/connected"
         params = self.apiParams
 
         if self.debug:
             print("URL: %s, params: %s" % (url, params))
 
-        r = requests.get(url, params=params)
+        r = self._getJSONResponse(url, raw_response=True)
         return r.status_code == 200
 
     def getGreasePencilOverlays(self, reviewId, itemId, homedir=None):
@@ -507,7 +533,7 @@ class SyncSketchAPI:
         """
         url = "shotgun/projects/{}".format(syncsketch_project_id)
 
-        return self._getJSONResponse(url, method="get", apiVersion="v2")
+        return self._getJSONResponse(url, method="get", api_version="v2")
 
     def shotgun_get_playlists(self, syncsketch_project_id, shotgun_project_id):
         """
@@ -521,7 +547,7 @@ class SyncSketchAPI:
         data = {
             "shotgun_project_id": shotgun_project_id
         }
-        return self._getJSONResponse(url, method="get", getData=data, apiVersion="v2")
+        return self._getJSONResponse(url, method="get", getData=data, api_version="v2")
 
     def shotgun_sync_review_notes(self, review_id):
         """
@@ -540,7 +566,7 @@ class SyncSketchAPI:
         """
         url = "shotgun/sync-review-notes/review/{}".format(review_id)
 
-        return self._getJSONResponse(url, method="post", apiVersion="v2")
+        return self._getJSONResponse(url, method="post", api_version="v2")
 
     def get_shotgun_sync_review_notes_progress(self, task_id):
         """
@@ -558,7 +584,7 @@ class SyncSketchAPI:
         """
         url = "shotgun/sync-review-notes/{}".format(task_id)
 
-        return self._getJSONResponse(url, method="get", apiVersion="v2")
+        return self._getJSONResponse(url, method="get", api_version="v2")
 
     def shotgun_sync_review_items(self, syncsketch_project_id, playlist_code, playlist_id, review_id=None):
         """
@@ -591,7 +617,7 @@ class SyncSketchAPI:
             "playlist_id": playlist_id
         }
 
-        return self._getJSONResponse(url, method="post", postData=data, apiVersion="v2")
+        return self._getJSONResponse(url, method="post", postData=data, api_version="v2")
 
     def get_shotgun_sync_review_items_progress(self, task_id):
         """
@@ -610,4 +636,4 @@ class SyncSketchAPI:
         """
         url = "shotgun/sync-review-items/{}".format(task_id)
 
-        return self._getJSONResponse(url, method="get", apiVersion="v2")
+        return self._getJSONResponse(url, method="get", api_version="v2")
