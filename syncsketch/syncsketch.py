@@ -321,7 +321,6 @@ class SyncSketchAPI:
             itemParentId (int): set when you want to add a new version of an item.
                                 itemParentId is the id of the item you want to upload a new version for
 
-
         Returns:
             TYPE: Description
         """
