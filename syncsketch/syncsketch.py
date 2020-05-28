@@ -30,7 +30,14 @@ class SyncSketchAPI:
     """
 
     def __init__(
-        self, auth, api_key, host="https://www.syncsketch.com", useExpiringToken=False, debug=False, api_version="v1", use_header_auth=False
+        self,
+        auth,
+        api_key,
+        host="https://www.syncsketch.com",
+        useExpiringToken=False,
+        debug=False,
+        api_version="v1",
+        use_header_auth=False,
     ):
         """Summary
 
@@ -80,7 +87,7 @@ class SyncSketchAPI:
         patchData=None,
         api_version=None,
         content_type="application/json",
-        raw_response=False
+        raw_response=False,
     ):
         url = self.get_api_base_url(api_version) + url + "/"
         params = dict(self.apiParams)
@@ -552,9 +559,7 @@ class SyncSketchAPI:
         """
         url = "shotgun/playlists/{}".format(syncsketch_project_id)
 
-        data = {
-            "shotgun_project_id": shotgun_project_id
-        }
+        data = {"shotgun_project_id": shotgun_project_id}
         return self._getJSONResponse(url, method="get", getData=data, api_version="v2")
 
     def shotgun_sync_review_notes(self, review_id):
@@ -620,10 +625,7 @@ class SyncSketchAPI:
         if review_id:
             url += "/review/{}".format(review_id)
 
-        data = {
-            "playlist_code": playlist_code,
-            "playlist_id": playlist_id
-        }
+        data = {"playlist_code": playlist_code, "playlist_id": playlist_id}
 
         return self._getJSONResponse(url, method="post", postData=data, api_version="v2")
 
