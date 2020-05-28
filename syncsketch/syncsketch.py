@@ -30,7 +30,7 @@ class SyncSketchAPI:
     """
 
     def __init__(
-        self, auth, api_key, host="https://www.syncsketch.com", useExpiringToken=False, debug=False, api_version="v1"
+        self, auth, api_key, host="https://www.syncsketch.com", useExpiringToken=False, debug=False, api_version="v1", use_header_auth=False
     ):
         """Summary
 
@@ -46,16 +46,23 @@ class SyncSketchAPI:
         self.user_auth = auth
         self.api_key = api_key
         self.apiParams = dict()
+        self.headers = dict()
         auth_type = "apikey"
 
         if useExpiringToken:
             auth_type = "token"
 
-        self.headers = {
-            "Authorization": "{auth_type} {auth}:{key}".format(
-                auth_type=auth_type, auth=self.user_auth, key=self.api_key
-            )
-        }
+        if use_header_auth:
+            # This will be the preferred way to connect once we fix headers on live
+            self.headers = {
+                "Authorization": "{auth_type} {auth}:{key}".format(
+                    auth_type=auth_type, auth=self.user_auth, key=self.api_key
+                )
+            }
+        elif useExpiringToken:
+            self.apiParams = {"token": self.api_key, "email": self.user_auth}
+        else:
+            self.apiParams = {"api_key": self.api_key, "username": self.user_auth}
 
         self.api_version = api_version
         self.debug = debug
