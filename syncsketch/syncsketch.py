@@ -30,12 +30,19 @@ class SyncSketchAPI:
     """
 
     def __init__(
-        self, email, api_key, host="https://www.syncsketch.com", useExpiringToken=False, debug=False, apiVersion="v1"
+        self,
+        auth,
+        api_key,
+        host="https://www.syncsketch.com",
+        useExpiringToken=False,
+        debug=False,
+        api_version="v1",
+        use_header_auth=False,
     ):
         """Summary
 
         Args:
-            email (str): Your email
+            user_auth (str): Your email or username
             api_key (str): Your SyncSketch API Key, found in the settings tab
             host (str, optional): Used for testing or local installs
             useExpiringToken (bool, optional): When using the expiring tokens for authentication.
@@ -43,20 +50,51 @@ class SyncSketchAPI:
             which returns JSON when the authentication is successful
         """
         # set initial values
-        if useExpiringToken:
-            self.apiParams = {"token": api_key, "email": email}
-        else:
-            self.apiParams = {"api_key": api_key, "username": email}
+        self.user_auth = auth
+        self.api_key = api_key
+        self.apiParams = dict()
+        self.headers = dict()
+        auth_type = "apikey"
 
-        self.apiVersion = apiVersion
+        if useExpiringToken:
+            auth_type = "token"
+
+        if use_header_auth:
+            # This will be the preferred way to connect once we fix headers on live
+            self.headers = {
+                "Authorization": "{auth_type} {auth}:{key}".format(
+                    auth_type=auth_type, auth=self.user_auth, key=self.api_key
+                )
+            }
+        elif useExpiringToken:
+            self.apiParams = {"token": self.api_key, "email": self.user_auth}
+        else:
+            self.apiParams = {"api_key": self.api_key, "username": self.user_auth}
+
+        self.api_version = api_version
         self.debug = debug
         self.HOST = host
-        self.baseURL = self.HOST + "/api/%s/" % self.apiVersion
 
-    def _getJSONResponse(self, entity, getData=False, postData=False, patchData=False):
-        url = "%s%s/" % (self.baseURL, entity)
+    def get_api_base_url(self, api_version=None):
+        return self.HOST + "/api/{}/".format(api_version or self.api_version)
+
+    def _getJSONResponse(
+        self,
+        url,
+        method=None,
+        getData=None,
+        postData=None,
+        patchData=None,
+        api_version=None,
+        content_type="application/json",
+        raw_response=False,
+    ):
+        url = self.get_api_base_url(api_version) + url + "/"
         params = dict(self.apiParams)
-        headers = {"Content-Type": "application/json"}
+
+        # Update headers with custom content-type
+        headers = self.headers.copy()
+        headers["Content-Type"] = content_type
 
         if getData:
             params.update(getData)
@@ -64,12 +102,16 @@ class SyncSketchAPI:
         if self.debug:
             print("URL: %s, params: %s" % (url, params))
 
-        if postData:
+        if postData or method == "post":
             r = requests.post(url, params=params, data=json.dumps(postData), headers=headers)
-        elif patchData:
+        elif patchData or method == "patch":
             r = requests.patch(url, params=params, data=json.dumps(patchData), headers=headers)
         else:
             r = requests.get(url, params=params, headers=headers)
+
+        if raw_response:
+            # Return the whole response object, not {"objects": []}
+            return r
 
         try:
             return r.json()
@@ -88,7 +130,7 @@ class SyncSketchAPI:
         :return:
         """
         getParams = {"fetchItems": 1} if withItems else {}
-        return self._getJSONResponse("person/tree", getParams)
+        return self._getJSONResponse("person/tree", getData=getParams)
 
     def getAccounts(self):
         """Summary
@@ -97,17 +139,28 @@ class SyncSketchAPI:
             TYPE: Account
         """
         getParams = {"active": 1}
-        return self._getJSONResponse("account", getParams)
+        return self._getJSONResponse("account", getData=getParams)
 
-    def getProjects(self):
+    def getProjects(self, include_deleted=False, include_archived=False):
         """
         Get a list of currently active projects
+
+        :param include_deleted: boolean: if true, include deleted projects
+        :param include_archived: boolean: if true, include archived projects
 
         Returns:
             TYPE: Dict with meta information and an array of found projects
         """
-        getParams = {"active": 1, "account__active": 1}
-        return self._getJSONResponse("project", getParams)
+        getParams = {"active": 1, "is_archived": 0, "account__active": 1}
+
+        if include_deleted:
+            del getParams["active"]
+
+        if include_archived:
+            del getParams["active"]
+            del getParams["is_archived"]
+
+        return self._getJSONResponse("project", getData=getParams)
 
     def getProjectsByName(self, name):
         """
@@ -117,7 +170,7 @@ class SyncSketchAPI:
             TYPE: Dict with meta information and an array of found projects
         """
         getParams = {"name": name}
-        return self._getJSONResponse("project", getParams)
+        return self._getJSONResponse("project", getData=getParams)
 
     def getProjectById(self, projectId):
         """
@@ -133,8 +186,8 @@ class SyncSketchAPI:
         :param projectId: Number
         :return: Dict with meta information and an array of found projects
         """
-        getParams = {"project__id": projectId}
-        return self._getJSONResponse("review", getParams)
+        getParams = {"project__id": projectId, "project__active": 1, "project__is_archived": 0}
+        return self._getJSONResponse("review", getData=getParams)
 
     def getReviewByName(self, name):
         """
@@ -143,7 +196,7 @@ class SyncSketchAPI:
         :return: Dict with meta information and an array of found projects
         """
         getParams = {"name__istartswith": name}
-        return self._getJSONResponse("review", getParams)
+        return self._getJSONResponse("review", getData=getParams)
 
     def getReviewById(self, reviewId):
         """
@@ -190,7 +243,7 @@ class SyncSketchAPI:
             dict: search results
         """
 
-        return self._getJSONResponse("item", searchCriteria)
+        return self._getJSONResponse("item", getData=searchCriteria)
 
     def getMediaByReviewId(self, reviewId):
         """Summary
@@ -202,7 +255,7 @@ class SyncSketchAPI:
             TYPE: Description
         """
         getParams = {"reviews__id": reviewId, "active": 1}
-        return self._getJSONResponse("item", getParams)
+        return self._getJSONResponse("item", getData=getParams)
 
     def getAnnotations(self, itemId, revisionId=False):
         """
@@ -218,15 +271,17 @@ class SyncSketchAPI:
         if revisionId:
             getParams["revision__id"] = revisionId
 
-        return self._getJSONResponse("frame", getParams)
+        return self._getJSONResponse("frame", getData=getParams)
 
     def getUsersByName(self, name):
-        getParams = {"name__istartswith": name}
-        return self._getJSONResponse("simpleperson", getParams)
+        # Uses a custom filter on SimplePersonResource
+        getParams = {"name": name}
+        return self._getJSONResponse("simpleperson", getData=getParams)
 
-    def getUsersByProjectId(self, projectId):
-        getParams = {"projects__id": projectId}
-        return self._getJSONResponse("simpleperson", getParams)
+    def getUsersByProjectId(self, project_id):
+        # Uses a custom filter on SimplePersonResource
+        getParams = {"project_id": project_id}
+        return self._getJSONResponse("simpleperson", getData=getParams)
 
     def getUserById(self, userId):
         return self._getJSONResponse("simpleperson/%s" % userId)
@@ -248,7 +303,7 @@ class SyncSketchAPI:
         postData = {
             "name": name,
             "description": description,
-            "account": "/api/%s/account/%s/" % (self.apiVersion, accountId),
+            "account": "/api/%s/account/%s/" % (self.api_version, accountId),
         }
 
         postData.update(data)
@@ -257,7 +312,7 @@ class SyncSketchAPI:
 
     def addReview(self, projectId, name, description="", data={}):
         postData = {
-            "project": "/api/%s/project/%s/" % (self.apiVersion, projectId),
+            "project": "/api/%s/project/%s/" % (self.api_version, projectId),
             "name": name,
             "description": description,
         }
@@ -266,19 +321,19 @@ class SyncSketchAPI:
 
         return self._getJSONResponse("review", postData=postData)
 
-    def addMedia(self, reviewId, filepath, noConvertFlag=False, itemParentId=False):
+    def addMedia(self, review_id, filepath, artist_name="", noConvertFlag=False, itemParentId=False):
         """
             Convenience function to upload a file to a review. It will automatically create
             an Item and attach it to the review. NOTE - if you are hosting your own media, please
             use the addItem function and pass in the external_url and external_thumbnail_url
 
         Args:
-            reviewId (int): Required reviewId
+            review_id (int): Required review_id
             filepath (string): path for the file on disk e.g /tmp/movie.webm
+            artist_name (string): The name of the artist you want associated with this media file
             noConvertFlag (bool): the video you are uploading is already in a browser compatible format
             itemParentId (int): set when you want to add a new version of an item.
                                 itemParentId is the id of the item you want to upload a new version for
-
 
         Returns:
             TYPE: Description
@@ -291,17 +346,17 @@ class SyncSketchAPI:
         if itemParentId:
             getParams.update({"itemParentId": itemParentId})
 
-        uploadURL = "%s/items/uploadToReview/%s/?%s" % (self.HOST, reviewId, urlencode(getParams))
+        uploadURL = "%s/items/uploadToReview/%s/?%s" % (self.HOST, review_id, urlencode(getParams))
 
         files = {"reviewFile": open(filepath, "rb")}
-        r = requests.post(uploadURL, files=files)
+        r = requests.post(uploadURL, files=files, data=dict(artist=artist_name), headers=self.headers)
 
         try:
             return json.loads(r.text)
         except Exception:
             print(r.text)
 
-    def addMediaByURL(self, review_id, media_url, noConvertFlag=False):
+    def addMediaByURL(self, review_id, media_url, artist_name="", noConvertFlag=False):
         """
             Convenience function to upload a mediaURl to a review. Please use this function when you already have your files in the cloud, e.g
             AWS, Dropbox, Shotgun, etc...
@@ -326,7 +381,7 @@ class SyncSketchAPI:
 
         uploadURL = "%s/items/uploadToReview/%s/?%s" % (self.HOST, review_id, urlencode(getParams))
 
-        r = requests.post(uploadURL, {"media_url": media_url})
+        r = requests.post(uploadURL, {"media_url": media_url, "artist": artist_name}, headers=self.headers)
 
         try:
             return json.loads(r.text)
@@ -350,7 +405,7 @@ class SyncSketchAPI:
             return False
 
         getParams = {"users": json.dumps(users)}
-        return self._getJSONResponse("project/%s/addUsers" % projectId, getParams)
+        return self._getJSONResponse("project/%s/addUsers" % projectId, getData=getParams)
 
     def addItem(self, reviewId, name, fps, additionalData):
         """
@@ -374,6 +429,7 @@ class SyncSketchAPI:
             additionalData (TYPE): dictionary with item info like {
                 width:1024
                 height:720
+                artist: "Brady Endres"
                 duration:3 (in seconds)
                 description: the description here
                 size: size in byte
@@ -385,7 +441,7 @@ class SyncSketchAPI:
         """
 
         postData = {
-            "reviews": ["/api/%s/review/%s/" % (self.apiVersion, reviewId)],
+            "reviews": ["/api/%s/review/%s/" % (self.api_version, reviewId)],
             "status": "done",
             "fps": fps,
             "name": name,
@@ -411,7 +467,7 @@ class SyncSketchAPI:
         itemData = self._getJSONResponse("item/%s" % itemId)
 
         if itemData["reviews"]:
-            itemData["reviews"].append("/api/%s/review/%s/" % (self.apiVersion, reviewId))
+            itemData["reviews"].append("/api/%s/review/%s/" % (self.api_version, reviewId))
 
         patchData = {"reviews": itemData["reviews"]}
 
@@ -442,13 +498,13 @@ class SyncSketchAPI:
         and authorization error
         :return:
         """
-        url = "%s%s/" % (self.baseURL, "person/connected")
+        url = "person/connected"
         params = self.apiParams
 
         if self.debug:
             print("URL: %s, params: %s" % (url, params))
 
-        r = requests.get(url, params=params)
+        r = self._getJSONResponse(url, raw_response=True)
         return r.status_code == 200
 
     def getGreasePencilOverlays(self, reviewId, itemId, homedir=None):
@@ -467,7 +523,7 @@ class SyncSketchAPI:
 
         """
         url = "%s/manage/downloadGreasePencilFile/%s/%s/" % (self.HOST, reviewId, itemId)
-        r = requests.get(url, params=dict(self.apiParams))
+        r = requests.get(url, params=dict(self.apiParams), headers=self.headers)
 
         if r.status_code == 200:
             data = r.json()
@@ -483,3 +539,111 @@ class SyncSketchAPI:
             return local_filename
         else:
             return False
+
+    def shotgun_get_projects(self, syncsketch_project_id):
+        """
+        Returns list of Shotgun projects connected to your account
+
+        :param syncsketch_project_id: <int>
+        """
+        url = "shotgun/projects/{}".format(syncsketch_project_id)
+
+        return self._getJSONResponse(url, method="get", api_version="v2")
+
+    def shotgun_get_playlists(self, syncsketch_project_id, shotgun_project_id):
+        """
+        Returns list of Shotgun playlists modified in the last 120 days
+
+        :param syncsketch_project_id: <int>
+        :param shotgun_project_id: <int>
+        """
+        url = "shotgun/playlists/{}".format(syncsketch_project_id)
+
+        data = {"shotgun_project_id": shotgun_project_id}
+        return self._getJSONResponse(url, method="get", getData=data, api_version="v2")
+
+    def shotgun_sync_review_notes(self, review_id):
+        """
+        Sync notes from SyncSketch review to the original shotgun playlist
+        Returns task id to use in get_shotgun_sync_review_notes_progress to get progress
+
+        :param review_id: <int>
+        :returns <dict>
+            message=<STR> "Shotgun review notes sync started"
+            status=<STR> processing/done/failed
+            progress_url=<STR> Full url to call for progress/results
+            task_id=<STR> task_ids *pass this value to the get_shotgun_sync_review_items_progress function
+            percent_complete=<INT> 0-100 value of percent complete
+            total_items=<INT> number of items being synced from shotgun
+            remaining_items=<INT> number of items not yet pulled from shotgun
+        """
+        url = "shotgun/sync-review-notes/review/{}".format(review_id)
+
+        return self._getJSONResponse(url, method="post", api_version="v2")
+
+    def get_shotgun_sync_review_notes_progress(self, task_id):
+        """
+        Returns status of review notes sync for the task id provided in shotgun_sync_review_notes
+
+        :param task_id: <str/uuid>
+        :returns <dict>
+            message=<STR> "Shotgun review notes sync started"
+            status=<STR> processing/done/failed
+            progress_url=<STR> Full url to call for progress/results
+            task_id=<STR> task_ids *pass this value to the get_shotgun_sync_review_items_progress function
+            percent_complete=<INT> 0-100 value of percent complete
+            total_items=<INT> number of items being synced from shotgun
+            remaining_items=<INT> number of items not yet pulled from shotgun
+        """
+        url = "shotgun/sync-review-notes/{}".format(task_id)
+
+        return self._getJSONResponse(url, method="get", api_version="v2")
+
+    def shotgun_sync_review_items(self, syncsketch_project_id, playlist_code, playlist_id, review_id=None):
+        """
+        Create or update SyncSketch review with shotgun playlist items
+        Returns task id to use in get_shotgun_sync_review_items_progress to get progress
+
+        :param syncsketch_project_id
+        :param playlist_code
+        :param playlist_id
+        :param review_id (optional)
+        :returns <dict>
+            message=<STR> "Shotgun review item sync started",
+            status=<STR> processing/done/failed,
+            progress_url=<STR> Full url to call for progress/results,
+            task_id=<STR> task_ids *pass this value to the get_shotgun_sync_review_items_progress function,
+            percent_complete=<INT> 0-100 value of percent complete,
+            total_items=<INT> number of items being synced from shotgun,
+            remaining_items=<INT> number of items not yet pulled from shotgun,
+            data=<dict>
+                review_id=<INT> review.id,
+                review_link=<STR> url link to the syncsketch player with the review pulled from shotgun,
+        )
+        """
+        url = "shotgun/sync-review-items/project/{}".format(syncsketch_project_id)
+        if review_id:
+            url += "/review/{}".format(review_id)
+
+        data = {"playlist_code": playlist_code, "playlist_id": playlist_id}
+
+        return self._getJSONResponse(url, method="post", postData=data, api_version="v2")
+
+    def get_shotgun_sync_review_items_progress(self, task_id):
+        """
+        Returns status of review items sync for the task id provided in shotgun_sync_review_items
+
+        :param task_id: <str/uuid>
+        :returns <dict>
+            message=<STR> "Shotgun review item sync started",
+            status=<STR> processing/done/failed,
+            progress_url=<STR> Full url to call for progress/results,
+            task_id=<STR> task_ids *pass this value to the get_shotgun_sync_review_items_progress function,
+            percent_complete=<INT> 0-100 value of percent complete,
+            total_items=<INT> number of items being synced from shotgun,
+            remaining_items=<INT> number of items not yet pulled from shotgun,
+        )
+        """
+        url = "shotgun/sync-review-items/{}".format(task_id)
+
+        return self._getJSONResponse(url, method="get", api_version="v2")

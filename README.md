@@ -86,13 +86,22 @@ If all steps were successfull, you should see the following in the web-app.
 
 ##### Traverse all Reviews
     projects = s.getProjects()
+    
     for project in projects['objects']:
         print(project)
 
 
-## Production Examples
+##### Traverse all Accounts 
+The fastest way to traverse all Accounts, Projects Reviews, and Items is to get the entire tree
 
-
-You might wan't to see some minimal examples on how an integration would work with a 3rd party API. 
-
- [1) Integrate Syncsketch into Shotgun with a column](https://github.com/syncsketch/python-api/tree/documentation/examples/SyncsketchColumnInShotgun)
+    tree_data = s.getTree(withItems = True)
+    
+    for account in tree_data:
+        for project in account['projects']:
+            if project['active'] == 1:
+                print project['name']
+                for review in project['reviews']:
+                    for item in review['items']:
+                        mediaid = item['id']
+                        medianame = item['name']
+                        print '\t %s:\t%s'%(mediaid, medianame)
