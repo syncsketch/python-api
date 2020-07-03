@@ -273,6 +273,25 @@ class SyncSketchAPI:
 
         return self._getJSONResponse("frame", getData=getParams)
 
+    def get_flattened_annotations(self, reviewId, itemId, with_tracing_paper=False, return_as_base64=False):
+        """
+        Returns a list of sketches either as signed urls from s3 or base64 encoded strings.
+        The sketches are composited over the background frame of the item.
+
+        :param syncsketch_review_id: <int>
+        :param syncsketch_item_id: <int>
+        :param with_tracing_paper: <bool>
+        :param return_as_base64: <bool>
+        """
+        getData = {
+            "tracingpaper": 1 if with_tracing_paper else 0,
+            "base64": 1 if return_as_base64 else 0
+        }
+
+        url = "downloads/flattenedSketches/{}/{}".format(reviewId, itemId)
+
+        return self._getJSONResponse(url, method="get", api_version="v2", getData = getData)
+
     def getUsersByName(self, name):
         # Uses a custom filter on SimplePersonResource
         getParams = {"name": name}
