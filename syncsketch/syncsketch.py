@@ -407,6 +407,9 @@ class SyncSketchAPI:
         getParams = {"users": json.dumps(users)}
         return self._getJSONResponse("project/%s/addUsers" % projectId, getData=getParams)
 
+    def getItem(self, item_id):
+        return self._getJSONResponse("item/{}".format(item_id))
+
     def addItem(self, reviewId, name, fps, additionalData):
         """
         create a media item record and connect it to a review. This should be used in case you want to add items with externaly hosted
@@ -450,6 +453,25 @@ class SyncSketchAPI:
         postData.update(additionalData)
 
         return self._getJSONResponse("item", postData=postData)
+
+    def addComment(self, item_id, text, frame=0):
+        item = self.getItem(item_id)
+
+        # Ugly method of getting revision id from item data, should fix this with api v2
+        revisions = item.get("revisions")
+        if not revisions:
+            return "error"
+        revision_id = revisions[0].get("id")
+
+        post_data = dict(
+            item="/api/v1/item/{}/".format(item_id),
+            frame=frame,
+            revision="/api/v1/revision/{}/".format(revision_id),
+            type="comment",
+            text=text
+        )
+
+        return self._getJSONResponse("frame", method="post", postData=post_data)
 
     def connectItemToReview(self, itemId, reviewId):
         """
