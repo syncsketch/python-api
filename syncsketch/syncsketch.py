@@ -273,6 +273,25 @@ class SyncSketchAPI:
 
         return self._getJSONResponse("frame", getData=getParams)
 
+    def get_flattened_annotations(self, reviewId, itemId, with_tracing_paper=False, return_as_base64=False):
+        """
+        Returns a list of sketches either as signed urls from s3 or base64 encoded strings.
+        The sketches are composited over the background frame of the item.
+
+        :param syncsketch_review_id: <int>
+        :param syncsketch_item_id: <int>
+        :param with_tracing_paper: <bool>
+        :param return_as_base64: <bool>
+        """
+        getData = {
+            "tracingpaper": 1 if with_tracing_paper else 0,
+            "base64": 1 if return_as_base64 else 0
+        }
+
+        url = "downloads/flattenedSketches/{}/{}".format(reviewId, itemId)
+
+        return self._getJSONResponse(url, method="get", api_version="v2", getData = getData)
+
     def getUsersByName(self, name):
         # Uses a custom filter on SimplePersonResource
         getParams = {"name": name}
@@ -356,7 +375,7 @@ class SyncSketchAPI:
         except Exception:
             print(r.text)
 
-    def addMediaByURL(self, reviewId, mediaURL, artist_name="", noConvertFlag=False):
+    def addMediaByURL(self, review_id, media_url, artist_name="", noConvertFlag=False):
         """
             Convenience function to upload a mediaURl to a review. Please use this function when you already have your files in the cloud, e.g
             AWS, Dropbox, Shotgun, etc...
@@ -364,8 +383,8 @@ class SyncSketchAPI:
             We will automatically create an Item and attach it to the review.
 
         Args:
-            reviewId (int): Required reviewId
-            mediaURL (string): url to the media you are trying to upload
+            review_id (int): Required review_id
+            media_url (string): url to the media you are trying to upload
             noConvertFlag (bool): the video you are uploading is already in a browser compatible format and does not need to be converted
 
         Returns:
@@ -373,15 +392,15 @@ class SyncSketchAPI:
         """
         getParams = self.apiParams.copy()
 
-        if not reviewId or not mediaURL:
-            raise Exception("You need to pass a review id and a mediaURL")
+        if not review_id or not media_url:
+            raise Exception("You need to pass a review id and a media_url")
 
         if noConvertFlag:
             getParams.update({"noConvertFlag": 1})
 
-        uploadURL = "%s/items/uploadToReview/%s/?%s" % (self.HOST, reviewId, urlencode(getParams))
+        uploadURL = "%s/items/uploadToReview/%s/?%s" % (self.HOST, review_id, urlencode(getParams))
 
-        r = requests.post(uploadURL, {"mediaURL": mediaURL, "artist": artist_name}, headers=self.headers)
+        r = requests.post(uploadURL, {"media_url": media_url, "artist": artist_name}, headers=self.headers)
 
         try:
             return json.loads(r.text)
