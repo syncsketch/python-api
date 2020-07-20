@@ -284,6 +284,7 @@ class SyncSketchAPI:
         :param return_as_base64: <bool>
         """
         getData = {
+            "include_data": 1,
             "tracingpaper": 1 if with_tracing_paper else 0,
             "base64": 1 if return_as_base64 else 0
         }
