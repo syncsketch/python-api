@@ -470,7 +470,7 @@ class SyncSketchAPI:
 
         Args:
             project_id (Number): id of the project
-            users (List): list with dicts e.g users=[{email:test@test.de,permission:'viewer'}] - possible permissions "member, viewer or reviewer"
+            users (List): list with dicts e.g users=[{email:test@test.de,permission:'viewer'}] - possible permissions "admin, member, viewer or reviewer"
             note (String): Optional message for the invitation email
 
         Returns:
