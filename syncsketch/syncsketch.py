@@ -324,7 +324,7 @@ class SyncSketchAPI:
         postData = {
             "name": name,
             "description": description,
-            "account": "/api/%s/account/%s/" % (self.api_version, accountId),
+            "account_id": accountId,
         }
 
         postData.update(data)
