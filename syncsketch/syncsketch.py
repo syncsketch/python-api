@@ -103,7 +103,6 @@ class SyncSketchAPI:
             print("URL: %s, params: %s" % (url, params))
 
         if postData or method == "post":
-            print("POST DATA: {}".format(postData))
             r = requests.post(url, params=params, data=json.dumps(postData), headers=headers)
         elif patchData or method == "patch":
             r = requests.patch(url, params=params, data=json.dumps(patchData), headers=headers)
@@ -422,7 +421,7 @@ class SyncSketchAPI:
 
         Args:
             workspace_id (Number): id of the workspace
-            users (List): list with dicts e.g users=[{email:test@test.de,permission:'admin'}] - possible permissions "admin"
+            users (List): list with dicts e.g users=[{"email":"test@test.de","permission":"admin"}] - possible permissions "admin"
             note (String): Optional message for the invitation email
 
         Returns:
@@ -448,7 +447,7 @@ class SyncSketchAPI:
 
         Args:
             workspace_id (Number): id of the workspace
-            users (List): list with dicts e.g users=[{email:test@test.de}, {id:12345}] - either remove by user email or id
+            users (List): list with dicts e.g users=[{"email":"test@test.de"}, {"id":12345}] - either remove by user email or id
 
         """
         if not isinstance(users, list):
@@ -470,7 +469,7 @@ class SyncSketchAPI:
 
         Args:
             project_id (Number): id of the project
-            users (List): list with dicts e.g users=[{email:test@test.de,permission:'viewer'}] - possible permissions "admin, member, viewer or reviewer"
+            users (List): list with dicts e.g users=[{"email":"test@test.de","permission":"viewer"}] - possible permissions "admin, member, viewer or reviewer"
             note (String): Optional message for the invitation email
 
         Returns:
@@ -496,7 +495,7 @@ class SyncSketchAPI:
 
         Args:
             project_id (Number): id of the project
-            users (List): list with dicts e.g users=[{email:test@test.de}, {id:12345}] - either remove by user email or id
+            users (List): list with dicts e.g users=[{"email":"test@test.de"}, {"id":12345}] - either remove by user email or id
 
         """
         if not isinstance(users, list):
