@@ -7,7 +7,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="syncsketch",
-    version="1.0.7.4",
+    version="1.0.7.8",
     description="SyncSketch Python API",
     author="Philip Floetotto",
     author_email="phil@syncsketch.com",

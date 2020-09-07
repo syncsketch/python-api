@@ -659,14 +659,10 @@ class SyncSketchAPI:
         request_processing = True
         check_celery_url = "%s/api/v2/downloads/greasePencil/%s/" % (self.HOST, celery_task_id)
 
-        print(check_celery_url)
         r = requests.get(check_celery_url, params=dict(self.apiParams), headers=self.headers)
-
 
         while request_processing:
             result = r.json()
-
-            print("checking", result)
 
             if result.get('status') == 'done':
                 data = result.get('data')
