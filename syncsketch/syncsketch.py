@@ -587,16 +587,21 @@ class SyncSketchAPI:
 
         :param syncsketch_project_id: <int>
         """
-        url = "shotgun/projects/{}".format(syncsketch_project_id)
+        print("DEPRECATED!  Please use Shotgun's API")
+        print("https://github.com/shotgunsoftware/python-api")
 
-        return self._getJSONResponse(url, method="get", api_version="v2")
+        return
 
-    def shotgun_get_playlists(self, syncsketch_project_id, shotgun_project_id):
+    def shotgun_get_playlists(self, syncsketch_project_id, shotgun_project_id=None):
         """
         Returns list of Shotgun playlists modified in the last 120 days
 
         :param syncsketch_project_id: <int>
-        :param shotgun_project_id: <int>
+        :param shotgun_project_id: <int> (optional)
+
+        If the syncsketch project is directly linked to a shotgun by the workspace admin, the
+        param shotgun_project_id will be ignored and can be omitted during the function call
+
         """
         url = "shotgun/playlists/{}".format(syncsketch_project_id)
 
