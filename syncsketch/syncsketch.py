@@ -10,6 +10,8 @@ from __future__ import print_function
 
 import os
 import json
+import time
+
 import requests
 
 try:
@@ -118,7 +120,8 @@ class SyncSketchAPI:
         except Exception as e:
             if self.debug:
                 print(e)
-                print("error %s" % (r.text))
+
+            print("Error: %s" % (r.text))
 
             return {"objects": []}
 
@@ -284,6 +287,7 @@ class SyncSketchAPI:
         :param return_as_base64: <bool>
         """
         getData = {
+            "include_data": 1,
             "tracingpaper": 1 if with_tracing_paper else 0,
             "base64": 1 if return_as_base64 else 0
         }
@@ -293,14 +297,13 @@ class SyncSketchAPI:
         return self._getJSONResponse(url, method="get", api_version="v2", getData = getData)
 
     def getUsersByName(self, name):
-        # Uses a custom filter on SimplePersonResource
-        getParams = {"name": name}
-        return self._getJSONResponse("simpleperson", getData=getParams)
+        """
+        Name is a combined search and will search in first_name, last_name and email
+        """
+        return self._getJSONResponse("simpleperson", getData={"name": name})
 
     def getUsersByProjectId(self, project_id):
-        # Uses a custom filter on SimplePersonResource
-        getParams = {"project_id": project_id}
-        return self._getJSONResponse("simpleperson", getData=getParams)
+        return self._getJSONResponse("all-project-users/{}".format(project_id), api_version="v2")
 
     def getUserById(self, userId):
         return self._getJSONResponse("simpleperson/%s" % userId)
@@ -322,7 +325,7 @@ class SyncSketchAPI:
         postData = {
             "name": name,
             "description": description,
-            "account": "/api/%s/account/%s/" % (self.api_version, accountId),
+            "account_id": accountId,
         }
 
         postData.update(data)
@@ -408,11 +411,68 @@ class SyncSketchAPI:
             print(r.text)
 
     def addUsers(self, projectId, users):
-        """Summary
+        """
+            Depreciated method.
+        """
+        print("Depreciated - please use method add_users_to_project instead")
+
+        return self.add_users_to_project(project_id=projectId, users=users)
+
+    def add_users_to_workspace(self, workspace_id, users, note = ''):
+        """Add Users to Workspace
 
         Args:
-            projectId (TYPE): Description
-            users (TYPE): list with dicts e.g users=[{email:test@test.de,permission:'viewer'}]
+            workspace_id (Number): id of the workspace
+            users (List): list with dicts e.g users=[{"email":"test@test.de","permission":"admin"}] - possible permissions "admin"
+            note (String): Optional message for the invitation email
+
+        Returns:
+            TYPE: Description
+        """
+        if not isinstance(users, list):
+            print(
+                "Please add users by list with user items e.g users=[{'email':'test@test.de','permission':'admin'}]"
+            )
+            return False
+
+        post_data = {
+            "which": "account",
+            "entity_id": workspace_id,
+            "note": note,
+            "users": json.dumps(users)
+        }
+
+        return self._getJSONResponse("add-users", postData=post_data, api_version="v2")
+
+    def remove_users_from_workspace(self, workspace_id, users):
+        """Remove a list of users from a workspace
+
+        Args:
+            workspace_id (Number): id of the workspace
+            users (List): list with dicts e.g users=[{"email":"test@test.de"}, {"id":12345}] - either remove by user email or id
+
+        """
+        if not isinstance(users, list):
+            print(
+                "Please add users by list with user items e.g users=[{'email':'test@test.de'}]"
+            )
+            return False
+
+        post_data = {
+            "which": "account",
+            "entity_id": workspace_id,
+            "users": json.dumps(users)
+        }
+
+        return self._getJSONResponse("remove-users", postData=post_data, api_version="v2")
+
+    def add_users_to_project(self, project_id, users, note = ''):
+        """Add Users to Project
+
+        Args:
+            project_id (Number): id of the project
+            users (List): list with dicts e.g users=[{"email":"test@test.de","permission":"viewer"}] - possible permissions "admin, member, viewer or reviewer"
+            note (String): Optional message for the invitation email
 
         Returns:
             TYPE: Description
@@ -423,8 +483,36 @@ class SyncSketchAPI:
             )
             return False
 
-        getParams = {"users": json.dumps(users)}
-        return self._getJSONResponse("project/%s/addUsers" % projectId, getData=getParams)
+        post_data = {
+            "which": "project",
+            "entity_id": project_id,
+            "note": note,
+            "users": json.dumps(users)
+        }
+
+        return self._getJSONResponse("add-users", postData=post_data, api_version="v2",)
+
+    def remove_users_from_project(self, project_id, users):
+        """Remove a list of users from a project
+
+        Args:
+            project_id (Number): id of the project
+            users (List): list with dicts e.g users=[{"email":"test@test.de"}, {"id":12345}] - either remove by user email or id
+
+        """
+        if not isinstance(users, list):
+            print(
+                "Please add users by list with user items e.g users=[{'email':'test@test.de']"
+            )
+            return False
+
+        post_data = {
+            "which": "project",
+            "entity_id": project_id,
+            "users": json.dumps(users)
+        }
+
+        return self._getJSONResponse("remove-users", postData=post_data, api_version="v2")
 
     def getItem(self, item_id):
         return self._getJSONResponse("item/{}".format(item_id))
@@ -551,9 +639,9 @@ class SyncSketchAPI:
     def getGreasePencilOverlays(self, reviewId, itemId, homedir=None):
         """Download overlay sketches for Maya Greasepencil.
 
-        Download overlay sketches for Maya Greasepencil. Function will download
-        a zip file which contains an XML and the sketches as png files. Maya
-        can load the zip file to overlay the sketches over the 3D model!
+            Download overlay sketches for Maya Greasepencil. Function will download
+            a zip file which contains an XML and the sketches as png files. Maya
+            can load the zip file to overlay the sketches over the 3D model!
 
             For more information visit:
             https://knowledge.autodesk.com/support/maya/learn-explore/caas/CloudHelp/cloudhelp/2015/ENU/Maya/files/Grease-Pencil-Tool-htm.html
@@ -563,23 +651,44 @@ class SyncSketchAPI:
         PLEASE make sure that /tmp is writable
 
         """
-        url = "%s/manage/downloadGreasePencilFile/%s/%s/" % (self.HOST, reviewId, itemId)
-        r = requests.get(url, params=dict(self.apiParams), headers=self.headers)
+        url = "%s/api/v2/downloads/greasePencil/%s/%s/" % (self.HOST, reviewId, itemId)
+        r = requests.post(url, params=dict(self.apiParams), headers=self.headers)
+        celery_task_id = r.json()
 
-        if r.status_code == 200:
-            data = r.json()
-            local_filename = "/tmp/%s.zip" % data["fileName"]
-            if homedir:
-                local_filename = os.path.join(homedir, "{}.zip".format(data["fileName"]))
-            r = requests.get(data["s3Path"], stream=True)
-            with open(local_filename, "wb") as f:
-                for chunk in r.iter_content(chunk_size=1024):
-                    if chunk:
-                        f.write(chunk)
+        # check the celery task
+        request_processing = True
+        check_celery_url = "%s/api/v2/downloads/greasePencil/%s/" % (self.HOST, celery_task_id)
 
-            return local_filename
-        else:
-            return False
+        r = requests.get(check_celery_url, params=dict(self.apiParams), headers=self.headers)
+
+        while request_processing:
+            result = r.json()
+
+            if result.get('status') == 'done':
+                data = result.get('data')
+
+                # storing locally
+                local_filename = "/tmp/%s.zip" % data["fileName"]
+                if homedir:
+                    local_filename = os.path.join(homedir, "{}.zip".format(data["fileName"]))
+                r = requests.get(data["s3Path"], stream=True)
+                with open(local_filename, "wb") as f:
+                    for chunk in r.iter_content(chunk_size=1024):
+                        if chunk:
+                            f.write(chunk)
+
+                request_processing = False
+                return local_filename
+
+            if result.get('status') == 'failed':
+                request_processing = False
+                return False
+
+            # wait a bit
+            time.sleep(1)
+
+            # check the url again
+            r = requests.get(check_celery_url, params=dict(self.apiParams), headers=self.headers)
 
     def shotgun_get_projects(self, syncsketch_project_id):
         """

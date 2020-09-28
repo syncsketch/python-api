@@ -5,6 +5,6 @@
 .idea/modules.xml
 .idea/python-api.iml
 .idea/workspace.xml
-
+local_test.py
 __pycache__/
 *.pyc
