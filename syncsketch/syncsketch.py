@@ -272,7 +272,7 @@ class SyncSketchAPI:
         :param project_id: Number
         :return:
         """
-        return self._get_json_response("project/%s" % project_id, method="delete")
+        return self._get_json_response("project/%s" % project_id, patchData=dict(active=0))
 
     def archive_project(self, project_id):
         """
@@ -365,7 +365,7 @@ class SyncSketchAPI:
         :param review_id: Int
         :return:
         """
-        return self._get_json_response("review/%s" % review_id, method="delete")
+        return self._get_json_response("review/%s" % review_id, patchData=dict(active=0))
 
     """
     Items
@@ -558,7 +558,7 @@ class SyncSketchAPI:
         :param item_id: Int
         :return:
         """
-        return self._get_json_response("item/%s" % item_id, method="delete")
+        return self._get_json_response("item/%s" % item_id, patchData=dict(active=0))
 
     def bulk_delete_items(self, item_ids):
         """
