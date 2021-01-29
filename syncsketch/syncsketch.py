@@ -169,6 +169,23 @@ class SyncSketchAPI:
         get_params = {"active": 1}
         return self._get_json_response("account", getData=get_params)
 
+    def update_account(self, account_id, data):
+        """
+        Update a project
+
+        Args:
+            account_id (TYPE): the id of the item
+            data (dict): normal dict with data for item
+
+        Returns:
+            TYPE: item
+        """
+        if not isinstance(data, dict):
+            print("Please make sure you pass a dict as data")
+            return False
+
+        return self._get_json_response("account/%s" % account_id, patchData=data)
+
     """
     Projects
     """
@@ -232,6 +249,23 @@ class SyncSketchAPI:
         """
         return self._get_json_response("project/%s" % project_id)
 
+    def update_project(self, project_id, data):
+        """
+        Update a project
+
+        Args:
+            project_id (TYPE): the id of the item
+            data (dict): normal dict with data for item
+
+        Returns:
+            TYPE: item
+        """
+        if not isinstance(data, dict):
+            print("Please make sure you pass a dict as data")
+            return False
+
+        return self._get_json_response("project/%s" % project_id, patchData=data)
+
     def delete_project(self, project_id):
         """
         Get single project by id.
@@ -239,6 +273,33 @@ class SyncSketchAPI:
         :return:
         """
         return self._get_json_response("project/%s" % project_id, method="delete")
+
+    def archive_project(self, project_id):
+        """
+        Archive a project
+
+        Args:
+            project_id (TYPE): the id of the item
+
+        Returns:
+            TYPE: item
+        """
+
+        return self._get_json_response("project/%s" % project_id, patchData=dict(is_archived=1))
+
+    def restore_project(self, project_id):
+        """
+        Restore (unarchive) a project
+
+        Args:
+            project_id (TYPE): the id of the item
+            data (dict): normal dict with data for item
+
+        Returns:
+            TYPE: item
+        """
+
+        return self._get_json_response("project/%s" % project_id, patchData=dict(is_archived=0))
 
     """
     Reviews
@@ -280,6 +341,23 @@ class SyncSketchAPI:
         :return: Review Dict
         """
         return self._get_json_response("review/%s" % review_id)
+
+    def update_review(self, review_id, data):
+        """
+        Update a review
+
+        Args:
+            review_id (TYPE): the id of the item
+            data (dict): normal dict with data for item
+
+        Returns:
+            TYPE: item
+        """
+        if not isinstance(data, dict):
+            print("Please make sure you pass a dict as data")
+            return False
+
+        return self._get_json_response("review/%s" % review_id, patchData=data)
 
     def delete_review(self, review_id):
         """
