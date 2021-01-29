@@ -41,13 +41,13 @@ If you got a `200` response, you successfully connected to the syncsketch server
 Before we can create/read/update/delete reviews, we need to select an account
 
     accounts = s.get_accounts()
-    firstAccount = accounts['objects'][0]
+    first_account = accounts["objects"][0]
 
 ##### 2) Create a project
 
 Let's create a project with the selected account
 
-    project = s.create_project(firstAccount.id, 'DEV Example Project', 'DEV API Testing')
+    project = s.create_project(first_account["id"], 'DEV Example Project', 'DEV API Testing')
 
 This creates a new Project called `Dev Example Project` with the description `DEV API Testing`
 
@@ -56,7 +56,7 @@ This creates a new Project called `Dev Example Project` with the description `DE
 
 We can now add a Review to our newly created Project using it's `id`
 
-    review = s.create_review(project['id'],'DEV Review (api)','DEV Syncsketch API Testing')
+    review = s.create_review(project['id'], 'DEV Review (api)','DEV Syncsketch API Testing')
 
 
 ##### 4) Get list of reviews

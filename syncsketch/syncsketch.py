@@ -6,7 +6,7 @@
 # @Last Modified time: 2021-01-28
 #!/usr/local/bin/python
 
-from __future__ import print_function
+from __future__ import absolute_import, division, print_function
 
 import os
 import json
@@ -96,7 +96,7 @@ class SyncSketchAPI:
         if not url.endswith("/"):
             url += "/"
 
-        params = self.api_params
+        params = self.api_params.copy()
 
         # Update headers with custom content-type
         headers = self.headers.copy()
@@ -111,7 +111,7 @@ class SyncSketchAPI:
         if postData or method == "post":
             r = requests.post(url, params=params, data=json.dumps(postData), headers=headers)
         elif patchData or method == "patch":
-            r = requests.patch(url, params=params, data=json.dumps(patchData), headers=headers)
+            r = requests.patch(url, params=params, json=patchData, headers=headers)
         elif method == "delete":
             r = requests.patch(url, params=params, data={"active": False}, headers=headers)
         else:
@@ -127,7 +127,7 @@ class SyncSketchAPI:
             if self.debug:
                 print(e)
 
-            print("Error: %s" % (r.text))
+            print("Error: %s" % r.text)
 
             return {"objects": []}
 
@@ -139,7 +139,7 @@ class SyncSketchAPI:
         :return:
         """
         url = "person/connected"
-        params = self.api_params
+        params = self.api_params.copy()
 
         if self.debug:
             print("URL: %s, params: %s" % (url, params))
@@ -562,32 +562,21 @@ class SyncSketchAPI:
 
     def bulk_delete_items(self, item_ids):
         """
-        Get multiple items by id.
+        Delete multiple items by id.
         :param item_ids: Array[Int}
         """
-        return self._get_json_response("bulk-delete-items/", postData=item_ids, method="post", api_version="v2")
+        return self._get_json_response(
+            "bulk-delete-items/",
+            postData=dict(item_ids=item_ids),
+            method="post",
+            api_version="v2",
+            raw_response=True,
+        )
 
     def connect_item_to_review(self, item_id, review_id):
-        """
-        adding an existing item record in the database to an existing review by id. This function is useful when
-        you don't want to upload an item multiple times but use it in multiple reviews e.g for context.
-
-        Args:
-            review_id (Number): Required review_id
-            item_id (Number): id of the item
-
-        Returns:
-            TYPE: Item
-        """
-
-        item_data = self._get_json_response("item/%s" % item_id)
-
-        if item_data["reviews"]:
-            item_data["reviews"].append("/api/%s/review/%s/" % (self.api_version, review_id))
-
-        patch_data = {"reviews": item_data["reviews"]}
-
-        return self._get_json_response("item/%s" % item_id, patchData=patch_data)
+        print("DEPRECATED.")
+        print("A new improved method for this will be added soon.")
+        return "Deprecated"
 
     """
     Frames (Sketches / Comments)
@@ -710,7 +699,7 @@ class SyncSketchAPI:
         """
             Deprecated method.
         """
-        print("Depreciated - please use method add_users_to_project instead")
+        print("Deprecated - please use method add_users_to_project instead")
 
         return self.add_users_to_project(project_id=project_id, users=users)
 
