@@ -54,7 +54,7 @@ class SyncSketchAPI:
         # set initial values
         self.user_auth = auth
         self.api_key = api_key
-        self.apiParams = dict()
+        self.api_params = dict()
         self.headers = dict()
         auth_type = "apikey"
 
@@ -69,9 +69,9 @@ class SyncSketchAPI:
                 )
             }
         elif useExpiringToken:
-            self.apiParams = {"token": self.api_key, "email": self.user_auth}
+            self.api_params = {"token": self.api_key, "email": self.user_auth}
         else:
-            self.apiParams = {"api_key": self.api_key, "username": self.user_auth}
+            self.api_params = {"api_key": self.api_key, "username": self.user_auth}
 
         self.api_version = api_version
         self.debug = debug
@@ -80,7 +80,7 @@ class SyncSketchAPI:
     def get_api_base_url(self, api_version=None):
         return self.HOST + "/api/{}/".format(api_version or self.api_version)
 
-    def _getJSONResponse(
+    def _get_json_response(
         self,
         url,
         method=None,
@@ -91,8 +91,12 @@ class SyncSketchAPI:
         content_type="application/json",
         raw_response=False,
     ):
-        url = self.get_api_base_url(api_version) + url + "/"
-        params = dict(self.apiParams)
+        url = self.get_api_base_url(api_version) + url
+
+        if not url.endswith("/"):
+            url += "/"
+
+        params = self.api_params
 
         # Update headers with custom content-type
         headers = self.headers.copy()
@@ -108,6 +112,8 @@ class SyncSketchAPI:
             r = requests.post(url, params=params, data=json.dumps(postData), headers=headers)
         elif patchData or method == "patch":
             r = requests.patch(url, params=params, data=json.dumps(patchData), headers=headers)
+        elif method == "delete":
+            r = requests.patch(url, params=params, data={"active": False}, headers=headers)
         else:
             r = requests.get(url, params=params, headers=headers)
 
@@ -125,26 +131,69 @@ class SyncSketchAPI:
 
             return {"objects": []}
 
-    # Get
-    def getTree(self, withItems=False):
+    def is_connected(self):
+        """
+        Convenience function to check if the API is connected to SyncSketch
+        Will check against Status Code 200 and return False if not which most likely would be
+        and authorization error
+        :return:
+        """
+        url = "person/connected"
+        params = self.api_params
+
+        if self.debug:
+            print("URL: %s, params: %s" % (url, params))
+
+        r = self._get_json_response(url, raw_response=True)
+        return r.status_code == 200
+
+    def get_tree(self, withItems=False):
         """
             get nested tree of account, projects, reviews and optionally items for the current user
         :param withItems:
         :return:
         """
-        getParams = {"fetchItems": 1} if withItems else {}
-        return self._getJSONResponse("person/tree", getData=getParams)
+        get_params = {"fetchItems": 1} if withItems else {}
+        return self._get_json_response("person/tree", getData=get_params)
 
-    def getAccounts(self):
+    """
+    Accounts
+    """
+
+    def get_accounts(self):
         """Summary
 
         Returns:
             TYPE: Account
         """
-        getParams = {"active": 1}
-        return self._getJSONResponse("account", getData=getParams)
+        get_params = {"active": 1}
+        return self._get_json_response("account", getData=get_params)
 
-    def getProjects(self, include_deleted=False, include_archived=False):
+    """
+    Projects
+    """
+
+    def create_project(self, account_id, name, description="", data={}):
+        """
+        Add a project to your account. Please make sure to pass the accountId which you can query using the getAccounts command.
+
+        :param account_id: Number - id of the account to connect with
+        :param name: String
+        :param description: String
+        :param data: Dict with additional information e.g is_public. Find out more about available fields at /api/v1/project/schema/.
+        :return:
+        """
+        post_data = {
+            "name": name,
+            "description": description,
+            "account_id": account_id,
+        }
+
+        post_data.update(data)
+
+        return self._get_json_response("project", postData=post_data)
+
+    def get_projects(self, include_deleted=False, include_archived=False):
         """
         Get a list of currently active projects
 
@@ -154,62 +203,242 @@ class SyncSketchAPI:
         Returns:
             TYPE: Dict with meta information and an array of found projects
         """
-        getParams = {"active": 1, "is_archived": 0, "account__active": 1}
+        get_params = {"active": 1, "is_archived": 0, "account__active": 1}
 
         if include_deleted:
-            del getParams["active"]
+            del get_params["active"]
 
         if include_archived:
-            del getParams["active"]
-            del getParams["is_archived"]
+            del get_params["active"]
+            del get_params["is_archived"]
 
-        return self._getJSONResponse("project", getData=getParams)
+        return self._get_json_response("project", getData=get_params)
 
-    def getProjectsByName(self, name):
+    def get_projects_by_name(self, name):
         """
         Get a project by name regardless of status
 
         Returns:
             TYPE: Dict with meta information and an array of found projects
         """
-        getParams = {"name": name}
-        return self._getJSONResponse("project", getData=getParams)
+        get_params = {"name": name}
+        return self._get_json_response("project", getData=get_params)
 
-    def getProjectById(self, projectId):
+    def get_project_by_id(self, project_id):
         """
         Get single project by id
-        :param projectId: Number
+        :param project_id: Number
         :return:
         """
-        return self._getJSONResponse("project/%s" % projectId)
+        return self._get_json_response("project/%s" % project_id)
 
-    def getReviewsByProjectId(self, projectId):
+    def delete_project(self, project_id):
+        """
+        Get single project by id.
+        :param project_id: Number
+        :return:
+        """
+        return self._get_json_response("project/%s" % project_id, method="delete")
+
+    """
+    Reviews
+    """
+
+    def create_review(self, project_id, name, description="", data={}):
+        postData = {
+            "project": "/api/%s/project/%s/" % (self.api_version, project_id),
+            "name": name,
+            "description": description,
+        }
+
+        postData.update(data)
+
+        return self._get_json_response("review", postData=postData)
+
+    def get_reviews_by_project_id(self, project_id):
         """
         Get list of reviews by project id.
-        :param projectId: Number
+        :param project_id: Number
         :return: Dict with meta information and an array of found projects
         """
-        getParams = {"project__id": projectId, "project__active": 1, "project__is_archived": 0}
-        return self._getJSONResponse("review", getData=getParams)
+        get_params = {"project__id": project_id, "project__active": 1, "project__is_archived": 0}
+        return self._get_json_response("review", getData=get_params)
 
-    def getReviewByName(self, name):
+    def get_review_by_name(self, name):
         """
         Get reviews by name using a case insensitive startswith query
         :param name: String - Name of the review
         :return: Dict with meta information and an array of found projects
         """
-        getParams = {"name__istartswith": name}
-        return self._getJSONResponse("review", getData=getParams)
+        get_params = {"name__istartswith": name}
+        return self._get_json_response("review", getData=get_params)
 
-    def getReviewById(self, reviewId):
+    def get_review_by_id(self, review_id):
         """
         Get single review by id.
-        :param reviewId: Number
+        :param review_id: Number
         :return: Review Dict
         """
-        return self._getJSONResponse("review/%s" % reviewId)
+        return self._get_json_response("review/%s" % review_id)
 
-    def getMedia(self, searchCriteria):
+    def delete_review(self, review_id):
+        """
+        Get single review by id.
+        :param review_id: Int
+        :return:
+        """
+        return self._get_json_response("review/%s" % review_id, method="delete")
+
+    """
+    Items
+    """
+
+    def get_item(self, item_id):
+        return self._get_json_response("item/{}".format(item_id))
+
+    def update_item(self, item_id, data):
+        """Summary
+
+        Args:
+            item_id (TYPE): the id of the item
+            data (dict): normal dict with data for item
+
+        Returns:
+            TYPE: item
+        """
+        if not isinstance(data, dict):
+            print("Please make sure you pass a dict as data")
+            return False
+
+        return self._get_json_response("item/%s" % item_id, patchData=data)
+
+    def add_item(self, review_id, name, fps, additional_data):
+        """
+        create a media item record and connect it to a review. This should be used in case you want to add items with externaly hosted
+        media by passing in the external_url and external_thumbnail_url to the additionalData dict e.g
+
+        additionalData = {
+            external_url: http://52.24.98.51/wp-content/uploads/2017/03/rain.jpg
+            external_thumbnail_url: http://52.24.98.51/wp-content/uploads/2017/03/rain.jpg
+        }
+
+        NOTE: you always need to pass in FPS for SyncSketch to work!
+
+        For a complete list of available fields to set, please
+        visit https://www.syncsketch.com/api/v1/item/schema/
+
+        Args:
+            review_id (TYPE): Required review_id
+            name (TYPE): Name of the item
+            fps (TYPE): The frame per second is very important for syncsketch to determine the correct number of frames
+            additional_data (TYPE): dictionary with item info like {
+                width:1024
+                height:720
+                artist: "Brady Endres"
+                duration:3 (in seconds)
+                description: the description here
+                size: size in byte
+                type: image | video
+            }
+
+        Returns:
+            TYPE: Item
+        """
+
+        postData = {
+            "reviews": ["/api/%s/review/%s/" % (self.api_version, review_id)],
+            "status": "done",
+            "fps": fps,
+            "name": name,
+        }
+
+        postData.update(additional_data)
+
+        return self._get_json_response("item", postData=postData)
+
+    def add_media(self, review_id, filepath, artist_name="", noConvertFlag=False, itemParentId=False):
+        """
+            Convenience function to upload a file to a review. It will automatically create
+            an Item and attach it to the review. NOTE - if you are hosting your own media, please
+            use the addItem function and pass in the external_url and external_thumbnail_url
+
+        Args:
+            review_id (int): Required review_id
+            filepath (string): path for the file on disk e.g /tmp/movie.webm
+            artist_name (string): The name of the artist you want associated with this media file
+            noConvertFlag (bool): the video you are uploading is already in a browser compatible format
+            itemParentId (int): set when you want to add a new version of an item.
+                                itemParentId is the id of the item you want to upload a new version for
+
+        Returns:
+            TYPE: Description
+        """
+        get_params = self.api_params.copy()
+
+        if noConvertFlag:
+            get_params.update({"noConvertFlag": 1})
+
+        if itemParentId:
+            get_params.update({"itemParentId": itemParentId})
+
+        uploadURL = "%s/items/uploadToReview/%s/?%s" % (self.HOST, review_id, urlencode(get_params))
+
+        files = {"reviewFile": open(filepath, "rb")}
+        r = requests.post(uploadURL, files=files, data=dict(artist=artist_name), headers=self.headers)
+
+        try:
+            return json.loads(r.text)
+        except Exception:
+            print(r.text)
+
+    def add_media_by_url(self, review_id, media_url, artist_name="", noConvertFlag=False):
+        """
+            Convenience function to upload a mediaURl to a review. Please use this function when you already have your files in the cloud, e.g
+            AWS, Dropbox, Shotgun, etc...
+
+            We will automatically create an Item and attach it to the review.
+
+        Args:
+            review_id (int): Required review_id
+            media_url (string): url to the media you are trying to upload
+            noConvertFlag (bool): the video you are uploading is already in a browser compatible format and does not need to be converted
+
+        Returns:
+            TYPE: Description
+        """
+        get_params = self.api_params.copy()
+
+        if not review_id or not media_url:
+            raise Exception("You need to pass a review id and a media_url")
+
+        if noConvertFlag:
+            get_params.update({"noConvertFlag": 1})
+
+        upload_url = "%s/items/uploadToReview/%s/?%s" % (self.HOST, review_id, urlencode(get_params))
+
+        r = requests.post(upload_url, {"media_url": media_url, "artist": artist_name}, headers=self.headers)
+
+        try:
+            return json.loads(r.text)
+        except Exception:
+            print(r.text)
+
+    def delete_item(self, item_id):
+        """
+        Get single item by id.
+        :param item_id: Int
+        :return:
+        """
+        return self._get_json_response("item/%s" % item_id, method="delete")
+
+    def bulk_delete_items(self, item_ids):
+        """
+        Get multiple items by id.
+        :param item_ids: Array[Int}
+        """
+        return self._get_json_response("bulk-delete-items/" % item_ids, method="delete")
+
+    def get_media(self, searchCriteria):
         """
         This is a general search function. You can search media items by
 
@@ -246,322 +475,47 @@ class SyncSketchAPI:
             dict: search results
         """
 
-        return self._getJSONResponse("item", getData=searchCriteria)
+        return self._get_json_response("item", getData=searchCriteria)
 
-    def getMediaByReviewId(self, reviewId):
+    def get_media_by_review_id(self, review_id):
         """Summary
 
         Args:
-            reviewId (TYPE): Description
+            review_id (TYPE): Description
 
         Returns:
             TYPE: Description
         """
-        getParams = {"reviews__id": reviewId, "active": 1}
-        return self._getJSONResponse("item", getData=getParams)
+        get_params = {"reviews__id": review_id, "active": 1}
+        return self._get_json_response("item", getData=get_params)
 
-    def getAnnotations(self, itemId, revisionId=False):
+    def connect_item_to_review(self, item_id, review_id):
         """
-        Get sketches and comments for an item. Frames have a revision id which signifies a "set of notes".
-        When querying an item you'll get the available revisions for this item. If you wish to get only the latest
-        revision, please get the revisionId for the latest revision.
-        :param itemId: id of the media item you are querying.
-        :param (number) revisionId: Optional revisionId to narrow down the results
-        :return: dict
-        """
-        getParams = {"item__id": itemId, "active": 1}
-
-        if revisionId:
-            getParams["revision__id"] = revisionId
-
-        return self._getJSONResponse("frame", getData=getParams)
-
-    def get_flattened_annotations(self, reviewId, itemId, with_tracing_paper=False, return_as_base64=False):
-        """
-        Returns a list of sketches either as signed urls from s3 or base64 encoded strings.
-        The sketches are composited over the background frame of the item.
-
-        :param syncsketch_review_id: <int>
-        :param syncsketch_item_id: <int>
-        :param with_tracing_paper: <bool>
-        :param return_as_base64: <bool>
-        """
-        getData = {
-            "include_data": 1,
-            "tracingpaper": 1 if with_tracing_paper else 0,
-            "base64": 1 if return_as_base64 else 0
-        }
-
-        url = "downloads/flattenedSketches/{}/{}".format(reviewId, itemId)
-
-        return self._getJSONResponse(url, method="get", api_version="v2", getData = getData)
-
-    def getUsersByName(self, name):
-        """
-        Name is a combined search and will search in first_name, last_name and email
-        """
-        return self._getJSONResponse("simpleperson", getData={"name": name})
-
-    def getUsersByProjectId(self, project_id):
-        return self._getJSONResponse("all-project-users/{}".format(project_id), api_version="v2")
-
-    def getUserById(self, userId):
-        return self._getJSONResponse("simpleperson/%s" % userId)
-
-    def getCurrentUser(self):
-        return self._getJSONResponse("simpleperson/currentUser")
-
-    # Add
-    def addProject(self, accountId, name, description="", data={}):
-        """
-        Add a project to your account. Please make sure to pass the accountId which you can query using the getAccounts command.
-
-        :param accountId: Number - id of the account to connect with
-        :param name: String
-        :param description: String
-        :param data: Dict with additional information e.g is_public. Find out more about available fields at /api/v1/project/schema/.
-        :return:
-        """
-        postData = {
-            "name": name,
-            "description": description,
-            "account_id": accountId,
-        }
-
-        postData.update(data)
-
-        return self._getJSONResponse("project", postData=postData)
-
-    def addReview(self, projectId, name, description="", data={}):
-        postData = {
-            "project": "/api/%s/project/%s/" % (self.api_version, projectId),
-            "name": name,
-            "description": description,
-        }
-
-        postData.update(data)
-
-        return self._getJSONResponse("review", postData=postData)
-
-    def addMedia(self, review_id, filepath, artist_name="", noConvertFlag=False, itemParentId=False):
-        """
-            Convenience function to upload a file to a review. It will automatically create
-            an Item and attach it to the review. NOTE - if you are hosting your own media, please
-            use the addItem function and pass in the external_url and external_thumbnail_url
+        adding an existing item record in the database to an existing review by id. This function is useful when
+        you don't want to upload an item multiple times but use it in multiple reviews e.g for context.
 
         Args:
-            review_id (int): Required review_id
-            filepath (string): path for the file on disk e.g /tmp/movie.webm
-            artist_name (string): The name of the artist you want associated with this media file
-            noConvertFlag (bool): the video you are uploading is already in a browser compatible format
-            itemParentId (int): set when you want to add a new version of an item.
-                                itemParentId is the id of the item you want to upload a new version for
-
-        Returns:
-            TYPE: Description
-        """
-        getParams = self.apiParams.copy()
-
-        if noConvertFlag:
-            getParams.update({"noConvertFlag": 1})
-
-        if itemParentId:
-            getParams.update({"itemParentId": itemParentId})
-
-        uploadURL = "%s/items/uploadToReview/%s/?%s" % (self.HOST, review_id, urlencode(getParams))
-
-        files = {"reviewFile": open(filepath, "rb")}
-        r = requests.post(uploadURL, files=files, data=dict(artist=artist_name), headers=self.headers)
-
-        try:
-            return json.loads(r.text)
-        except Exception:
-            print(r.text)
-
-    def addMediaByURL(self, review_id, media_url, artist_name="", noConvertFlag=False):
-        """
-            Convenience function to upload a mediaURl to a review. Please use this function when you already have your files in the cloud, e.g
-            AWS, Dropbox, Shotgun, etc...
-
-            We will automatically create an Item and attach it to the review.
-
-        Args:
-            review_id (int): Required review_id
-            media_url (string): url to the media you are trying to upload
-            noConvertFlag (bool): the video you are uploading is already in a browser compatible format and does not need to be converted
-
-        Returns:
-            TYPE: Description
-        """
-        getParams = self.apiParams.copy()
-
-        if not review_id or not media_url:
-            raise Exception("You need to pass a review id and a media_url")
-
-        if noConvertFlag:
-            getParams.update({"noConvertFlag": 1})
-
-        uploadURL = "%s/items/uploadToReview/%s/?%s" % (self.HOST, review_id, urlencode(getParams))
-
-        r = requests.post(uploadURL, {"media_url": media_url, "artist": artist_name}, headers=self.headers)
-
-        try:
-            return json.loads(r.text)
-        except Exception:
-            print(r.text)
-
-    def addUsers(self, projectId, users):
-        """
-            Depreciated method.
-        """
-        print("Depreciated - please use method add_users_to_project instead")
-
-        return self.add_users_to_project(project_id=projectId, users=users)
-
-    def add_users_to_workspace(self, workspace_id, users, note = ''):
-        """Add Users to Workspace
-
-        Args:
-            workspace_id (Number): id of the workspace
-            users (List): list with dicts e.g users=[{"email":"test@test.de","permission":"admin"}] - possible permissions "admin"
-            note (String): Optional message for the invitation email
-
-        Returns:
-            TYPE: Description
-        """
-        if not isinstance(users, list):
-            print(
-                "Please add users by list with user items e.g users=[{'email':'test@test.de','permission':'admin'}]"
-            )
-            return False
-
-        post_data = {
-            "which": "account",
-            "entity_id": workspace_id,
-            "note": note,
-            "users": json.dumps(users)
-        }
-
-        return self._getJSONResponse("add-users", postData=post_data, api_version="v2")
-
-    def remove_users_from_workspace(self, workspace_id, users):
-        """Remove a list of users from a workspace
-
-        Args:
-            workspace_id (Number): id of the workspace
-            users (List): list with dicts e.g users=[{"email":"test@test.de"}, {"id":12345}] - either remove by user email or id
-
-        """
-        if not isinstance(users, list):
-            print(
-                "Please add users by list with user items e.g users=[{'email':'test@test.de'}]"
-            )
-            return False
-
-        post_data = {
-            "which": "account",
-            "entity_id": workspace_id,
-            "users": json.dumps(users)
-        }
-
-        return self._getJSONResponse("remove-users", postData=post_data, api_version="v2")
-
-    def add_users_to_project(self, project_id, users, note = ''):
-        """Add Users to Project
-
-        Args:
-            project_id (Number): id of the project
-            users (List): list with dicts e.g users=[{"email":"test@test.de","permission":"viewer"}] - possible permissions "admin, member, viewer or reviewer"
-            note (String): Optional message for the invitation email
-
-        Returns:
-            TYPE: Description
-        """
-        if not isinstance(users, list):
-            print(
-                "Please add users by list with user items e.g users=[{'email':'test@test.de','permission':'viewer'}]"
-            )
-            return False
-
-        post_data = {
-            "which": "project",
-            "entity_id": project_id,
-            "note": note,
-            "users": json.dumps(users)
-        }
-
-        return self._getJSONResponse("add-users", postData=post_data, api_version="v2",)
-
-    def remove_users_from_project(self, project_id, users):
-        """Remove a list of users from a project
-
-        Args:
-            project_id (Number): id of the project
-            users (List): list with dicts e.g users=[{"email":"test@test.de"}, {"id":12345}] - either remove by user email or id
-
-        """
-        if not isinstance(users, list):
-            print(
-                "Please add users by list with user items e.g users=[{'email':'test@test.de']"
-            )
-            return False
-
-        post_data = {
-            "which": "project",
-            "entity_id": project_id,
-            "users": json.dumps(users)
-        }
-
-        return self._getJSONResponse("remove-users", postData=post_data, api_version="v2")
-
-    def getItem(self, item_id):
-        return self._getJSONResponse("item/{}".format(item_id))
-
-    def addItem(self, reviewId, name, fps, additionalData):
-        """
-        create a media item record and connect it to a review. This should be used in case you want to add items with externaly hosted
-        media by passing in the external_url and external_thumbnail_url to the additionalData dict e.g
-
-        additionalData = {
-            external_url: http://52.24.98.51/wp-content/uploads/2017/03/rain.jpg
-            external_thumbnail_url: http://52.24.98.51/wp-content/uploads/2017/03/rain.jpg
-        }
-
-        NOTE: you always need to pass in FPS for SyncSketch to work!
-
-        For a complete list of available fields to set, please
-        visit https://www.syncsketch.com/api/v1/item/schema/
-
-        Args:
-            reviewId (TYPE): Required reviewId
-            name (TYPE): Name of the item
-            fps (TYPE): The frame per second is very important for syncsketch to determine the correct number of frames
-            additionalData (TYPE): dictionary with item info like {
-                width:1024
-                height:720
-                artist: "Brady Endres"
-                duration:3 (in seconds)
-                description: the description here
-                size: size in byte
-                type: image | video
-            }
+            review_id (Number): Required review_id
+            item_id (Number): id of the item
 
         Returns:
             TYPE: Item
         """
 
-        postData = {
-            "reviews": ["/api/%s/review/%s/" % (self.api_version, reviewId)],
-            "status": "done",
-            "fps": fps,
-            "name": name,
-        }
+        item_data = self._get_json_response("item/%s" % item_id)
 
-        postData.update(additionalData)
+        if item_data["reviews"]:
+            item_data["reviews"].append("/api/%s/review/%s/" % (self.api_version, review_id))
 
-        return self._getJSONResponse("item", postData=postData)
+        patch_data = {"reviews": item_data["reviews"]}
 
-    def addComment(self, item_id, text, frame=0):
+        return self._get_json_response("item/%s" % item_id, patchData=patch_data)
+
+    """
+    Frames (Sketches / Comments)
+    """
+
+    def add_comment(self, item_id, text, frame=0):
         item = self.getItem(item_id)
 
         # Ugly method of getting revision id from item data, should fix this with api v2
@@ -578,65 +532,45 @@ class SyncSketchAPI:
             text=text
         )
 
-        return self._getJSONResponse("frame", method="post", postData=post_data)
+        return self._get_json_response("frame", method="post", postData=post_data)
 
-    def connectItemToReview(self, itemId, reviewId):
+    def get_annotations(self, item_id, revisionId=False):
         """
-        adding an existing item record in the database to an existing review by id. This function is useful when
-        you don't want to upload an item multiple times but use it in multiple reviews e.g for context.
-
-        Args:
-            reviewId (Number): Required reviewId
-            itemId (Number): id of the item
-
-        Returns:
-            TYPE: Item
+        Get sketches and comments for an item. Frames have a revision id which signifies a "set of notes".
+        When querying an item you'll get the available revisions for this item. If you wish to get only the latest
+        revision, please get the revisionId for the latest revision.
+        :param item_id: id of the media item you are querying.
+        :param (number) revisionId: Optional revisionId to narrow down the results
+        :return: dict
         """
+        get_params = {"item__id": item_id, "active": 1}
 
-        itemData = self._getJSONResponse("item/%s" % itemId)
+        if revisionId:
+            get_params["revision__id"] = revisionId
 
-        if itemData["reviews"]:
-            itemData["reviews"].append("/api/%s/review/%s/" % (self.api_version, reviewId))
+        return self._get_json_response("frame", getData=get_params)
 
-        patchData = {"reviews": itemData["reviews"]}
-
-        return self._getJSONResponse("item/%s" % itemId, patchData=patchData)
-
-    # Setting Data
-    def updateItem(self, itemId, data):
-        """Summary
-
-        Args:
-            itemId (TYPE): the id of the item
-            data (dict): normal dict with data for item
-
-        Returns:
-            TYPE: item
+    def get_flattened_annotations(self, review_id, item_id, with_tracing_paper=False, return_as_base64=False):
         """
-        if not isinstance(data, dict):
-            print("Please make sure you pass a dict as data")
-            return False
+        Returns a list of sketches either as signed urls from s3 or base64 encoded strings.
+        The sketches are composited over the background frame of the item.
 
-        return self._getJSONResponse("item/%s" % itemId, patchData=data)
-
-    # Checking connectivity
-    def isConnected(self):
+        :param syncsketch_review_id: <int>
+        :param syncsketch_item_id: <int>
+        :param with_tracing_paper: <bool>
+        :param return_as_base64: <bool>
         """
-        Convenience function to check if the API is connected to SyncSketch
-        Will check against Status Code 200 and return False if not which most likely would be
-        and authorization error
-        :return:
-        """
-        url = "person/connected"
-        params = self.apiParams
+        getData = {
+            "include_data": 1,
+            "tracingpaper": 1 if with_tracing_paper else 0,
+            "base64": 1 if return_as_base64 else 0
+        }
 
-        if self.debug:
-            print("URL: %s, params: %s" % (url, params))
+        url = "downloads/flattenedSketches/{}/{}".format(review_id, item_id)
 
-        r = self._getJSONResponse(url, raw_response=True)
-        return r.status_code == 200
+        return self._get_json_response(url, method="get", api_version="v2", getData = getData)
 
-    def getGreasePencilOverlays(self, reviewId, itemId, homedir=None):
+    def get_grease_pencil_overlays(self, review_id, item_id, homedir=None):
         """Download overlay sketches for Maya Greasepencil.
 
             Download overlay sketches for Maya Greasepencil. Function will download
@@ -651,15 +585,15 @@ class SyncSketchAPI:
         PLEASE make sure that /tmp is writable
 
         """
-        url = "%s/api/v2/downloads/greasePencil/%s/%s/" % (self.HOST, reviewId, itemId)
-        r = requests.post(url, params=dict(self.apiParams), headers=self.headers)
+        url = "%s/api/v2/downloads/greasePencil/%s/%s/" % (self.HOST, review_id, item_id)
+        r = requests.post(url, params=self.api_params, headers=self.headers)
         celery_task_id = r.json()
 
         # check the celery task
         request_processing = True
         check_celery_url = "%s/api/v2/downloads/greasePencil/%s/" % (self.HOST, celery_task_id)
 
-        r = requests.get(check_celery_url, params=dict(self.apiParams), headers=self.headers)
+        r = requests.get(check_celery_url, params=self.api_params, headers=self.headers)
 
         while request_processing:
             result = r.json()
@@ -688,7 +622,134 @@ class SyncSketchAPI:
             time.sleep(1)
 
             # check the url again
-            r = requests.get(check_celery_url, params=dict(self.apiParams), headers=self.headers)
+            r = requests.get(check_celery_url, params=self.api_params, headers=self.headers)
+
+    """
+    Users
+    """
+
+    def add_users(self, project_id, users):
+        """
+            Deprecated method.
+        """
+        print("Depreciated - please use method add_users_to_project instead")
+
+        return self.add_users_to_project(project_id=project_id, users=users)
+
+    def get_users_by_name(self, name):
+        """
+        Name is a combined search and will search in first_name, last_name and email
+        """
+        return self._get_json_response("simpleperson", getData={"name": name})
+
+    def get_users_by_project_id(self, project_id):
+        return self._get_json_response("all-project-users/{}".format(project_id), api_version="v2")
+
+    def get_user_by_id(self, userId):
+        return self._get_json_response("simpleperson/%s" % userId)
+
+    def get_current_user(self):
+        return self._get_json_response("simpleperson/currentUser")
+
+    def add_users_to_workspace(self, workspace_id, users, note = ''):
+        """Add Users to Workspace
+
+        Args:
+            workspace_id (Number): id of the workspace
+            users (List): list with dicts e.g users=[{"email":"test@test.de","permission":"admin"}] - possible permissions "admin"
+            note (String): Optional message for the invitation email
+
+        Returns:
+            TYPE: Description
+        """
+        if not isinstance(users, list):
+            print(
+                "Please add users by list with user items e.g users=[{'email':'test@test.de','permission':'admin'}]"
+            )
+            return False
+
+        post_data = {
+            "which": "account",
+            "entity_id": workspace_id,
+            "note": note,
+            "users": json.dumps(users)
+        }
+
+        return self._get_json_response("add-users", postData=post_data, api_version="v2")
+
+    def remove_users_from_workspace(self, workspace_id, users):
+        """Remove a list of users from a workspace
+
+        Args:
+            workspace_id (Number): id of the workspace
+            users (List): list with dicts e.g users=[{"email":"test@test.de"}, {"id":12345}] - either remove by user email or id
+
+        """
+        if not isinstance(users, list):
+            print(
+                "Please add users by list with user items e.g users=[{'email':'test@test.de'}]"
+            )
+            return False
+
+        post_data = {
+            "which": "account",
+            "entity_id": workspace_id,
+            "users": json.dumps(users)
+        }
+
+        return self._get_json_response("remove-users", postData=post_data, api_version="v2")
+
+    def add_users_to_project(self, project_id, users, note=''):
+        """Add Users to Project
+
+        Args:
+            project_id (Number): id of the project
+            users (List): list with dicts e.g users=[{"email":"test@test.de","permission":"viewer"}] - possible permissions "admin, member, viewer or reviewer"
+            note (String): Optional message for the invitation email
+
+        Returns:
+            TYPE: Description
+        """
+        if not isinstance(users, list):
+            print(
+                "Please add users by list with user items e.g users=[{'email':'test@test.de','permission':'viewer'}]"
+            )
+            return False
+
+        post_data = {
+            "which": "project",
+            "entity_id": project_id,
+            "note": note,
+            "users": json.dumps(users)
+        }
+
+        return self._get_json_response("add-users", postData=post_data, api_version="v2",)
+
+    def remove_users_from_project(self, project_id, users):
+        """Remove a list of users from a project
+
+        Args:
+            project_id (Number): id of the project
+            users (List): list with dicts e.g users=[{"email":"test@test.de"}, {"id":12345}] - either remove by user email or id
+
+        """
+        if not isinstance(users, list):
+            print(
+                "Please add users by list with user items e.g users=[{'email':'test@test.de']"
+            )
+            return False
+
+        post_data = {
+            "which": "project",
+            "entity_id": project_id,
+            "users": json.dumps(users)
+        }
+
+        return self._get_json_response("remove-users", postData=post_data, api_version="v2")
+
+    """
+    Shotgun API
+    """
 
     def shotgun_get_projects(self, syncsketch_project_id):
         """
@@ -701,10 +762,11 @@ class SyncSketchAPI:
 
         return
 
-    def shotgun_get_playlists(self, syncsketch_project_id, shotgun_project_id=None):
+    def shotgun_get_playlists(self, syncsketch_account_id, syncsketch_project_id, shotgun_project_id=None):
         """
         Returns list of Shotgun playlists modified in the last 120 days
 
+        :param syncsketch_account_id: <int>
         :param syncsketch_project_id: <int>
         :param shotgun_project_id: <int> (optional)
 
@@ -712,10 +774,12 @@ class SyncSketchAPI:
         param shotgun_project_id will be ignored and can be omitted during the function call
 
         """
-        url = "shotgun/playlists/{}".format(syncsketch_project_id)
+        url = "shotgun/playlists/{}".format(syncsketch_account_id)
+        if syncsketch_project_id:
+            url += "/{}".format(syncsketch_project_id)
 
         data = {"shotgun_project_id": shotgun_project_id}
-        return self._getJSONResponse(url, method="get", getData=data, api_version="v2")
+        return self._get_json_response(url, method="get", getData=data, api_version="v2")
 
     def shotgun_sync_review_notes(self, review_id):
         """
@@ -734,7 +798,7 @@ class SyncSketchAPI:
         """
         url = "shotgun/sync-review-notes/review/{}".format(review_id)
 
-        return self._getJSONResponse(url, method="post", api_version="v2")
+        return self._get_json_response(url, method="post", api_version="v2")
 
     def get_shotgun_sync_review_notes_progress(self, task_id):
         """
@@ -752,7 +816,7 @@ class SyncSketchAPI:
         """
         url = "shotgun/sync-review-notes/{}".format(task_id)
 
-        return self._getJSONResponse(url, method="get", api_version="v2")
+        return self._get_json_response(url, method="get", api_version="v2")
 
     def shotgun_sync_review_items(self, syncsketch_project_id, playlist_code, playlist_id, review_id=None):
         """
@@ -782,7 +846,7 @@ class SyncSketchAPI:
 
         data = {"playlist_code": playlist_code, "playlist_id": playlist_id}
 
-        return self._getJSONResponse(url, method="post", postData=data, api_version="v2")
+        return self._get_json_response(url, method="post", postData=data, api_version="v2")
 
     def get_shotgun_sync_review_items_progress(self, task_id):
         """
@@ -801,4 +865,36 @@ class SyncSketchAPI:
         """
         url = "shotgun/sync-review-items/{}".format(task_id)
 
-        return self._getJSONResponse(url, method="get", api_version="v2")
+        return self._get_json_response(url, method="get", api_version="v2")
+
+    # Keep old names for backwards compatibility
+    isConnected = is_connected
+    getAccounts = get_accounts
+    getProjects = get_projects
+    getProjectsByName = get_projects_by_name
+    getProjectById = get_project_by_id
+    addProject = create_project
+    deleteProject = delete_project
+    addReview = create_review
+    getReviewsByProjectId = get_reviews_by_project_id
+    getReviewByName = get_review_by_name
+    getReviewById = get_review_by_id
+    getItem = get_item
+    addItem = add_item
+    updateItem = update_item
+    addMedia = add_media
+    addMediaByURL = add_media_by_url
+    getMediaByReviewId = get_media_by_review_id
+    getMedia = get_media
+    connectItemToReview = connect_item_to_review
+    deleteReview = delete_review
+    deleteItem = delete_item
+    getUsersByName = get_users_by_name
+    getUsersByProjectId = get_users_by_project_id
+    getUserById = get_user_by_id
+    addUsers = add_users
+    getCurrentUser = get_current_user
+    addComment = add_comment
+    getGreasePencilOverlays = get_grease_pencil_overlays
+    getTree = get_tree
+    getAnnotations = get_annotations

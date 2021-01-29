@@ -1,8 +1,7 @@
-# Syncsketch-API
+# Syncsketch Python API
 This package provides methods to communicate with the syncsketch servers and wraps CRUD (create, reade, update, delete) methods to interact with Reviews.
 
 ### Getting Started
-
 
 
 #### Installation
@@ -32,7 +31,7 @@ Setting up a connection with your SyncSketch projects is as easy as following.
     
     s = SyncSketchAPI(username, api_key)
     
-    s.isConnected()
+    s.is_connected()
 
 If you got a `200` response, you successfully connected to the syncsketch server! You can proceed with the next examples. We will skip the setup code for the next examples and the snippets will rely on each other, so make sure you run them one by one.
 
@@ -41,14 +40,14 @@ If you got a `200` response, you successfully connected to the syncsketch server
 
 Before we can create/read/update/delete reviews, we need to select an account
 
-    accounts = s.getAccounts()
+    accounts = s.get_accounts()
     firstAccount = accounts['objects'][0]
 
 ##### 2) Create a project
 
 Let's create a project with the selected account
 
-    project = s.addProject(firstAccount.id, 'DEV Example Project', 'DEV API Testing')
+    project = s.create_project(firstAccount.id, 'DEV Example Project', 'DEV API Testing')
 
 This creates a new Project called `Dev Example Project` with the description `DEV API Testing`
 
@@ -57,35 +56,39 @@ This creates a new Project called `Dev Example Project` with the description `DE
 
 We can now add a Review to our newly created Project using it's `id`
 
-    review = s.addReview(project['id'],'DEV Review (api)','DEV Syncsketch API Testing')
+    review = s.create_review(project['id'],'DEV Review (api)','DEV Syncsketch API Testing')
 
 
 ##### 4) Get list of reviews
 
 
-    print(s.getReviewsByProjectId(project['id'])
+    print(s.get_reviews_by_project_id(project['id'])
 
 
 ##### 5) Upload a review item
 
 You can upload a file to the created review with the review id, we provided one example file in this repo under `examples/test.webm` for testing.
 
-    itemData = s.addMedia(review['id'],'examples/test.webm')
+    item_data = s.add_media(review['id'],'examples/test.webm')
 
 
-If all steps were successfull, you should see the following in the web-app. 
+If all steps were successful, you should see the following in the web-app. 
 
 ![alt text](https://github.com/syncsketch/python-api/blob/documentation/examples/ressources/exampleResult.jpg?raw=true)
 
 ### Additional Examples
 
 ##### Adding a user to the project
-    addedUsers = s.addUsers(firstProjectId,[{'email':'test@syncsketch.com','permission':'viewer'}])
-    print(addedUser)
+    addedUsers = s.add_users_to_project(
+        project_id,
+        [{'email':'test@syncsketch.com','permission':'viewer'}],
+        "This is a note to include with the welcome email"
+    )
+    print(addedUsers)
 
 
 ##### Traverse all Reviews
-    projects = s.getProjects()
+    projects = s.get_projects()
     
     for project in projects['objects']:
         print(project)
@@ -94,7 +97,7 @@ If all steps were successfull, you should see the following in the web-app.
 ##### Traverse all Accounts 
 The fastest way to traverse all Accounts, Projects Reviews, and Items is to get the entire tree
 
-    tree_data = s.getTree(withItems = True)
+    tree_data = s.get_tree(withItems = True)
     
     for account in tree_data:
         for project in account['projects']:
