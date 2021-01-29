@@ -17,7 +17,8 @@ This library was tested with and confirmed on python versions:
 - 3.8
 
 PyPi package
-https://pypi.org/project/syncsketch/1.0.8.0/
+
+https://pypi.org/project/syncsketch/
 
 #### Installation
 
