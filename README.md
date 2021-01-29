@@ -1,19 +1,30 @@
 # Syncsketch Python API
+
 This package provides methods to communicate with the syncsketch servers and wraps CRUD (create, reade, update, delete) methods to interact with Reviews.
 
+# Overview
+
+SyncSketch is a syncronized visual review tool for the Film/TV/Games industry.
+
+API access requires an enterprise level account.  For help or more info reach out to us.
+
 ### Getting Started
-
-
-#### Installation
-
-    pip install git+https://github.com/syncsketch/python-api.git
-
 
 #### Compatibility
 This library was tested with and confirmed on python versions:
 - 2.7.14+
 - 3.6
 - 3.8
+
+PyPi package
+https://pypi.org/project/syncsketch/1.0.8.0/
+
+#### Installation
+
+Install using `pip`...
+
+    pip install syncsketch
+
 
 ### Basic Examples
 
