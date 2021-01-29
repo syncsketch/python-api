@@ -501,21 +501,6 @@ class SyncSketchAPI:
         except Exception:
             print(r.text)
 
-    def delete_item(self, item_id):
-        """
-        Get single item by id.
-        :param item_id: Int
-        :return:
-        """
-        return self._get_json_response("item/%s" % item_id, method="delete")
-
-    def bulk_delete_items(self, item_ids):
-        """
-        Get multiple items by id.
-        :param item_ids: Array[Int}
-        """
-        return self._get_json_response("bulk-delete-items/" % item_ids, method="delete")
-
     def get_media(self, searchCriteria):
         """
         This is a general search function. You can search media items by
@@ -566,6 +551,21 @@ class SyncSketchAPI:
         """
         get_params = {"reviews__id": review_id, "active": 1}
         return self._get_json_response("item", getData=get_params)
+
+    def delete_item(self, item_id):
+        """
+        Get single item by id.
+        :param item_id: Int
+        :return:
+        """
+        return self._get_json_response("item/%s" % item_id, method="delete")
+
+    def bulk_delete_items(self, item_ids):
+        """
+        Get multiple items by id.
+        :param item_ids: Array[Int}
+        """
+        return self._get_json_response("bulk-delete-items/", postData=item_ids, method="post", api_version="v2")
 
     def connect_item_to_review(self, item_id, review_id):
         """
