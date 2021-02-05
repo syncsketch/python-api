@@ -1,0 +1,9 @@
+README.md
+setup.py
+syncsketch/__init__.py
+syncsketch/syncsketch.py
+syncsketch.egg-info/PKG-INFO
+syncsketch.egg-info/SOURCES.txt
+syncsketch.egg-info/dependency_links.txt
+syncsketch.egg-info/requires.txt
+syncsketch.egg-info/top_level.txt
