@@ -274,6 +274,28 @@ class SyncSketchAPI:
         """
         return self._get_json_response("project/%s" % project_id, patchData=dict(active=0))
 
+    def duplicate_project(self, project_id, name=None, copy_reviews=False, copy_users=False, copy_settings=False):
+        """
+        Create a new project from an existing project
+
+        :param project_id: Int
+        :param name: Str
+        :param copy_reviews: Bool
+        :param copy_users: Bool
+        :param copy_settings: Bool
+        :return: New project data
+        """
+
+        config = dict(
+            reviews=copy_reviews,
+            users=copy_users,
+            settings=copy_settings,
+        )
+        if name:
+            config["name"] = name
+
+        return self._get_json_response("project/%s/duplicate/" % project_id, api_version="v2", postData=config)
+
     def archive_project(self, project_id):
         """
         Archive a project
@@ -709,6 +731,18 @@ class SyncSketchAPI:
         Name is a combined search and will search in first_name, last_name and email
         """
         return self._get_json_response("simpleperson", getData={"name": name})
+
+    def get_user_by_email(self, email):
+        """
+        Get user by email
+        """
+        response = self._get_json_response("simpleperson", getData={"email": email}, raw_response=True)
+
+        try:
+            data = response.json()
+            return data.get("objects")[0]
+        except:
+            return None
 
     def get_users_by_project_id(self, project_id):
         return self._get_json_response("all-project-users/{}".format(project_id), api_version="v2")
