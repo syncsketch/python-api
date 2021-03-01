@@ -3,7 +3,7 @@
 # @Author: floepi
 # @Date:   2015-06-04 17:42:44
 # @Last Modified by:   Brady Endres
-# @Last Modified time: 2021-02-05
+# @Last Modified time: 2021-02-23
 #!/usr/local/bin/python
 
 from __future__ import absolute_import, division, print_function
@@ -210,7 +210,7 @@ class SyncSketchAPI:
 
         return self._get_json_response("project", postData=post_data)
 
-    def get_projects(self, include_deleted=False, include_archived=False):
+    def get_projects(self, include_deleted=False, include_archived=False, limit=100, offset=0):
         """
         Get a list of currently active projects
 
@@ -220,7 +220,7 @@ class SyncSketchAPI:
         Returns:
             TYPE: Dict with meta information and an array of found projects
         """
-        get_params = {"active": 1, "is_archived": 0, "account__active": 1}
+        get_params = {"active": 1, "is_archived": 0, "account__active": 1, "limit": limit, "offset": offset}
 
         if include_deleted:
             del get_params["active"]
@@ -274,6 +274,28 @@ class SyncSketchAPI:
         """
         return self._get_json_response("project/%s" % project_id, patchData=dict(active=0))
 
+    def duplicate_project(self, project_id, name=None, copy_reviews=False, copy_users=False, copy_settings=False):
+        """
+        Create a new project from an existing project
+
+        :param project_id: Int
+        :param name: Str
+        :param copy_reviews: Bool
+        :param copy_users: Bool
+        :param copy_settings: Bool
+        :return: New project data
+        """
+
+        config = dict(
+            reviews=copy_reviews,
+            users=copy_users,
+            settings=copy_settings,
+        )
+        if name:
+            config["name"] = name
+
+        return self._get_json_response("project/%s/duplicate/" % project_id, api_version="v2", postData=config)
+
     def archive_project(self, project_id):
         """
         Archive a project
@@ -316,13 +338,15 @@ class SyncSketchAPI:
 
         return self._get_json_response("review", postData=postData)
 
-    def get_reviews_by_project_id(self, project_id):
+    def get_reviews_by_project_id(self, project_id, limit=100, offset=0):
         """
         Get list of reviews by project id.
         :param project_id: Number
         :return: Dict with meta information and an array of found projects
         """
-        get_params = {"project__id": project_id, "project__active": 1, "project__is_archived": 0}
+        get_params = {
+            "project__id": project_id, "project__active": 1, "project__is_archived": 0, "limit": limit, "offset": offset
+        }
         return self._get_json_response("review", getData=get_params)
 
     def get_review_by_name(self, name):
@@ -709,6 +733,18 @@ class SyncSketchAPI:
         Name is a combined search and will search in first_name, last_name and email
         """
         return self._get_json_response("simpleperson", getData={"name": name})
+
+    def get_user_by_email(self, email):
+        """
+        Get user by email
+        """
+        response = self._get_json_response("simpleperson", getData={"email": email}, raw_response=True)
+
+        try:
+            data = response.json()
+            return data.get("objects")[0]
+        except:
+            return None
 
     def get_users_by_project_id(self, project_id):
         return self._get_json_response("all-project-users/{}".format(project_id), api_version="v2")

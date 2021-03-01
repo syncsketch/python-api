@@ -10,7 +10,7 @@ with open("README.md", "r") as f:
 
 setup(
     name="syncsketch",
-    version="1.0.8.2",
+    version="1.0.8.3",
     description="SyncSketch Python API",
     author="Philip Floetotto",
     author_email="phil@syncsketch.com",

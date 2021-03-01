@@ -210,7 +210,7 @@ class SyncSketchAPI:
 
         return self._get_json_response("project", postData=post_data)
 
-    def get_projects(self, include_deleted=False, include_archived=False):
+    def get_projects(self, include_deleted=False, include_archived=False, limit=100, offset=0):
         """
         Get a list of currently active projects
 
@@ -220,7 +220,7 @@ class SyncSketchAPI:
         Returns:
             TYPE: Dict with meta information and an array of found projects
         """
-        get_params = {"active": 1, "is_archived": 0, "account__active": 1}
+        get_params = {"active": 1, "is_archived": 0, "account__active": 1, "limit": limit, "offset": offset}
 
         if include_deleted:
             del get_params["active"]
@@ -338,13 +338,15 @@ class SyncSketchAPI:
 
         return self._get_json_response("review", postData=postData)
 
-    def get_reviews_by_project_id(self, project_id):
+    def get_reviews_by_project_id(self, project_id, limit=100, offset=0):
         """
         Get list of reviews by project id.
         :param project_id: Number
         :return: Dict with meta information and an array of found projects
         """
-        get_params = {"project__id": project_id, "project__active": 1, "project__is_archived": 0}
+        get_params = {
+            "project__id": project_id, "project__active": 1, "project__is_archived": 0, "limit": limit, "offset": offset
+        }
         return self._get_json_response("review", getData=get_params)
 
     def get_review_by_name(self, name):
