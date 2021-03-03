@@ -2,8 +2,8 @@
 """Summary"""
 # @Author: floepi
 # @Date:   2015-06-04 17:42:44
-# @Last Modified by:   Brady Endres
-# @Last Modified time: 2021-02-23
+# @Last Modified by:   Nícholas Kegler
+# @Last Modified time: 2021-03-02
 #!/usr/local/bin/python
 
 from __future__ import absolute_import, division, print_function
@@ -210,12 +210,13 @@ class SyncSketchAPI:
 
         return self._get_json_response("project", postData=post_data)
 
-    def get_projects(self, include_deleted=False, include_archived=False, limit=100, offset=0):
+    def get_projects(self, include_deleted=False, include_archived=False, include_tags=False, limit=100, offset=0):
         """
         Get a list of currently active projects
 
         :param include_deleted: boolean: if true, include deleted projects
         :param include_archived: boolean: if true, include archived projects
+        :param include_tags: boolean: if true, include tag list on the project object
 
         Returns:
             TYPE: Dict with meta information and an array of found projects
@@ -228,6 +229,9 @@ class SyncSketchAPI:
         if include_archived:
             del get_params["active"]
             del get_params["is_archived"]
+
+        if include_tags:
+            get_params["include_tags"] = 1
 
         return self._get_json_response("project", getData=get_params)
 
