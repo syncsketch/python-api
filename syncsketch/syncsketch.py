@@ -769,6 +769,12 @@ class SyncSketchAPI:
     def get_users_by_project_id(self, project_id):
         return self._get_json_response("all-project-users/{}".format(project_id), api_version="v2")
 
+    def get_connections_by_user_id(self, user_id, account_id):
+        """
+        Get all project and account connections for a user. Good for checking access for a user that might have left...
+        """
+        return self._get_json_response("user/{}/connections/account/{}".format(user_id, account_id), api_version="v2")
+
     def get_user_by_id(self, userId):
         return self._get_json_response("simpleperson/%s" % userId)
 
