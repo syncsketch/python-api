@@ -3,7 +3,7 @@
 # @Author: floepi
 # @Date:   2015-06-04 17:42:44
 # @Last Modified by:   Nícholas Kegler
-# @Last Modified time: 2021-03-02
+# @Last Modified time: 2021-05-03
 #!/usr/local/bin/python
 
 from __future__ import absolute_import, division, print_function
@@ -606,6 +606,26 @@ class SyncSketchAPI:
         print("A new improved method for this will be added soon.")
         return "Deprecated"
 
+    def move_items(self, new_review_id, item_data):
+        """
+        Move items from one review to another
+
+        item_data should be a list of dictionaries with the old review id and the item id.
+        The items in the list will be moved to the new review for the param new_review_id
+
+        :param new_review_id: int
+        :param item_data: list [ dict { review_id: int, item_id: int} ]
+        :return:
+        """
+
+        return self._get_json_response(
+            "move-review-items/",
+            method="post",
+            api_version="v2",
+            postData={"new_review_id": new_review_id, "item_data": item_data},
+            raw_response=True,
+        )
+
     """
     Frames (Sketches / Comments)
     """
@@ -752,6 +772,12 @@ class SyncSketchAPI:
 
     def get_users_by_project_id(self, project_id):
         return self._get_json_response("all-project-users/{}".format(project_id), api_version="v2")
+
+    def get_connections_by_user_id(self, user_id, account_id):
+        """
+        Get all project and account connections for a user. Good for checking access for a user that might have left...
+        """
+        return self._get_json_response("user/{}/connections/account/{}".format(user_id, account_id), api_version="v2")
 
     def get_user_by_id(self, userId):
         return self._get_json_response("simpleperson/%s" % userId)
