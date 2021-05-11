@@ -970,13 +970,31 @@ class SyncSketchAPI:
                 review_link=<STR> url link to the syncsketch player with the review pulled from shotgun,
         )
         """
-        url = "shotgun/sync-review-items/project/{}".format(syncsketch_project_id)
+        url = "shotgun/sync-items/project/{}/".format(syncsketch_project_id)
         if review_id:
-            url += "/review/{}".format(review_id)
+            url += "review/{}/check".format(review_id)
+        else:
+            url += "check"
 
         data = {"playlist_code": playlist_code, "playlist_id": playlist_id}
 
-        return self._get_json_response(url, method="post", postData=data, api_version="v2")
+        response = self._get_json_response(url, method="post", postData=data, api_version="v2")
+        if self.debug:
+            print(response)
+
+        result = dict(review_id=response["review_id"], items=[], status="done", total_items=len(response["items"]))
+
+        if "items" in response:
+            for item in response["items"]:
+                item_id = item["id"]
+                data = {"playlist_item_json": {"id": item_id}}
+                item_sync_url = "shotgun/sync-items/project/{}/review/{}/".format(syncsketch_project_id, response["review_id"])
+                item_data = self._get_json_response(item_sync_url, method="post", postData=data, api_version="v2")
+                result["items"].append(item_data["id"])
+
+                if self.debug:
+                    print(item_data)
+        return result
 
     def get_shotgun_sync_review_items_progress(self, task_id):
         """
@@ -993,9 +1011,7 @@ class SyncSketchAPI:
             remaining_items=<INT> number of items not yet pulled from shotgun,
         )
         """
-        url = "shotgun/sync-review-items/{}".format(task_id)
-
-        return self._get_json_response(url, method="get", api_version="v2")
+        print("Deprecated.  Response is printed in the shotgun_sync_review_items() function")
 
     # Keep old names for backwards compatibility
     isConnected = is_connected
