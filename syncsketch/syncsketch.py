@@ -2,8 +2,8 @@
 """Summary"""
 # @Author: floepi
 # @Date:   2015-06-04 17:42:44
-# @Last Modified by:   Brady Endres
-# @Last Modified time: 2021-02-23
+# @Last Modified by:   Nícholas Kegler
+# @Last Modified time: 2021-05-18
 #!/usr/local/bin/python
 
 from __future__ import absolute_import, division, print_function
@@ -458,7 +458,7 @@ class SyncSketchAPI:
 
         return self._get_json_response("item", postData=postData)
 
-    def add_media(self, review_id, filepath, artist_name="", noConvertFlag=False, itemParentId=False):
+    def add_media(self, review_id, filepath, item_name=None, artist_name="", noConvertFlag=False, itemParentId=False):
         """
             Convenience function to upload a file to a review. It will automatically create
             an Item and attach it to the review. NOTE - if you are hosting your own media, please
@@ -467,6 +467,7 @@ class SyncSketchAPI:
         Args:
             review_id (int): Required review_id
             filepath (string): path for the file on disk e.g /tmp/movie.webm
+            item_name (string): The name for the item, if not specified we'll use the filename.
             artist_name (string): The name of the artist you want associated with this media file
             noConvertFlag (bool): the video you are uploading is already in a browser compatible format
             itemParentId (int): set when you want to add a new version of an item.
@@ -476,6 +477,12 @@ class SyncSketchAPI:
             TYPE: Description
         """
         get_params = self.api_params.copy()
+        data = {
+            'artist': artist_name
+        }
+
+        if item_name:
+            data['itemName'] = item_name
 
         if noConvertFlag:
             get_params.update({"noConvertFlag": 1})
@@ -486,7 +493,7 @@ class SyncSketchAPI:
         uploadURL = "%s/items/uploadToReview/%s/?%s" % (self.HOST, review_id, urlencode(get_params))
 
         files = {"reviewFile": open(filepath, "rb")}
-        r = requests.post(uploadURL, files=files, data=dict(artist=artist_name), headers=self.headers)
+        r = requests.post(uploadURL, files=files, data=data, headers=self.headers)
 
         try:
             return json.loads(r.text)
