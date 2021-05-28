@@ -210,12 +210,13 @@ class SyncSketchAPI:
 
         return self._get_json_response("project", postData=post_data)
 
-    def get_projects(self, include_deleted=False, include_archived=False, limit=100, offset=0):
+    def get_projects(self, include_deleted=False, include_archived=False, include_tags=False, limit=100, offset=0):
         """
         Get a list of currently active projects
 
         :param include_deleted: boolean: if true, include deleted projects
         :param include_archived: boolean: if true, include archived projects
+        :param include_tags: boolean: if true, include tag list on the project object
 
         Returns:
             TYPE: Dict with meta information and an array of found projects
@@ -228,6 +229,9 @@ class SyncSketchAPI:
         if include_archived:
             del get_params["active"]
             del get_params["is_archived"]
+
+        if include_tags:
+            get_params["include_tags"] = 1
 
         return self._get_json_response("project", getData=get_params)
 
@@ -609,6 +613,26 @@ class SyncSketchAPI:
         print("A new improved method for this will be added soon.")
         return "Deprecated"
 
+    def move_items(self, new_review_id, item_data):
+        """
+        Move items from one review to another
+
+        item_data should be a list of dictionaries with the old review id and the item id.
+        The items in the list will be moved to the new review for the param new_review_id
+
+        :param new_review_id: int
+        :param item_data: list [ dict { review_id: int, item_id: int} ]
+        :return:
+        """
+
+        return self._get_json_response(
+            "move-review-items/",
+            method="post",
+            api_version="v2",
+            postData={"new_review_id": new_review_id, "item_data": item_data},
+            raw_response=True,
+        )
+
     """
     Frames (Sketches / Comments)
     """
@@ -755,6 +779,12 @@ class SyncSketchAPI:
 
     def get_users_by_project_id(self, project_id):
         return self._get_json_response("all-project-users/{}".format(project_id), api_version="v2")
+
+    def get_connections_by_user_id(self, user_id, account_id):
+        """
+        Get all project and account connections for a user. Good for checking access for a user that might have left...
+        """
+        return self._get_json_response("user/{}/connections/account/{}".format(user_id, account_id), api_version="v2")
 
     def get_user_by_id(self, userId):
         return self._get_json_response("simpleperson/%s" % userId)

@@ -210,12 +210,13 @@ class SyncSketchAPI:
 
         return self._get_json_response("project", postData=post_data)
 
-    def get_projects(self, include_deleted=False, include_archived=False, limit=100, offset=0):
+    def get_projects(self, include_deleted=False, include_archived=False, include_tags=False, limit=100, offset=0):
         """
         Get a list of currently active projects
 
         :param include_deleted: boolean: if true, include deleted projects
         :param include_archived: boolean: if true, include archived projects
+        :param include_tags: boolean: if true, include tag list on the project object
 
         Returns:
             TYPE: Dict with meta information and an array of found projects
@@ -228,6 +229,9 @@ class SyncSketchAPI:
         if include_archived:
             del get_params["active"]
             del get_params["is_archived"]
+
+        if include_tags:
+            get_params["include_tags"] = 1
 
         return self._get_json_response("project", getData=get_params)
 
@@ -609,6 +613,26 @@ class SyncSketchAPI:
         print("A new improved method for this will be added soon.")
         return "Deprecated"
 
+    def move_items(self, new_review_id, item_data):
+        """
+        Move items from one review to another
+
+        item_data should be a list of dictionaries with the old review id and the item id.
+        The items in the list will be moved to the new review for the param new_review_id
+
+        :param new_review_id: int
+        :param item_data: list [ dict { review_id: int, item_id: int} ]
+        :return:
+        """
+
+        return self._get_json_response(
+            "move-review-items/",
+            method="post",
+            api_version="v2",
+            postData={"new_review_id": new_review_id, "item_data": item_data},
+            raw_response=True,
+        )
+
     """
     Frames (Sketches / Comments)
     """
@@ -755,6 +779,12 @@ class SyncSketchAPI:
 
     def get_users_by_project_id(self, project_id):
         return self._get_json_response("all-project-users/{}".format(project_id), api_version="v2")
+
+    def get_connections_by_user_id(self, user_id, account_id):
+        """
+        Get all project and account connections for a user. Good for checking access for a user that might have left...
+        """
+        return self._get_json_response("user/{}/connections/account/{}".format(user_id, account_id), api_version="v2")
 
     def get_user_by_id(self, userId):
         return self._get_json_response("simpleperson/%s" % userId)
@@ -951,13 +981,31 @@ class SyncSketchAPI:
                 review_link=<STR> url link to the syncsketch player with the review pulled from shotgun,
         )
         """
-        url = "shotgun/sync-review-items/project/{}".format(syncsketch_project_id)
+        url = "shotgun/sync-items/project/{}/".format(syncsketch_project_id)
         if review_id:
-            url += "/review/{}".format(review_id)
+            url += "review/{}/check".format(review_id)
+        else:
+            url += "check"
 
         data = {"playlist_code": playlist_code, "playlist_id": playlist_id}
 
-        return self._get_json_response(url, method="post", postData=data, api_version="v2")
+        response = self._get_json_response(url, method="post", postData=data, api_version="v2")
+        if self.debug:
+            print(response)
+
+        result = dict(review_id=response["review_id"], items=[], status="done", total_items=len(response["items"]))
+
+        if "items" in response:
+            for item in response["items"]:
+                item_id = item["id"]
+                data = {"playlist_item_json": {"id": item_id}}
+                item_sync_url = "shotgun/sync-items/project/{}/review/{}/".format(syncsketch_project_id, response["review_id"])
+                item_data = self._get_json_response(item_sync_url, method="post", postData=data, api_version="v2")
+                result["items"].append(item_data["id"])
+
+                if self.debug:
+                    print(item_data)
+        return result
 
     def get_shotgun_sync_review_items_progress(self, task_id):
         """
@@ -974,9 +1022,7 @@ class SyncSketchAPI:
             remaining_items=<INT> number of items not yet pulled from shotgun,
         )
         """
-        url = "shotgun/sync-review-items/{}".format(task_id)
-
-        return self._get_json_response(url, method="get", api_version="v2")
+        print("Deprecated.  Response is printed in the shotgun_sync_review_items() function")
 
     # Keep old names for backwards compatibility
     isConnected = is_connected
