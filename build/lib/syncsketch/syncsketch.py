@@ -210,7 +210,15 @@ class SyncSketchAPI:
 
         return self._get_json_response("project", postData=post_data)
 
-    def get_projects(self, include_deleted=False, include_archived=False, include_tags=False, limit=100, offset=0):
+    def get_projects(
+        self,
+        include_deleted=False,
+        include_archived=False,
+        include_tags=False,
+        include_connections=False,
+        limit=100,
+        offset=0,
+    ):
         """
         Get a list of currently active projects
 
@@ -221,7 +229,16 @@ class SyncSketchAPI:
         Returns:
             TYPE: Dict with meta information and an array of found projects
         """
-        get_params = {"active": 1, "is_archived": 0, "account__active": 1, "limit": limit, "offset": offset}
+        get_params = {
+            "active": 1,
+            "is_archived": 0,
+            "account__active": 1,
+            "limit": limit,
+            "offset": offset,
+        }
+
+        if include_connections:
+            get_params["withFullConnections"] = True
 
         if include_deleted:
             del get_params["active"]
