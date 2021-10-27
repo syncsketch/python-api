@@ -3,7 +3,7 @@
 # @Author: floepi
 # @Date:   2015-06-04 17:42:44
 # @Last Modified by:   Brady Endres
-# @Last Modified time: 2021-06-08
+# @Last Modified time: 2021-08-30
 #!/usr/local/bin/python
 
 from __future__ import absolute_import, division, print_function
@@ -87,6 +87,7 @@ class SyncSketchAPI:
         getData=None,
         postData=None,
         patchData=None,
+        putData=None,
         api_version=None,
         content_type="application/json",
         raw_response=False,
@@ -112,6 +113,8 @@ class SyncSketchAPI:
             r = requests.post(url, params=params, data=json.dumps(postData), headers=headers)
         elif patchData or method == "patch":
             r = requests.patch(url, params=params, json=patchData, headers=headers)
+        elif putData or method == "put":
+            r = requests.put(url, params=params, json=putData, headers=headers)
         elif method == "delete":
             r = requests.patch(url, params=params, data={"active": False}, headers=headers)
         else:
@@ -419,6 +422,31 @@ class SyncSketchAPI:
             return False
 
         return self._get_json_response("review/%s" % review_id, patchData=data)
+
+    def sort_review_items(self, review_id, items):
+        """
+        Update a review
+
+        Args:
+            review_id (TYPE): the id of the item
+            items (list): payload
+                e.g.
+                [
+                    {
+                        "id": 1, # item id
+                        "sortorder": 0, # sortorder, starting at 0
+                    }
+                ]
+
+        Returns:
+            TYPE: dict
+                { "updated_items": int }  # number of successful items sort updated
+        """
+        if not isinstance(items, list):
+            print("Please make sure you pass a list as data")
+            return False
+
+        return self._get_json_response("review/%s/sort_items" % review_id, putData=dict(items=items), api_version="v2")
 
     def delete_review(self, review_id):
         """

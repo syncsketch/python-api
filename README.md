@@ -93,10 +93,39 @@ If all steps were successful, you should see the following in the web-app.
 ##### Adding a user to the project
     addedUsers = s.add_users_to_project(
         project_id,
-        [{'email':'test@syncsketch.com','permission':'viewer'}],
+        [
+            {'email': 'test@syncsketch.com', 'permission':'viewer'}
+        ],
         "This is a note to include with the welcome email"
     )
     print(addedUsers)
+
+
+##### Update sort order of items in a review
+
+    response = s.sort_review_items(
+        review_id,
+        [
+            { "id": 111, "sortorder": 0 },
+            { "id": 222, "sortorder": 1 },
+            { "id": 333, "sortorder": 2 },
+        ]
+    )
+    print(response)
+    Out[1] {u'updated_items': 3}
+
+
+##### Move items from one review to another
+
+    response = s.move_items(
+        new_review_id,
+        [
+            {
+                "review_id": old_review_id,
+                "item_id": item_id,
+            }
+        ]
+    )
 
 
 ##### Traverse all Reviews
