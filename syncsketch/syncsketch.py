@@ -2,8 +2,8 @@
 """Summary"""
 # @Author: floepi
 # @Date:   2015-06-04 17:42:44
-# @Last Modified by:   Nícholas Kegler
-# @Last Modified time: 2021-05-03
+# @Last Modified by:   Brady Endres
+# @Last Modified time: 2021-08-30
 #!/usr/local/bin/python
 
 from __future__ import absolute_import, division, print_function
@@ -87,6 +87,7 @@ class SyncSketchAPI:
         getData=None,
         postData=None,
         patchData=None,
+        putData=None,
         api_version=None,
         content_type="application/json",
         raw_response=False,
@@ -112,6 +113,8 @@ class SyncSketchAPI:
             r = requests.post(url, params=params, data=json.dumps(postData), headers=headers)
         elif patchData or method == "patch":
             r = requests.patch(url, params=params, json=patchData, headers=headers)
+        elif putData or method == "put":
+            r = requests.put(url, params=params, json=putData, headers=headers)
         elif method == "delete":
             r = requests.patch(url, params=params, data={"active": False}, headers=headers)
         else:
@@ -210,7 +213,15 @@ class SyncSketchAPI:
 
         return self._get_json_response("project", postData=post_data)
 
-    def get_projects(self, include_deleted=False, include_archived=False, include_tags=False, limit=100, offset=0):
+    def get_projects(
+        self,
+        include_deleted=False,
+        include_archived=False,
+        include_tags=False,
+        include_connections=False,
+        limit=100,
+        offset=0,
+    ):
         """
         Get a list of currently active projects
 
@@ -221,7 +232,16 @@ class SyncSketchAPI:
         Returns:
             TYPE: Dict with meta information and an array of found projects
         """
-        get_params = {"active": 1, "is_archived": 0, "account__active": 1, "limit": limit, "offset": offset}
+        get_params = {
+            "active": 1,
+            "is_archived": 0,
+            "account__active": 1,
+            "limit": limit,
+            "offset": offset,
+        }
+
+        if include_connections:
+            get_params["withFullConnections"] = True
 
         if include_deleted:
             del get_params["active"]
@@ -252,6 +272,14 @@ class SyncSketchAPI:
         :return:
         """
         return self._get_json_response("project/%s" % project_id)
+
+    def get_project_storage(self, project_id):
+        """
+        Get project storage usage in bytes
+        :param project_id: Number
+        :return:
+        """
+        return self._get_json_response("project/%s/storage" % project_id, api_version="v2")
 
     def update_project(self, project_id, data):
         """
@@ -370,6 +398,14 @@ class SyncSketchAPI:
         """
         return self._get_json_response("review/%s" % review_id)
 
+    def get_review_storage(self, review_id):
+        """
+        Get review storage usage in bytes
+        :param review_id: Number
+        :return:
+        """
+        return self._get_json_response("review/%s/storage" % review_id, api_version="v2")
+
     def update_review(self, review_id, data):
         """
         Update a review
@@ -386,6 +422,31 @@ class SyncSketchAPI:
             return False
 
         return self._get_json_response("review/%s" % review_id, patchData=data)
+
+    def sort_review_items(self, review_id, items):
+        """
+        Update a review
+
+        Args:
+            review_id (TYPE): the id of the item
+            items (list): payload
+                e.g.
+                [
+                    {
+                        "id": 1, # item id
+                        "sortorder": 0, # sortorder, starting at 0
+                    }
+                ]
+
+        Returns:
+            TYPE: dict
+                { "updated_items": int }  # number of successful items sort updated
+        """
+        if not isinstance(items, list):
+            print("Please make sure you pass a list as data")
+            return False
+
+        return self._get_json_response("review/%s/sort_items" % review_id, putData=dict(items=items), api_version="v2")
 
     def delete_review(self, review_id):
         """
