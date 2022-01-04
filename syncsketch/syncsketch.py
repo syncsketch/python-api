@@ -721,13 +721,13 @@ class SyncSketchAPI:
         :param (number) review_id: RECOMMENDED - retrieve annotations for a specific review only.
         :return: dict
         """
-        get_params = {"item__id": item_id, "active": 1}
+        get_params = {"item_id": item_id, "active": 1}
 
         if revisionId:
-            get_params["revision__id"] = revisionId
+            get_params["revision_id"] = revisionId
 
         if review_id:
-            get_params["review_id"] = review_id
+            get_params["revision__review_id"] = review_id
 
         return self._get_json_response("frame", getData=get_params)
 
