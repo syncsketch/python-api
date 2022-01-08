@@ -304,7 +304,7 @@ class SyncSketchAPI:
         :param project_id: Number
         :return:
         """
-        return self._get_json_response("project/%s" % project_id, patchData=dict(active=0))
+        return self._get_json_response("project/%s" % project_id, patchData=dict(active=False))
 
     def duplicate_project(self, project_id, name=None, copy_reviews=False, copy_users=False, copy_settings=False):
         """
@@ -339,7 +339,7 @@ class SyncSketchAPI:
             TYPE: item
         """
 
-        return self._get_json_response("project/%s" % project_id, patchData=dict(is_archived=1))
+        return self._get_json_response("project/%s" % project_id, patchData=dict(is_archived=True))
 
     def restore_project(self, project_id):
         """
@@ -353,7 +353,7 @@ class SyncSketchAPI:
             TYPE: item
         """
 
-        return self._get_json_response("project/%s" % project_id, patchData=dict(is_archived=0))
+        return self._get_json_response("project/%s" % project_id, patchData=dict(is_archived=False))
 
     """
     Reviews
@@ -454,14 +454,14 @@ class SyncSketchAPI:
         :param review_id: Int
         :return:
         """
-        return self._get_json_response("review/%s" % review_id, patchData=dict(active=0))
+        return self._get_json_response("review/%s" % review_id, patchData=dict(active=False))
 
     """
     Items
     """
 
-    def get_item(self, item_id):
-        return self._get_json_response("item/{}".format(item_id))
+    def get_item(self, item_id, data=None):
+        return self._get_json_response("item/{}".format(item_id), getData=data)
 
     def update_item(self, item_id, data):
         """Summary
@@ -647,7 +647,7 @@ class SyncSketchAPI:
         :param item_id: Int
         :return:
         """
-        return self._get_json_response("item/%s" % item_id, patchData=dict(active=0))
+        return self._get_json_response("item/%s" % item_id, patchData=dict(active=False))
 
     def bulk_delete_items(self, item_ids):
         """
@@ -691,14 +691,13 @@ class SyncSketchAPI:
     Frames (Sketches / Comments)
     """
 
-    def add_comment(self, item_id, text, frame=0):
-        item = self.getItem(item_id)
+    def add_comment(self, item_id, text, review_id, frame=0):
+        item = self.get_item(item_id, data={"review_id": review_id})
 
         # Ugly method of getting revision id from item data, should fix this with api v2
-        revisions = item.get("revisions")
-        if not revisions:
+        revision_id = item.get("revision_id")
+        if not revision_id:
             return "error"
-        revision_id = revisions[0].get("id")
 
         post_data = dict(
             item="/api/v1/item/{}/".format(item_id),

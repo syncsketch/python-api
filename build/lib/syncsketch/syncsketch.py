@@ -304,7 +304,7 @@ class SyncSketchAPI:
         :param project_id: Number
         :return:
         """
-        return self._get_json_response("project/%s" % project_id, patchData=dict(active=0))
+        return self._get_json_response("project/%s" % project_id, patchData=dict(active=False))
 
     def duplicate_project(self, project_id, name=None, copy_reviews=False, copy_users=False, copy_settings=False):
         """
@@ -339,7 +339,7 @@ class SyncSketchAPI:
             TYPE: item
         """
 
-        return self._get_json_response("project/%s" % project_id, patchData=dict(is_archived=1))
+        return self._get_json_response("project/%s" % project_id, patchData=dict(is_archived=False))
 
     def restore_project(self, project_id):
         """
@@ -353,7 +353,7 @@ class SyncSketchAPI:
             TYPE: item
         """
 
-        return self._get_json_response("project/%s" % project_id, patchData=dict(is_archived=0))
+        return self._get_json_response("project/%s" % project_id, patchData=dict(is_archived=False))
 
     """
     Reviews
@@ -454,7 +454,7 @@ class SyncSketchAPI:
         :param review_id: Int
         :return:
         """
-        return self._get_json_response("review/%s" % review_id, patchData=dict(active=0))
+        return self._get_json_response("review/%s" % review_id, patchData=dict(active=False))
 
     """
     Items
@@ -647,7 +647,7 @@ class SyncSketchAPI:
         :param item_id: Int
         :return:
         """
-        return self._get_json_response("item/%s" % item_id, patchData=dict(active=0))
+        return self._get_json_response("item/%s" % item_id, patchData=dict(active=False))
 
     def bulk_delete_items(self, item_ids):
         """
