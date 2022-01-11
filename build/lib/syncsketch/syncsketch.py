@@ -3,7 +3,7 @@
 # @Author: floepi
 # @Date:   2015-06-04 17:42:44
 # @Last Modified by:   Brady Endres
-# @Last Modified time: 2021-08-30
+# @Last Modified time: 2022-01-10
 #!/usr/local/bin/python
 
 from __future__ import absolute_import, division, print_function
@@ -339,7 +339,7 @@ class SyncSketchAPI:
             TYPE: item
         """
 
-        return self._get_json_response("project/%s" % project_id, patchData=dict(is_archived=False))
+        return self._get_json_response("project/%s" % project_id, patchData=dict(is_archived=True))
 
     def restore_project(self, project_id):
         """
@@ -460,8 +460,8 @@ class SyncSketchAPI:
     Items
     """
 
-    def get_item(self, item_id):
-        return self._get_json_response("item/{}".format(item_id))
+    def get_item(self, item_id, data=None):
+        return self._get_json_response("item/{}".format(item_id), getData=data)
 
     def update_item(self, item_id, data):
         """Summary
@@ -523,7 +523,7 @@ class SyncSketchAPI:
 
         return self._get_json_response("item", postData=postData)
 
-    def add_media(self, review_id, filepath, artist_name="", noConvertFlag=False, itemParentId=False):
+    def add_media(self, review_id, filepath, artist_name="", file_name="", noConvertFlag=False, itemParentId=False):
         """
             Convenience function to upload a file to a review. It will automatically create
             an Item and attach it to the review. NOTE - if you are hosting your own media, please
@@ -533,6 +533,7 @@ class SyncSketchAPI:
             review_id (int): Required review_id
             filepath (string): path for the file on disk e.g /tmp/movie.webm
             artist_name (string): The name of the artist you want associated with this media file
+            file_name (string): The name of the file. Please make sure to pass the correct file extension
             noConvertFlag (bool): the video you are uploading is already in a browser compatible format
             itemParentId (int): set when you want to add a new version of an item.
                                 itemParentId is the id of the item you want to upload a new version for
@@ -551,7 +552,7 @@ class SyncSketchAPI:
         uploadURL = "%s/items/uploadToReview/%s/?%s" % (self.HOST, review_id, urlencode(get_params))
 
         files = {"reviewFile": open(filepath, "rb")}
-        r = requests.post(uploadURL, files=files, data=dict(artist=artist_name), headers=self.headers)
+        r = requests.post(uploadURL, files=files, data=dict(artist=artist_name, name=file_name), headers=self.headers)
 
         try:
             return json.loads(r.text)
@@ -691,14 +692,13 @@ class SyncSketchAPI:
     Frames (Sketches / Comments)
     """
 
-    def add_comment(self, item_id, text, frame=0):
-        item = self.getItem(item_id)
+    def add_comment(self, item_id, text, review_id, frame=0):
+        item = self.get_item(item_id, data={"review_id": review_id})
 
         # Ugly method of getting revision id from item data, should fix this with api v2
-        revisions = item.get("revisions")
-        if not revisions:
+        revision_id = item.get("revision_id")
+        if not revision_id:
             return "error"
-        revision_id = revisions[0].get("id")
 
         post_data = dict(
             item="/api/v1/item/{}/".format(item_id),
@@ -710,19 +710,23 @@ class SyncSketchAPI:
 
         return self._get_json_response("frame", method="post", postData=post_data)
 
-    def get_annotations(self, item_id, revisionId=False):
+    def get_annotations(self, item_id, revisionId=False, review_id=False):
         """
         Get sketches and comments for an item. Frames have a revision id which signifies a "set of notes".
         When querying an item you'll get the available revisions for this item. If you wish to get only the latest
         revision, please get the revisionId for the latest revision.
         :param item_id: id of the media item you are querying.
         :param (number) revisionId: Optional revisionId to narrow down the results
+        :param (number) review_id: RECOMMENDED - retrieve annotations for a specific review only.
         :return: dict
         """
         get_params = {"item__id": item_id, "active": 1}
 
         if revisionId:
             get_params["revision__id"] = revisionId
+
+        if review_id:
+            get_params["revision__review_id"] = review_id
 
         return self._get_json_response("frame", getData=get_params)
 

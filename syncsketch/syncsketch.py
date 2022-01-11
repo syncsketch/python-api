@@ -3,7 +3,7 @@
 # @Author: floepi
 # @Date:   2015-06-04 17:42:44
 # @Last Modified by:   Brady Endres
-# @Last Modified time: 2021-08-30
+# @Last Modified time: 2022-01-10
 #!/usr/local/bin/python
 
 from __future__ import absolute_import, division, print_function
@@ -720,10 +720,10 @@ class SyncSketchAPI:
         :param (number) review_id: RECOMMENDED - retrieve annotations for a specific review only.
         :return: dict
         """
-        get_params = {"item_id": item_id, "active": 1}
+        get_params = {"item__id": item_id, "active": 1}
 
         if revisionId:
-            get_params["revision_id"] = revisionId
+            get_params["revision__id"] = revisionId
 
         if review_id:
             get_params["revision__review_id"] = review_id
