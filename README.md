@@ -1,6 +1,6 @@
 # Syncsketch Python API
 
-This package provides methods to communicate with the syncsketch servers and wraps CRUD (create, reade, update, delete) methods to interact with Reviews.
+This package provides methods to communicate with the syncsketch servers and wraps CRUD (create, read, update, delete) methods to interact with Reviews.
 
 # Overview
 
@@ -86,7 +86,7 @@ You can upload a file to the created review with the review id, we provided one 
 
 If all steps were successful, you should see the following in the web-app. 
 
-![alt text](https://github.com/syncsketch/python-api/blob/documentation/examples/ressources/exampleResult.jpg?raw=true)
+![alt text](https://github.com/syncsketch/python-api/blob/documentation/examples/resources/exampleResult.jpg?raw=true)
 
 ### Additional Examples
 
