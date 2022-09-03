@@ -31,7 +31,7 @@ Install using `pip`...
 
 
 #### Authentication
-Before we can start working, we need to get an `API_KEY` which you can obtain from the syncsketch [settings page](https://syncsketch.com/pro/#userProfile/settingsTab). Follow the given link, login and scroll down to the bottom headline `Developer Options` to see your 40 character API-Key.
+Before we can start working, we need to get an `API_KEY` which you can obtain from the syncsketch [settings page](https://syncsketch.com/pro/#/userProfile/settings). Follow the given link, login and scroll down to the bottom headline `Developer Options` to see your 40 character API-Key.
 
 
 Setting up a connection with your SyncSketch projects is as easy as following. 
