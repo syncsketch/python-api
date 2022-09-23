@@ -610,8 +610,8 @@ class SyncSketchAPI:
             return None
 
         file = open(filepath, "rb")
-        content_length = len(f.read())
-        f.seek(0)  # reset cursor
+        content_length = len(file.read())
+        file.seek(0)  # reset cursor
 
         content_type = mimetypes.guess_type("/users/tyler.nickerson/Downloads/woah.gif", strict=False)[0]
 
@@ -630,7 +630,7 @@ class SyncSketchAPI:
         url_response_data = url_response.json()
         url = url_response_data["url"]
         fields = url_response_data["fields"]
-        files = {"file": }
+        files = {"file": file}
         upload_response = requests.post(url, data=fields, files=files)
 
         if not upload_response.ok:
