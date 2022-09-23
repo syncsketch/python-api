@@ -591,6 +591,65 @@ class SyncSketchAPI:
         except Exception:
             print(r.text)
 
+    def add_media_via_s3(self, review_id, filepath, artist_name="", file_name="", noConvertFlag=False):
+        """ Similar to add_media method, but uploads the media file to S3 instead of to the syncsketch server.
+        In some cases using this method over add_media can improve upload performance and stability. Unlike add_media
+        this method does not return as much data about the created item.
+
+        :param int review_id: Required review_id.
+        :param str filepath: path for the file on disk e.g /tmp/movie.webm.
+        :param str file_name: The name of the file. Please make sure to pass the correct file extension.
+        :param bool noConvertFlag: the video you are uploading is already in a browser compatible format.
+
+        :return: A dict, containing "item_id" and "uuid" or None on failure.
+        :rtype: Optional[dict]
+        """
+        if not self.headers:
+            print("add_media_via_s3 failed. use_header_auth must be set to true.")
+            return None
+
+        url_response = self._get_s3_signed_url(review_id, item_name=file_name)
+
+        if not url_response.ok:
+            print("Failed to generate signed S3 url.\nAPI response:\n{}".format(url_response.text))
+            return None
+
+        url_response_data = url_response.json()
+        url = url_response_data["url"]
+        fields = url_response_data["fields"]
+        files = {"file": open(filepath, "rb")}
+        upload_response = requests.post(url, data=fields, files=files)
+
+        if not upload_response.ok:
+            print("Upload process failed while uploading file to S3.\nS3 response:\n{}".format(upload_response.text))
+            return None
+
+        return {"id": fields["x-amz-meta-item-id"], "uuid": fields["x-amz-meta-item-uuid"]}
+
+    def _get_s3_signed_url(self, review_id, item_name, item_uuid=None, content_type=None, content_length=None,):
+        """
+        Internal method. Use to retrieve s3 signed url for file upload in `add_media_via_s3`.
+        """
+        request_data = self.api_params.copy()
+        additional_request_data = {
+            "review_id": review_id,
+            "item_name": item_name,
+            "item_data": {
+                "uuid": item_uuid,
+                "content_type": content_type,
+                "content_length": content_length,
+            },
+        }
+        request_data.update(additional_request_data)
+
+        request_url = "{host}/uploads/get-s3-signed-url/".format(host=self.HOST)
+
+        return requests.post(
+            request_url,
+            json=request_data,
+            headers=self.headers,
+        )
+
     def get_media(self, searchCriteria):
         """
         This is a general search function. You can search media items by
