@@ -10,6 +10,7 @@ from __future__ import absolute_import, division, print_function
 
 import os
 import json
+import mimetypes
 import time
 
 import requests
@@ -608,7 +609,19 @@ class SyncSketchAPI:
             print("add_media_via_s3 failed. use_header_auth must be set to true.")
             return None
 
-        url_response = self._get_s3_signed_url(review_id, item_name=file_name)
+        file = open(filepath, "rb")
+        content_length = len(f.read())
+        f.seek(0)  # reset cursor
+
+        content_type = mimetypes.guess_type("/users/tyler.nickerson/Downloads/woah.gif", strict=False)[0]
+
+        url_response = self._get_s3_signed_url(
+            review_id=review_id,
+            item_name=file_name,
+            content_length=content_length,
+            content_type=content_type,
+            no_convert=noConvertFlag,
+        )
 
         if not url_response.ok:
             print("Failed to generate signed S3 url.\nAPI response:\n{}".format(url_response.text))
@@ -617,7 +630,7 @@ class SyncSketchAPI:
         url_response_data = url_response.json()
         url = url_response_data["url"]
         fields = url_response_data["fields"]
-        files = {"file": open(filepath, "rb")}
+        files = {"file": }
         upload_response = requests.post(url, data=fields, files=files)
 
         if not upload_response.ok:
@@ -626,7 +639,7 @@ class SyncSketchAPI:
 
         return {"id": fields["x-amz-meta-item-id"], "uuid": fields["x-amz-meta-item-uuid"]}
 
-    def _get_s3_signed_url(self, review_id, item_name, item_uuid=None, content_type=None, content_length=None,):
+    def _get_s3_signed_url(self, review_id, item_name, item_uuid=None, content_type=None, content_length=None, no_convert=False):
         """
         Internal method. Use to retrieve s3 signed url for file upload in `add_media_via_s3`.
         """
@@ -638,6 +651,7 @@ class SyncSketchAPI:
                 "uuid": item_uuid,
                 "content_type": content_type,
                 "content_length": content_length,
+                "noConvertFlag": no_convert,
             },
         }
         request_data.update(additional_request_data)
