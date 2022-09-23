@@ -592,10 +592,10 @@ class SyncSketchAPI:
         except Exception:
             print(r.text)
 
-    def add_media_via_s3(self, review_id, filepath, artist_name="", file_name="", noConvertFlag=False):
-        """ Similar to add_media method, but uploads the media file to S3 instead of to the syncsketch server.
-        In some cases using this method over add_media can improve upload performance and stability. Unlike add_media
-        this method does not return as much data about the created item.
+    def add_media_v2(self, review_id, filepath, artist_name="", file_name="", noConvertFlag=False):
+        """ Similar to add_media method, but uploads the media file directly to SyncSketche's internal S3 instead of to
+        the SyncSketch server. In some cases, using this method over add_media can improve upload performance and
+        stability. Unlike add_media this method does not return as much data about the created item.
 
         :param int review_id: Required review_id.
         :param str filepath: path for the file on disk e.g /tmp/movie.webm.
@@ -1155,6 +1155,8 @@ class SyncSketchAPI:
         """
         print("Deprecated.  Response is printed in the shotgun_sync_review_items() function")
 
+    # alias methods to <name>_v1 if they have a v2
+    add_media_v1 = add_media
     # Keep old names for backwards compatibility
     isConnected = is_connected
     getAccounts = get_accounts
