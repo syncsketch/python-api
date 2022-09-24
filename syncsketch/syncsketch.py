@@ -614,7 +614,7 @@ class SyncSketchAPI:
         content_length = len(file.read())
         file.seek(0)  # reset cursor
 
-        content_type = mimetypes.guess_type("/users/tyler.nickerson/Downloads/woah.gif", strict=False)[0]
+        content_type = mimetypes.guess_type(filepath, strict=False)[0]
 
         url_response = self._get_s3_signed_url(
             review_id=review_id,
