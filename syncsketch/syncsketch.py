@@ -593,7 +593,7 @@ class SyncSketchAPI:
         except Exception:
             print(r.text)
 
-    def add_media_v2(self, review_id, filepath, artist_name="", file_name="", noConvertFlag=False):
+    def add_media_v2(self, review_id, filepath, file_name="", noConvertFlag=False):
         """ Similar to add_media method, but uploads the media file directly to SyncSketche's internal S3 instead of to
         the SyncSketch server. In some cases, using this method over add_media can improve upload performance and
         stability. Unlike add_media this method does not return as much data about the created item.
