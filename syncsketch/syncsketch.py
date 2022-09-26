@@ -80,7 +80,22 @@ class SyncSketchAPI:
         self.HOST = host
 
     def get_api_base_url(self, api_version=None):
-        return self.HOST + "/api/{}/".format(api_version or self.api_version)
+        return self.join_url_path(self.HOST, "/api/{}/".format(api_version or self.api_version))
+
+    @staticmethod
+    def join_url_path(base, *path_segments):
+        # remove preceeding "/" from entries to avoid absolute path behavior with os.path.join
+        # and append an empty string so that os.path.join will add a terminating "/" if needed
+        path_segments = [
+            path_segment[1:] if path_segment.startswith("/") else path_segment
+            for path_segment in path_segments
+        ] + [""]
+        return os.path.join(
+            base, *path_segments
+        )
+
+    def _get_unversioned_api_url(self, path):
+        return self.join_url_path(self.HOST, path)
 
     def _get_json_response(
         self,
@@ -93,11 +108,12 @@ class SyncSketchAPI:
         api_version=None,
         content_type="application/json",
         raw_response=False,
+        api_version_prefix=True,
     ):
-        url = self.get_api_base_url(api_version) + url
-
-        if not url.endswith("/"):
-            url += "/"
+        if api_version_prefix:
+            url = self.join_url_path(self.get_api_base_url(api_version), url)
+        else:
+            url = self._get_unversioned_api_url(url)
 
         params = self.api_params.copy()
 
@@ -593,7 +609,7 @@ class SyncSketchAPI:
         except Exception:
             print(r.text)
 
-    def add_media_v2(self, review_id, filepath, file_name="", noConvertFlag=False):
+    def add_media_v2(self, review_id, filepath, file_name="", item_uuid=None, noConvertFlag=False):
         """ Similar to add_media method, but uploads the media file directly to SyncSketche's internal S3 instead of to
         the SyncSketch server. In some cases, using this method over add_media can improve upload performance and
         stability. Unlike add_media this method does not return as much data about the created item.
@@ -628,10 +644,13 @@ class SyncSketchAPI:
             print("Failed to generate signed S3 url.\nAPI response:\n{}".format(url_response.text))
             return None
 
+        print(url_response.text)
+
         url_response_data = url_response.json()
         url = url_response_data["url"]
         fields = url_response_data["fields"]
         files = {"file": file}
+
         upload_response = requests.post(url, data=fields, files=files)
 
         if not upload_response.ok:
@@ -657,13 +676,15 @@ class SyncSketchAPI:
         }
         request_data.update(additional_request_data)
 
-        request_url = "{host}/uploads/get-s3-signed-url/".format(host=self.HOST)
+        request_url = "/uploads/get-s3-signed-url/".format(host=self.HOST)
 
-        return requests.post(
-            request_url,
-            json=request_data,
-            headers=self.headers,
+        return self._get_json_response(
+            url=request_url,
+            postData=request_data,
+            raw_response=True,
+            api_version_prefix=False,
         )
+
 
     def get_media(self, searchCriteria):
         """
