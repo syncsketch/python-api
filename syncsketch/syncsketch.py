@@ -294,7 +294,7 @@ class SyncSketchAPI:
         Returns:
             TYPE: Dict with meta information and an array of found projects
         """
-        get_params = {"name": name}
+        get_params = {"name__istartswith": name}
         return self._get_json_response("/api/v1/project/", getData=get_params)
 
     def get_project_by_id(self, project_id):
