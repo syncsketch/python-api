@@ -98,7 +98,7 @@ class SyncSketchAPI:
         :param path_segments: Additional strings to be appened to the path.
         :type path_segments: List[str]
 
-        :returns: A "/" delimited string containing base and path_segments combined with a "/" seperator.
+        :returns: A "/" terminated string containing base and path_segments delimited by "/".
         """
         # remove preceeding "/" from entries to avoid absolute path behavior with os.path.join
         # and append an empty string so that os.path.join will add a terminating "/" if needed
@@ -170,7 +170,7 @@ class SyncSketchAPI:
         and authorization error
         :return:
         """
-        url = "api/v1/person/connected"
+        url = "/api/v1/person/connected"
         params = self.api_params.copy()
 
         if self.debug:
@@ -199,7 +199,7 @@ class SyncSketchAPI:
             TYPE: Account
         """
         get_params = {"active": 1}
-        return self._get_json_response("api/v1/account", getData=get_params)
+        return self._get_json_response("/api/v1/account", getData=get_params)
 
     def update_account(self, account_id, data):
         """
@@ -240,7 +240,7 @@ class SyncSketchAPI:
 
         post_data.update(data)
 
-        return self._get_json_response("api/v1/project", postData=post_data)
+        return self._get_json_response("/api/v1/project", postData=post_data)
 
     def get_projects(
         self,
@@ -292,7 +292,7 @@ class SyncSketchAPI:
             TYPE: Dict with meta information and an array of found projects
         """
         get_params = {"name": name}
-        return self._get_json_response("api/v1/project", getData=get_params)
+        return self._get_json_response("/api/v1/project", getData=get_params)
 
     def get_project_by_id(self, project_id):
         """
