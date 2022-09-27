@@ -542,7 +542,7 @@ class SyncSketchAPI:
         """
 
         postData = {
-            "reviews": ["/api/%s/review/%s/" % (self.api_version, review_id)],
+            "reviewId": review_id,
             "status": "done",
             "fps": fps,
             "name": name,
@@ -928,7 +928,7 @@ class SyncSketchAPI:
         """
         Get user by email
         """
-        response = self._get_json_response("/api/v1/simpleperson/", getData={"email": email}, raw_response=True)
+        response = self._get_json_response("/api/v1/simpleperson/", getData={"email__iexact": email}, raw_response=True)
 
         try:
             data = response.json()
