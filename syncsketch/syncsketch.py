@@ -1156,8 +1156,7 @@ class SyncSketchAPI:
 
         if "items" in response:
             for item in response["items"]:
-                item_id = item["id"]
-                data = {"playlist_item_json": {"id": item_id}}
+                data = {"playlist_item_json": json.dumps(item)}
                 item_sync_url = "/api/v2/shotgun/sync-items/project/{}/review/{}/".format(syncsketch_project_id, response["review_id"])
                 item_data = self._get_json_response(item_sync_url, method="post", postData=data)
                 result["items"].append(item_data["id"])
