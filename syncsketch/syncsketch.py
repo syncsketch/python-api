@@ -1060,7 +1060,7 @@ class SyncSketchAPI:
         """
         url = "/api/v2/shotgun/playlists/{}".format(syncsketch_account_id)
         if syncsketch_project_id:
-            url += "/{}".format(syncsketch_project_id)
+            url = self.join_url_path(url, "/{}".format(syncsketch_project_id))
 
         data = {"shotgun_project_id": shotgun_project_id}
         return self._get_json_response(url, method="get", getData=data)
@@ -1126,9 +1126,9 @@ class SyncSketchAPI:
         """
         url = "/api/v2/shotgun/sync-items/project/{}/".format(syncsketch_project_id)
         if review_id:
-            url += "review/{}/check".format(review_id)
+            url = self.join_url_path(url, "review/{}/check".format(review_id))
         else:
-            url += "check"
+            url = self.join_url_path(url, "check")
 
         data = {"playlist_code": playlist_code, "playlist_id": playlist_id}
 
