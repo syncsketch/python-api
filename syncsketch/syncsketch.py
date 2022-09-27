@@ -84,6 +84,22 @@ class SyncSketchAPI:
 
     @staticmethod
     def join_url_path(base, *path_segments):
+        """Takes one more more strings and returns a properly terminated url path. Handles strings regardless
+        of whether they are "/" prefixed/terminated or not.
+
+        >>> SyncSketchAPI.join_url_path("abc")
+        "abc/"
+        >>> SyncSketchAPI.join_url_path("abc", "123")
+        "abc/123/"
+        >>> SyncSketchAPI.join_url_path("abc", "123", "/xyz/")
+        "abc/123/xyz/"
+
+        :param str base: The "base" path to append to.
+        :param path_segments: Additional strings to be appened to the path.
+        :type path_segments: List[str]
+
+        :returns: A "/" delimited string containing base and path_segments combined with a "/" seperator.
+        """
         # remove preceeding "/" from entries to avoid absolute path behavior with os.path.join
         # and append an empty string so that os.path.join will add a terminating "/" if needed
         path_segments = [
