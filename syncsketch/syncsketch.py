@@ -222,7 +222,7 @@ class SyncSketchAPI:
     Projects
     """
 
-    def create_project(self, account_id, name, description="", data={}):
+    def create_project(self, account_id, name, description="", data=None):
         """
         Add a project to your account. Please make sure to pass the accountId which you can query using the getAccounts command.
 
@@ -232,6 +232,9 @@ class SyncSketchAPI:
         :param data: Dict with additional information e.g is_public. Find out more about available fields at /api/v1/project/schema/.
         :return:
         """
+        if data is None:
+            data = {}
+
         post_data = {
             "name": name,
             "description": description,
@@ -388,7 +391,10 @@ class SyncSketchAPI:
     Reviews
     """
 
-    def create_review(self, project_id, name, description="", data={}):
+    def create_review(self, project_id, name, description="", data=None):
+        if data is None:
+            data = {}
+
         postData = {
             "project": "/api/%s/project/%s/" % (self.api_version, project_id),
             "name": name,
