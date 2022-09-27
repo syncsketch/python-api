@@ -170,7 +170,7 @@ class SyncSketchAPI:
         and authorization error
         :return:
         """
-        url = "/api/v1/person/connected"
+        url = "/api/v1/person/connected/"
         params = self.api_params.copy()
 
         if self.debug:
@@ -186,7 +186,7 @@ class SyncSketchAPI:
         :return:
         """
         get_params = {"fetchItems": 1} if withItems else {}
-        return self._get_json_response("/api/v1/person/tree", getData=get_params)
+        return self._get_json_response("/api/v1/person/tree/", getData=get_params)
 
     """
     Accounts
@@ -199,7 +199,7 @@ class SyncSketchAPI:
             TYPE: Account
         """
         get_params = {"active": 1}
-        return self._get_json_response("/api/v1/account", getData=get_params)
+        return self._get_json_response("/api/v1/account/", getData=get_params)
 
     def update_account(self, account_id, data):
         """
@@ -216,7 +216,7 @@ class SyncSketchAPI:
             print("Please make sure you pass a dict as data")
             return False
 
-        return self._get_json_response("/api/v1/account/%s" % account_id, patchData=data)
+        return self._get_json_response("/api/v1/account/%s/" % account_id, patchData=data)
 
     """
     Projects
@@ -240,7 +240,7 @@ class SyncSketchAPI:
 
         post_data.update(data)
 
-        return self._get_json_response("/api/v1/project", postData=post_data)
+        return self._get_json_response("/api/v1/project/", postData=post_data)
 
     def get_projects(
         self,
@@ -282,7 +282,7 @@ class SyncSketchAPI:
         if include_tags:
             get_params["include_tags"] = 1
 
-        return self._get_json_response("/api/v1/project", getData=get_params)
+        return self._get_json_response("/api/v1/project/", getData=get_params)
 
     def get_projects_by_name(self, name):
         """
@@ -292,7 +292,7 @@ class SyncSketchAPI:
             TYPE: Dict with meta information and an array of found projects
         """
         get_params = {"name": name}
-        return self._get_json_response("/api/v1/project", getData=get_params)
+        return self._get_json_response("/api/v1/project/", getData=get_params)
 
     def get_project_by_id(self, project_id):
         """
@@ -300,7 +300,7 @@ class SyncSketchAPI:
         :param project_id: Number
         :return:
         """
-        return self._get_json_response("/api/v1/project/%s" % project_id)
+        return self._get_json_response("/api/v1/project/%s/" % project_id)
 
     def get_project_storage(self, project_id):
         """
@@ -308,7 +308,7 @@ class SyncSketchAPI:
         :param project_id: Number
         :return:
         """
-        return self._get_json_response("/api/v2/project/%s/storage" % project_id)
+        return self._get_json_response("/api/v2/project/%s/storage/" % project_id)
 
     def update_project(self, project_id, data):
         """
@@ -325,7 +325,7 @@ class SyncSketchAPI:
             print("Please make sure you pass a dict as data")
             return False
 
-        return self._get_json_response("/api/v1/project/%s" % project_id, patchData=data)
+        return self._get_json_response("/api/v1/project/%s/" % project_id, patchData=data)
 
     def delete_project(self, project_id):
         """
@@ -333,7 +333,7 @@ class SyncSketchAPI:
         :param project_id: Number
         :return:
         """
-        return self._get_json_response("/api/v1/project/%s" % project_id, patchData=dict(active=False))
+        return self._get_json_response("/api/v1/project/%s/" % project_id, patchData=dict(active=False))
 
     def duplicate_project(self, project_id, name=None, copy_reviews=False, copy_users=False, copy_settings=False):
         """
@@ -368,7 +368,7 @@ class SyncSketchAPI:
             TYPE: item
         """
 
-        return self._get_json_response("/api/v1/project/%s" % project_id, patchData=dict(is_archived=True))
+        return self._get_json_response("/api/v1/project/%s/" % project_id, patchData=dict(is_archived=True))
 
     def restore_project(self, project_id):
         """
@@ -382,7 +382,7 @@ class SyncSketchAPI:
             TYPE: item
         """
 
-        return self._get_json_response("/api/v1/project/%s" % project_id, patchData=dict(is_archived=False))
+        return self._get_json_response("/api/v1/project/%s/" % project_id, patchData=dict(is_archived=False))
 
     """
     Reviews
@@ -397,7 +397,7 @@ class SyncSketchAPI:
 
         postData.update(data)
 
-        return self._get_json_response("/api/v1/review", postData=postData)
+        return self._get_json_response("/api/v1/review/", postData=postData)
 
     def get_reviews_by_project_id(self, project_id, limit=100, offset=0):
         """
@@ -408,7 +408,7 @@ class SyncSketchAPI:
         get_params = {
             "project__id": project_id, "project__active": 1, "project__is_archived": 0, "limit": limit, "offset": offset
         }
-        return self._get_json_response("/api/v1/review", getData=get_params)
+        return self._get_json_response("/api/v1/review/", getData=get_params)
 
     def get_review_by_name(self, name):
         """
@@ -417,7 +417,7 @@ class SyncSketchAPI:
         :return: Dict with meta information and an array of found projects
         """
         get_params = {"name__istartswith": name}
-        return self._get_json_response("/api/v1/review", getData=get_params)
+        return self._get_json_response("/api/v1/review/", getData=get_params)
 
     def get_review_by_id(self, review_id):
         """
@@ -425,7 +425,7 @@ class SyncSketchAPI:
         :param review_id: Number
         :return: Review Dict
         """
-        return self._get_json_response("/api/v1/review/%s" % review_id)
+        return self._get_json_response("/api/v1/review/%s/" % review_id)
 
     def get_review_storage(self, review_id):
         """
@@ -433,7 +433,7 @@ class SyncSketchAPI:
         :param review_id: Number
         :return:
         """
-        return self._get_json_response("/api/v2/review/%s/storage" % review_id)
+        return self._get_json_response("/api/v2/review/%s/storage/" % review_id)
 
     def update_review(self, review_id, data):
         """
@@ -450,7 +450,7 @@ class SyncSketchAPI:
             print("Please make sure you pass a dict as data")
             return False
 
-        return self._get_json_response("/api/v1/review/%s" % review_id, patchData=data)
+        return self._get_json_response("/api/v1/review/%s/" % review_id, patchData=data)
 
     def sort_review_items(self, review_id, items):
         """
@@ -475,7 +475,7 @@ class SyncSketchAPI:
             print("Please make sure you pass a list as data")
             return False
 
-        return self._get_json_response("/api/v2/review/%s/sort_items" % review_id, putData=dict(items=items))
+        return self._get_json_response("/api/v2/review/%s/sort_items/" % review_id, putData=dict(items=items))
 
     def delete_review(self, review_id):
         """
@@ -483,14 +483,14 @@ class SyncSketchAPI:
         :param review_id: Int
         :return:
         """
-        return self._get_json_response("/api/v1/review/%s" % review_id, patchData=dict(active=False))
+        return self._get_json_response("/api/v1/review/%s/" % review_id, patchData=dict(active=False))
 
     """
     Items
     """
 
     def get_item(self, item_id, data=None):
-        return self._get_json_response("/api/v1/item/{}".format(item_id), getData=data)
+        return self._get_json_response("/api/v1/item/{}/".format(item_id), getData=data)
 
     def update_item(self, item_id, data):
         """Summary
@@ -506,7 +506,7 @@ class SyncSketchAPI:
             print("Please make sure you pass a dict as data")
             return False
 
-        return self._get_json_response("/api/v1/item/%s" % item_id, patchData=data)
+        return self._get_json_response("/api/v1/item/%s/" % item_id, patchData=data)
 
     def add_item(self, review_id, name, fps, additional_data):
         """
@@ -550,7 +550,7 @@ class SyncSketchAPI:
 
         postData.update(additional_data)
 
-        return self._get_json_response("/api/v1/item", postData=postData)
+        return self._get_json_response("/api/v1/item/", postData=postData)
 
     def add_media(self, review_id, filepath, artist_name="", file_name="", noConvertFlag=False, itemParentId=False):
         """
@@ -731,7 +731,7 @@ class SyncSketchAPI:
             dict: search results
         """
 
-        return self._get_json_response("/api/v1/item", getData=searchCriteria)
+        return self._get_json_response("/api/v1/item/", getData=searchCriteria)
 
     def get_media_by_review_id(self, review_id):
         """Summary
@@ -743,7 +743,7 @@ class SyncSketchAPI:
             TYPE: Description
         """
         get_params = {"reviews__id": review_id, "active": 1}
-        return self._get_json_response("/api/v1/item", getData=get_params)
+        return self._get_json_response("/api/v1/item/", getData=get_params)
 
     def delete_item(self, item_id):
         """
@@ -751,7 +751,7 @@ class SyncSketchAPI:
         :param item_id: Int
         :return:
         """
-        return self._get_json_response("/api/v1/item/%s" % item_id, patchData=dict(active=False))
+        return self._get_json_response("/api/v1/item/%s/" % item_id, patchData=dict(active=False))
 
     def bulk_delete_items(self, item_ids):
         """
@@ -809,7 +809,7 @@ class SyncSketchAPI:
             text=text
         )
 
-        return self._get_json_response("/api/v1/frame", method="post", postData=post_data)
+        return self._get_json_response("/api/v1/frame/", method="post", postData=post_data)
 
     def get_annotations(self, item_id, revisionId=False, review_id=False):
         """
@@ -829,7 +829,7 @@ class SyncSketchAPI:
         if review_id:
             get_params["revision__review_id"] = review_id
 
-        return self._get_json_response("/api/v1/frame", getData=get_params)
+        return self._get_json_response("/api/v1/frame/", getData=get_params)
 
     def get_flattened_annotations(self, review_id, item_id, with_tracing_paper=False, return_as_base64=False):
         """
@@ -848,7 +848,7 @@ class SyncSketchAPI:
             "async": 0
         }
 
-        url = "/api/v2/downloads/flattenedSketches/{}/{}".format(review_id, item_id)
+        url = "/api/v2/downloads/flattenedSketches/{}/{}/".format(review_id, item_id)
 
         return self._get_json_response(url, method="post", getData = getData)
 
@@ -922,13 +922,13 @@ class SyncSketchAPI:
         """
         Name is a combined search and will search in first_name, last_name and email
         """
-        return self._get_json_response("/api/v1/simpleperson", getData={"name": name})
+        return self._get_json_response("/api/v1/simpleperson/", getData={"name": name})
 
     def get_user_by_email(self, email):
         """
         Get user by email
         """
-        response = self._get_json_response("/api/v1/simpleperson", getData={"email": email}, raw_response=True)
+        response = self._get_json_response("/api/v1/simpleperson/", getData={"email": email}, raw_response=True)
 
         try:
             data = response.json()
@@ -937,19 +937,19 @@ class SyncSketchAPI:
             return None
 
     def get_users_by_project_id(self, project_id):
-        return self._get_json_response("/api/v2/all-project-users/{}".format(project_id))
+        return self._get_json_response("/api/v2/all-project-users/{}/".format(project_id))
 
     def get_connections_by_user_id(self, user_id, account_id):
         """
         Get all project and account connections for a user. Good for checking access for a user that might have left...
         """
-        return self._get_json_response("/api/v2/user/{}/connections/account/{}".format(user_id, account_id))
+        return self._get_json_response("/api/v2/user/{}/connections/account/{}/".format(user_id, account_id))
 
     def get_user_by_id(self, userId):
-        return self._get_json_response("/api/v1/simpleperson/%s" % userId)
+        return self._get_json_response("/api/v1/simpleperson/%s/" % userId)
 
     def get_current_user(self):
-        return self._get_json_response("/api/v1/simpleperson/currentUser")
+        return self._get_json_response("/api/v1/simpleperson/currentUser/")
 
     def add_users_to_workspace(self, workspace_id, users, note = ''):
         """Add Users to Workspace
@@ -975,7 +975,7 @@ class SyncSketchAPI:
             "users": json.dumps(users)
         }
 
-        return self._get_json_response("/api/v2/add-users", postData=post_data)
+        return self._get_json_response("/api/v2/add-users/", postData=post_data)
 
     def remove_users_from_workspace(self, workspace_id, users):
         """Remove a list of users from a workspace
@@ -997,7 +997,7 @@ class SyncSketchAPI:
             "users": json.dumps(users)
         }
 
-        return self._get_json_response("/api/v2/remove-users", postData=post_data)
+        return self._get_json_response("/api/v2/remove-users/", postData=post_data)
 
     def add_users_to_project(self, project_id, users, note=''):
         """Add Users to Project
@@ -1023,7 +1023,7 @@ class SyncSketchAPI:
             "users": json.dumps(users)
         }
 
-        return self._get_json_response("/api/v2/add-users", postData=post_data)
+        return self._get_json_response("/api/v2/add-users/", postData=post_data)
 
     def remove_users_from_project(self, project_id, users):
         """Remove a list of users from a project
@@ -1045,7 +1045,7 @@ class SyncSketchAPI:
             "users": json.dumps(users)
         }
 
-        return self._get_json_response("/api/v2/remove-users", postData=post_data)
+        return self._get_json_response("/api/v2/remove-users/", postData=post_data)
 
     """
     Shotgun API
@@ -1074,9 +1074,9 @@ class SyncSketchAPI:
         param shotgun_project_id will be ignored and can be omitted during the function call
 
         """
-        url = "/api/v2/shotgun/playlists/{}".format(syncsketch_account_id)
+        url = "/api/v2/shotgun/playlists/{}/".format(syncsketch_account_id)
         if syncsketch_project_id:
-            url = self.join_url_path(url, "/{}".format(syncsketch_project_id))
+            url = self.join_url_path(url, "/{}/".format(syncsketch_project_id))
 
         data = {"shotgun_project_id": shotgun_project_id}
         return self._get_json_response(url, method="get", getData=data)
@@ -1096,7 +1096,7 @@ class SyncSketchAPI:
             total_items=<INT> number of items being synced from shotgun
             remaining_items=<INT> number of items not yet pulled from shotgun
         """
-        url = "/api/v2/shotgun/sync-review-notes/review/{}".format(review_id)
+        url = "/api/v2/shotgun/sync-review-notes/review/{}/".format(review_id)
 
         return self._get_json_response(url, method="post")
 
@@ -1114,7 +1114,7 @@ class SyncSketchAPI:
             total_items=<INT> number of items being synced from shotgun
             remaining_items=<INT> number of items not yet pulled from shotgun
         """
-        url = "/api/v2/shotgun/sync-review-notes/{}".format(task_id)
+        url = "/api/v2/shotgun/sync-review-notes/{}/".format(task_id)
 
         return self._get_json_response(url, method="get")
 
@@ -1142,9 +1142,9 @@ class SyncSketchAPI:
         """
         url = "/api/v2/shotgun/sync-items/project/{}/".format(syncsketch_project_id)
         if review_id:
-            url = self.join_url_path(url, "review/{}/check".format(review_id))
+            url = self.join_url_path(url, "/review/{}/check/".format(review_id))
         else:
-            url = self.join_url_path(url, "check")
+            url = self.join_url_path(url, "/check/")
 
         data = {"playlist_code": playlist_code, "playlist_id": playlist_id}
 
