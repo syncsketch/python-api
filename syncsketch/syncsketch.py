@@ -643,9 +643,18 @@ class SyncSketchAPI:
             print("add_media_via_s3 failed. use_header_auth must be set to true.")
             return None
 
-        file = open(filepath, "rb")
-        content_length = len(file.read())
-        file.seek(0)  # reset cursor
+        content_length = os.stat(filepath).st_size
+
+        # for media > 5gb use v1 upload api
+        if content_length > 5 * 1000 * 1000:
+            result = self.add_media_v1(
+                review_id=review_id,
+                filepath=filepath,
+                file_name=file_name,
+                noConvertFlag=noConvertFlag,
+            )
+            return {"id": result["id"], "uuid": result["uuid"]}
+
 
         content_type = mimetypes.guess_type(filepath, strict=False)[0]
 
@@ -664,9 +673,9 @@ class SyncSketchAPI:
         url_response_data = url_response.json()
         url = url_response_data["url"]
         fields = url_response_data["fields"]
-        files = {"file": file}
 
-        upload_response = requests.post(url, data=fields, files=files)
+        with open(filepath, "rb") as file:
+            upload_response = requests.post(url, data=fields, files={"file": file})
 
         if not upload_response.ok:
             print("Upload process failed while uploading file to S3.\nS3 response:\n{}".format(upload_response.text))
