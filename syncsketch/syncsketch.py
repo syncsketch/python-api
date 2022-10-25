@@ -138,7 +138,6 @@ class SyncSketchAPI:
         if self.debug:
             print("URL: %s, params: %s" % (url, params))
 
-        print(url)
         if postData or method == "post":
             r = requests.post(url, params=params, data=json.dumps(postData), headers=headers)
         elif patchData or method == "patch":
