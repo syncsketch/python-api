@@ -138,6 +138,7 @@ class SyncSketchAPI:
         if self.debug:
             print("URL: %s, params: %s" % (url, params))
 
+        print(url)
         if postData or method == "post":
             r = requests.post(url, params=params, data=json.dumps(postData), headers=headers)
         elif patchData or method == "patch":
@@ -647,12 +648,13 @@ class SyncSketchAPI:
 
         # for media > 5gb use v1 upload api
         if content_length > 5 * 1000 * 1000:
-            return self.add_media_v1(
+            result = self.add_media_v1(
                 review_id=review_id,
                 filepath=filepath,
                 file_name=file_name,
                 noConvertFlag=noConvertFlag,
             )
+            return {"id": result["id"], "uuid": result["uuid"]}
 
 
         content_type = mimetypes.guess_type(filepath, strict=False)[0]
