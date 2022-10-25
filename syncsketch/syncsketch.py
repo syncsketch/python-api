@@ -670,14 +670,12 @@ class SyncSketchAPI:
             print("Failed to generate signed S3 url.\nAPI response:\n{}".format(url_response.text))
             return None
 
-        file = open(filepath, "rb")
-
         url_response_data = url_response.json()
         url = url_response_data["url"]
         fields = url_response_data["fields"]
-        files = {"file": file}
 
-        upload_response = requests.post(url, data=fields, files=files)
+        with open(filepath, "rb") as file:
+            upload_response = requests.post(url, data=fields, files={"file": file})
 
         if not upload_response.ok:
             print("Upload process failed while uploading file to S3.\nS3 response:\n{}".format(upload_response.text))
