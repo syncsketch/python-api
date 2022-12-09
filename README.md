@@ -26,9 +26,41 @@ Install using `pip`...
 
     pip install syncsketch
 
+### Data hierarchy
+
+Within SyncSketch there is a basic data hierarchy that makes it easy to manage your resources
+
+- Account (aka Workspace)
+- Project
+- Review
+- ReviewItem (many-to-many connection table)
+- Item
+- Frame (aka comment or sketch)
+
+Users can be connected to a workspace and/or project, and may have different permissions on each connection.
+It's important to know which connections and permissions your api user has to ensure you can build your integration.
+You can find these permissions in the website or ask an admin from your project/workspace.
+
+What does this mean?
+
+_These depend on the specific permission level_
+
+- Account/Workspace connection means you can
+  - Edit settings on the workspace
+  - Invite new workspace level users
+  - Manage projects in the account
+  - Workspace level users also get all the permissions listed below in projects
+- Project connection means you can
+  - Edit settings on the project
+  - Invite new project level users
+  - Manage reviews in the project
+  - Manage items in the reviews
+  - Manage comments or sketches on items
 
 ### Basic Examples
 
+This page includes simple examples to get you started working with our api, but does not show all the methods or parameters that you can use.
+We recommend you read the [source code](https://github.com/syncsketch/python-api/blob/master/syncsketch/syncsketch.py) to see all options. 
 
 #### Authentication
 Before we can start working, we need to get an `API_KEY` which you can obtain from the syncsketch [settings page](https://syncsketch.com/pro/#/userProfile/settings). Follow the given link, login and scroll down to the bottom headline `Developer Options` to see your 40 character API-Key.
@@ -43,19 +75,33 @@ Setting up a connection with your SyncSketch projects is as easy as following.
     
     s = SyncSketchAPI(username, api_key)
     
+    # Verify your credentials work
     s.is_connected()
+
+    # Display your current user data
+    s.get_current_user()
 
 If you got a `200` response, you successfully connected to the syncsketch server! You can proceed with the next examples. We will skip the setup code for the next examples and the snippets will rely on each other, so make sure you run them one by one.
 
 
 ##### 1) Choose your account
 
-Before we can create/read/update/delete reviews, we need to select an account
+Before we can create/read/update/delete projects and/or reviews, we need to select an Account (internal api name for Workspace)
 
+    # Get a list of workspaces your user has access to
     accounts = s.get_accounts()
     first_account = accounts["objects"][0]
 
-##### 2) Create a project
+IMPORTANT: You may not see anything in the array returned from `s.get_accounts()`.
+This means your user is connected directly to the project(s) and not an account.
+If so you can skip this and proceed to fetching `s.get_projects()`.
+
+##### 2) Interact with Projects
+
+Projects are nested under an Account/Workspace
+
+    # List projects your user has access to
+    s.get_projects()
 
 Let's create a project with the selected account
 
