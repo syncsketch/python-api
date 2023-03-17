@@ -954,11 +954,19 @@ class SyncSketchAPI:
     def get_users_by_project_id(self, project_id):
         return self._get_json_response("/api/v2/all-project-users/{}/".format(project_id))
 
-    def get_connections_by_user_id(self, user_id, account_id):
+    def get_connections_by_user_id(self, user_id, account_id, include_inactive=None, include_archived=None):
         """
         Get all project and account connections for a user. Good for checking access for a user that might have left...
         """
-        return self._get_json_response("/api/v2/user/{}/connections/account/{}/".format(user_id, account_id))
+        data = {}
+        if include_inactive is not None:
+            data["include_inactive"] = "true" if include_inactive else "false"
+        if include_archived is not None:
+            data["include_archived"] = "true" if include_archived else "false"
+        return self._get_json_response(
+            "/api/v2/user/{}/connections/account/{}/".format(user_id, account_id),
+            getData=data,
+        )
 
     def get_user_by_id(self, userId):
         return self._get_json_response("/api/v1/simpleperson/%s/" % userId)
