@@ -958,16 +958,15 @@ class SyncSketchAPI:
         """
         Get all project and account connections for a user. Good for checking access for a user that might have left...
         """
-        get_params = {}
+        data = {}
         if include_inactive is not None:
-            get_params["include_inactive"] = "true" if include_inactive else "false"
+            data["include_inactive"] = "true" if include_inactive else "false"
         if include_archived is not None:
-            get_params["include_archived"] = "true" if include_archived else "false"
-        return self._get_json_response("/api/v2/user/{}/connections/account/{}/{}".format(
-            user_id,
-            account_id,
-            "?{}".format(urlencode(get_params)) if get_params else "",
-        ))
+            data["include_archived"] = "true" if include_archived else "false"
+        return self._get_json_response(
+            "/api/v2/user/{}/connections/account/{}/".format(user_id, account_id),
+            getData=data,
+        )
 
     def get_user_by_id(self, userId):
         return self._get_json_response("/api/v1/simpleperson/%s/" % userId)
