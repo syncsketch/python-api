@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # @Author: Philip Floetotto
 # @Date:   2015-06-07 10:01:57
-# @Last Modified by:   Brady Endres
-# @Last Modified time: 2022-01-10
+# @Last Modified by:   Eric Palakovich Carr
+# @Last Modified time: 2023-03-21
 
 """
 SyncSketch Python API
