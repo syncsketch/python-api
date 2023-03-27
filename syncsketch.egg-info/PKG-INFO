@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: syncsketch
-Version: 1.0.9.0
+Version: 1.0.10.0
 Summary: SyncSketch Python API
 Home-page: https://github.com/syncsketch/python-api
 Author: Philip Floetotto
@@ -12,7 +12,7 @@ Description: # Syncsketch Python API
         
         # Overview
         
-        SyncSketch is a syncronized visual review tool for the Film/TV/Games industry.
+        SyncSketch is a synchronized visual review tool for the Film/TV/Games industry.
         
         API access requires an enterprise level account.  For help or more info reach out to us.
         

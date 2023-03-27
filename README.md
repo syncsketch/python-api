@@ -4,7 +4,7 @@ This package provides methods to communicate with the syncsketch servers and wra
 
 # Overview
 
-SyncSketch is a syncronized visual review tool for the Film/TV/Games industry.
+SyncSketch is a synchronized visual review tool for the Film/TV/Games industry.
 
 API access requires an enterprise level account.  For help or more info reach out to us.
 

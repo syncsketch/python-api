@@ -2,8 +2,8 @@
 """Summary"""
 # @Author: floepi
 # @Date:   2015-06-04 17:42:44
-# @Last Modified by:   Eric Palakovich Carr
-# @Last Modified time: 2023-03-21
+# @Last Modified by: Brady Endres
+# @Last Modified time: 2023-03-27
 #!/usr/local/bin/python
 
 from __future__ import absolute_import, division, print_function
@@ -102,13 +102,10 @@ class SyncSketchAPI:
         """
         # remove preceeding "/" from entries to avoid absolute path behavior with os.path.join
         # and append an empty string so that os.path.join will add a terminating "/" if needed
-        path_segments = [
-            path_segment[1:] if path_segment.startswith("/") else path_segment
-            for path_segment in path_segments
+        path_segments = [base.rstrip("/")] + [
+            path_segment.strip("/") for path_segment in path_segments
         ] + [""]
-        return os.path.join(
-            base, *path_segments
-        )
+        return "/".join(path_segments)
 
     def _get_unversioned_api_url(self, path):
         return self.join_url_path(self.HOST, path)

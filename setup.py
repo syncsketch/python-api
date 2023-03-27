@@ -1,7 +1,7 @@
 # @Author: yafes
 # @Date:   2018-11-20 17:36:16
-# @Last Modified by:   Eric Palakovich Carr
-# @Last Modified time: 2023-03-21
+# @Last Modified by:   Brady Endres
+# @Last Modified time: 2023-03-27
 
 from setuptools import setup, find_packages
 
@@ -10,7 +10,7 @@ with open("README.md", "r") as f:
 
 setup(
     name="syncsketch",
-    version="1.0.9.0",
+    version="1.0.10.0",
     description="SyncSketch Python API",
     author="Philip Floetotto",
     author_email="phil@syncsketch.com",

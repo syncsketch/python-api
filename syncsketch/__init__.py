@@ -8,6 +8,6 @@ from __future__ import absolute_import
 
 from .syncsketch import SyncSketchAPI
 
-__version__ = "1.0.9.0"
+__version__ = "1.0.10.0"
 __author__ = "SyncSketch Dev Team"
 __credits__ = "Philip Floetotto, Yafes Sahin, Brady Endres, Eric Palakovich Carr"
