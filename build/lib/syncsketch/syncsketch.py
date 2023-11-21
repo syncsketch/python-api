@@ -102,9 +102,7 @@ class SyncSketchAPI:
         """
         # remove preceeding "/" from entries to avoid absolute path behavior with os.path.join
         # and append an empty string so that os.path.join will add a terminating "/" if needed
-        path_segments = [base.rstrip("/")] + [
-            path_segment.strip("/") for path_segment in path_segments
-        ] + [""]
+        path_segments = [base.rstrip("/")] + [path_segment.strip("/") for path_segment in path_segments] + [""]
         return "/".join(path_segments)
 
     def _get_unversioned_api_url(self, path):
@@ -409,7 +407,11 @@ class SyncSketchAPI:
         :return: Dict with meta information and an array of found projects
         """
         get_params = {
-            "project__id": project_id, "project__active": 1, "project__is_archived": 0, "limit": limit, "offset": offset
+            "project__id": project_id,
+            "project__active": 1,
+            "project__is_archived": 0,
+            "limit": limit,
+            "offset": offset,
         }
         return self._get_json_response("/api/v1/review/", getData=get_params)
 
@@ -429,6 +431,17 @@ class SyncSketchAPI:
         :return: Review Dict
         """
         return self._get_json_response("/api/v1/review/%s/" % review_id)
+
+    def get_review_by_uuid(self, uuid):
+        """
+        Get single review by uuid.
+        :param uuid:
+        :return: Review dict
+        """
+        data = self._get_json_response("/api/v1/review/", getData={"uuid": uuid})
+        if "objects" in data and len(data["objects"]) > 0:
+            return data["objects"][0]
+        return None
 
     def get_review_storage(self, review_id):
         """
@@ -624,7 +637,7 @@ class SyncSketchAPI:
             print(r.text)
 
     def add_media_v2(self, review_id, filepath, file_name="", item_uuid=None, noConvertFlag=False):
-        """ Similar to add_media method, but uploads the media file directly to SyncSketche's internal S3 instead of to
+        """Similar to add_media method, but uploads the media file directly to SyncSketche's internal S3 instead of to
         the SyncSketch server. In some cases, using this method over add_media can improve upload performance and
         stability. Unlike add_media this method does not return as much data about the created item.
 
@@ -651,7 +664,6 @@ class SyncSketchAPI:
                 noConvertFlag=noConvertFlag,
             )
             return {"id": result["id"], "uuid": result["uuid"]}
-
 
         content_type = mimetypes.guess_type(filepath, strict=False)[0]
 
@@ -680,7 +692,9 @@ class SyncSketchAPI:
 
         return {"id": fields["x-amz-meta-item-id"], "uuid": fields["x-amz-meta-item-uuid"]}
 
-    def _get_s3_signed_url(self, review_id, item_name, item_uuid=None, content_type=None, content_length=None, no_convert=False):
+    def _get_s3_signed_url(
+        self, review_id, item_name, item_uuid=None, content_type=None, content_length=None, no_convert=False
+    ):
         """
         Internal method. Use to retrieve s3 signed url for file upload in `add_media_via_s3`.
         """
@@ -704,7 +718,6 @@ class SyncSketchAPI:
             postData=request_data,
             raw_response=True,
         )
-
 
     def get_media(self, searchCriteria):
         """
@@ -818,7 +831,7 @@ class SyncSketchAPI:
             frame=frame,
             revision="/api/v1/revision/{}/".format(revision_id),
             type="comment",
-            text=text
+            text=text,
         )
 
         return self._get_json_response("/api/v1/frame/", method="post", postData=post_data)
@@ -857,12 +870,12 @@ class SyncSketchAPI:
             "include_data": 1,
             "tracingpaper": 1 if with_tracing_paper else 0,
             "base64": 1 if return_as_base64 else 0,
-            "async": 0
+            "async": 0,
         }
 
         url = "/api/v2/downloads/flattenedSketches/{}/{}/".format(review_id, item_id)
 
-        return self._get_json_response(url, method="post", getData = getData)
+        return self._get_json_response(url, method="post", getData=getData)
 
     def get_grease_pencil_overlays(self, review_id, item_id, homedir=None):
         """Download overlay sketches for Maya Greasepencil.
@@ -924,7 +937,7 @@ class SyncSketchAPI:
 
     def add_users(self, project_id, users):
         """
-            Deprecated method.
+        Deprecated method.
         """
         print("Deprecated - please use method add_users_to_project instead")
 
@@ -940,7 +953,9 @@ class SyncSketchAPI:
         """
         Get user by email
         """
-        response = self._get_json_response("/api/v1/simpleperson/", getData={"email__iexact": email}, raw_response=True)
+        response = self._get_json_response(
+            "/api/v1/simpleperson/", getData={"email__iexact": email}, raw_response=True
+        )
 
         try:
             data = response.json()
@@ -971,7 +986,7 @@ class SyncSketchAPI:
     def get_current_user(self):
         return self._get_json_response("/api/v1/simpleperson/currentUser/")
 
-    def add_users_to_workspace(self, workspace_id, users, note = ''):
+    def add_users_to_workspace(self, workspace_id, users, note=''):
         """Add Users to Workspace
 
         Args:
@@ -983,17 +998,10 @@ class SyncSketchAPI:
             TYPE: Description
         """
         if not isinstance(users, list):
-            print(
-                "Please add users by list with user items e.g users=[{'email':'test@test.de','permission':'admin'}]"
-            )
+            print("Please add users by list with user items e.g users=[{'email':'test@test.de','permission':'admin'}]")
             return False
 
-        post_data = {
-            "which": "account",
-            "entity_id": workspace_id,
-            "note": note,
-            "users": json.dumps(users)
-        }
+        post_data = {"which": "account", "entity_id": workspace_id, "note": note, "users": json.dumps(users)}
 
         return self._get_json_response("/api/v2/add-users/", postData=post_data)
 
@@ -1006,16 +1014,10 @@ class SyncSketchAPI:
 
         """
         if not isinstance(users, list):
-            print(
-                "Please add users by list with user items e.g users=[{'email':'test@test.de'}]"
-            )
+            print("Please add users by list with user items e.g users=[{'email':'test@test.de'}]")
             return False
 
-        post_data = {
-            "which": "account",
-            "entity_id": workspace_id,
-            "users": json.dumps(users)
-        }
+        post_data = {"which": "account", "entity_id": workspace_id, "users": json.dumps(users)}
 
         return self._get_json_response("/api/v2/remove-users/", postData=post_data)
 
@@ -1036,12 +1038,7 @@ class SyncSketchAPI:
             )
             return False
 
-        post_data = {
-            "which": "project",
-            "entity_id": project_id,
-            "note": note,
-            "users": json.dumps(users)
-        }
+        post_data = {"which": "project", "entity_id": project_id, "note": note, "users": json.dumps(users)}
 
         return self._get_json_response("/api/v2/add-users/", postData=post_data)
 
@@ -1054,16 +1051,10 @@ class SyncSketchAPI:
 
         """
         if not isinstance(users, list):
-            print(
-                "Please add users by list with user items e.g users=[{'email':'test@test.de']"
-            )
+            print("Please add users by list with user items e.g users=[{'email':'test@test.de']")
             return False
 
-        post_data = {
-            "which": "project",
-            "entity_id": project_id,
-            "users": json.dumps(users)
-        }
+        post_data = {"which": "project", "entity_id": project_id, "users": json.dumps(users)}
 
         return self._get_json_response("/api/v2/remove-users/", postData=post_data)
 
@@ -1177,7 +1168,9 @@ class SyncSketchAPI:
         if "items" in response:
             for item in response["items"]:
                 data = {"playlist_item_json": json.dumps(item)}
-                item_sync_url = "/api/v2/shotgun/sync-items/project/{}/review/{}/".format(syncsketch_project_id, response["review_id"])
+                item_sync_url = "/api/v2/shotgun/sync-items/project/{}/review/{}/".format(
+                    syncsketch_project_id, response["review_id"]
+                )
                 item_data = self._get_json_response(item_sync_url, method="post", postData=data)
                 result["items"].append(item_data["id"])
 
