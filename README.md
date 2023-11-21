@@ -14,6 +14,7 @@ API access requires an enterprise level account.  For help or more info reach ou
 This library was tested with and confirmed on python versions:
 - 2.7.14+
 - 3.6
+- 3.7
 - 3.8
 
 PyPi package
@@ -136,62 +137,65 @@ If all steps were successful, you should see the following in the web-app.
 
 ### Additional Examples
 
+##### Get a review from a review url link
+
+If you have a review link and want to get the review data, first you need to get the uuid from the link
+
+```python
+review_link = "https://syncsketch.com/sketch/abcdefg1234/"
+
+review_uuid = review_link.split('/')[4]
+
+# Then you can get the review data
+review_data = s.get_review_by_uuid(review_uuid)
+```
+
 ##### Adding a user to the project
-    addedUsers = s.add_users_to_project(
-        project_id,
-        [
-            {'email': 'test@syncsketch.com', 'permission':'viewer'}
-        ],
-        "This is a note to include with the welcome email"
-    )
-    print(addedUsers)
+```python
+  addedUsers = s.add_users_to_project(
+      project_id,
+      [
+          {'email': 'test@syncsketch.com', 'permission':'viewer'}
+      ],
+      "This is a note to include with the welcome email"
+  )
+  print(addedUsers)
+```
 
 
 ##### Update sort order of items in a review
-
-    response = s.sort_review_items(
-        review_id,
-        [
-            { "id": 111, "sortorder": 0 },
-            { "id": 222, "sortorder": 1 },
-            { "id": 333, "sortorder": 2 },
-        ]
-    )
-    print(response)
-    Out[1] {u'updated_items': 3}
+```python
+response = s.sort_review_items(
+    review_id,
+    [
+        { "id": 111, "sortorder": 0 },
+        { "id": 222, "sortorder": 1 },
+        { "id": 333, "sortorder": 2 },
+    ]
+)
+print(response)
+# {u'updated_items': 3}
+```
 
 
 ##### Move items from one review to another
-
-    response = s.move_items(
-        new_review_id,
-        [
-            {
-                "review_id": old_review_id,
-                "item_id": item_id,
-            }
-        ]
-    )
-
-
-##### Traverse all Reviews
-    projects = s.get_projects()
-    
-    for project in projects['objects']:
-        print(project)
+```python
+response = s.move_items(
+    new_review_id,
+    [
+        {
+            "review_id": old_review_id,
+            "item_id": item_id,
+        }
+    ]
+)
+```
 
 
-##### Traverse all Accounts 
-The fastest way to traverse all Accounts, Projects Reviews, and Items is to get the entire tree
+##### Traverse all projects
+```python
+projects = s.get_projects()
 
-    tree_data = s.get_tree(withItems = True)
-    
-    for account in tree_data:
-        for project in account['projects']:
-            if project['active'] == 1:
-                print project['name']
-                for review in project['reviews']:
-                    for item in review['items']:
-                        mediaid = item['id']
-                        medianame = item['name']
-                        print '\t %s:\t%s'%(mediaid, medianame)
+for project in projects['objects']:
+    print(project)
+```
