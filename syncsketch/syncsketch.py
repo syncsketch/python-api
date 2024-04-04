@@ -48,7 +48,7 @@ class SyncSketchAPI:
         Args:
             user_auth (str): Your email or username
             api_key (str): Your SyncSketch API Key, found in the settings tab
-            host (str, optional): Used for testing or local installs
+            host (str): Used for testing or local installs
             useExpiringToken (bool, optional): When using the expiring tokens for authentication.
             Expiring tokens are generated behind a authenticated URL like https://syncsketch.com/users/getToken/
             which returns JSON when the authentication is successful
@@ -130,19 +130,24 @@ class SyncSketchAPI:
         if getData:
             params.update(getData)
 
-        if self.debug:
-            print("URL: %s, params: %s" % (url, params))
-
+        method = method or "get"
         if postData or method == "post":
+            method = "post"
             r = requests.post(url, params=params, data=json.dumps(postData), headers=headers)
         elif patchData or method == "patch":
+            method = "patch"
             r = requests.patch(url, params=params, json=patchData, headers=headers)
         elif putData or method == "put":
+            method = "put"
             r = requests.put(url, params=params, json=putData, headers=headers)
         elif method == "delete":
+            method = "delete"
             r = requests.patch(url, params=params, data={"active": False}, headers=headers)
         else:
             r = requests.get(url, params=params, headers=headers)
+
+        if self.debug:
+            print("%s URL: %s, params: %s" % (method, url, params))
 
         if raw_response:
             # Return the whole response object, not {"objects": []}
@@ -221,10 +226,10 @@ class SyncSketchAPI:
         """
         Add a project to your account. Please make sure to pass the accountId which you can query using the getAccounts command.
 
-        :param account_id: Number - id of the account to connect with
-        :param name: String
+        :param int account_id: id of the account to connect with
+        :param str name: Name of the project
         :param description: String
-        :param data: Dict with additional information e.g is_public. Find out more about available fields at /api/v1/project/schema/.
+        :param dict data: additional information e.g is_public. Find out more about available fields at /api/v1/project/schema/.
         :return:
         """
         if data is None:
@@ -1071,15 +1076,42 @@ class SyncSketchAPI:
         print("DEPRECATED!  Please use Shotgun's API")
         print("https://github.com/shotgunsoftware/python-api")
 
-        return
+        raise DeprecationWarning("DEPRECATED!  Please use Shotgun's API.")
+
+    def shotgun_create_config(self, syncsketch_account_id, syncsketch_project_id=None, data=None):
+        """
+        Create a new Shotgun configuration for a SyncSketch workspace and optionally a project
+        :param int syncsketch_account_id:
+        :param int syncsketch_project_id:
+        :param dict data: Configuration data.
+        :return:
+        """
+        assert isinstance(data, dict), "Please make sure you pass a dict as data"
+        assert "url" in data, "Please make sure you pass a Shotgrid url in the data"
+        assert "username" in data, "Please make sure you pass a username in the data"
+        assert "key" in data, "Please make sure you pass a script user key in the data"
+
+        post_data = {
+            "account": syncsketch_account_id,
+            "project": syncsketch_project_id,
+        }
+        post_data.update(data)
+
+        test_data = {"test_settings": post_data}
+
+        test_response = self._get_json_response("/api/v2/shotgun/config/test/", postData=test_data, raw_response=True)
+        if test_response.status_code == 200:
+            return self._get_json_response("/api/v2/shotgun/config/", postData=post_data, raw_response=True)
+        else:
+            raise Exception("Shotgun configuration test failed. Please check your Shotgrid config settings.")
 
     def shotgun_get_playlists(self, syncsketch_account_id, syncsketch_project_id, shotgun_project_id=None):
         """
         Returns list of Shotgun playlists modified in the last 120 days
 
-        :param syncsketch_account_id: <int>
-        :param syncsketch_project_id: <int>
-        :param shotgun_project_id: <int> (optional)
+        :param int syncsketch_account_id: SyncSketch account id
+        :param int syncsketch_project_id: SyncSketch project id
+        :param int shotgun_project_id: (optional) Shotgun project id
 
         If the syncsketch project is directly linked to a shotgun by the workspace admin, the
         param shotgun_project_id will be ignored and can be omitted during the function call
