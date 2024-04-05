@@ -1,6 +1,11 @@
-# Syncsketch Python API
+# SyncSketch Python API
 
 This package provides methods to communicate with the syncsketch servers and wraps CRUD (create, read, update, delete) methods to interact with Reviews.
+
+[![PyPI](https://img.shields.io/pypi/v/syncsketch?color=blue)](https://pypi.org/project/syncsketch/)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/syncsketch)
+![PyPI - License](https://img.shields.io/pypi/l/syncsketch)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 # Overview
 
@@ -16,16 +21,19 @@ This library was tested with and confirmed on python versions:
 - 3.6
 - 3.7
 - 3.8
-
-PyPi package
-
-https://pypi.org/project/syncsketch/
+- 3.9
+- 3.10
+- 3.11
 
 #### Installation
 
+[PyPi package](https://pypi.org/project/syncsketch/)
+
 Install using `pip`...
 
-    pip install syncsketch
+```bash
+pip install syncsketch
+```
 
 ### Data hierarchy
 
@@ -69,18 +77,20 @@ Before we can start working, we need to get an `API_KEY` which you can obtain fr
 
 Setting up a connection with your SyncSketch projects is as easy as following. 
 
-    from syncsketch import SyncSketchAPI
-    
-    username = "username"
-    api_key = "api-key-123"
-    
-    s = SyncSketchAPI(username, api_key)
-    
-    # Verify your credentials work
-    s.is_connected()
+```python
+from syncsketch import SyncSketchAPI
 
-    # Display your current user data
-    s.get_current_user()
+username = "username"
+api_key = "api-key-123"
+
+s = SyncSketchAPI(username, api_key)
+
+# Verify your credentials work
+s.is_connected()
+
+# Display your current user data
+s.get_current_user()
+```
 
 If you got a `200` response, you successfully connected to the syncsketch server! You can proceed with the next examples. We will skip the setup code for the next examples and the snippets will rely on each other, so make sure you run them one by one.
 
@@ -89,9 +99,11 @@ If you got a `200` response, you successfully connected to the syncsketch server
 
 Before we can create/read/update/delete projects and/or reviews, we need to select an Account (internal api name for Workspace)
 
-    # Get a list of workspaces your user has access to
-    accounts = s.get_accounts()
-    first_account = accounts["objects"][0]
+```python
+# Get a list of workspaces your user has access to
+accounts = s.get_accounts()
+first_account = accounts["objects"][0]
+```
 
 IMPORTANT: You may not see anything in the array returned from `s.get_accounts()`.
 This means your user is connected directly to the project(s) and not an account.
@@ -101,35 +113,40 @@ If so you can skip this and proceed to fetching `s.get_projects()`.
 
 Projects are nested under an Account/Workspace
 
-    # List projects your user has access to
-    s.get_projects()
+```python
+# List projects your user has access to
+s.get_projects()
+```
 
 Let's create a project with the selected account
 
-    project = s.create_project(first_account["id"], 'DEV Example Project', 'DEV API Testing')
+```python
+project = s.create_project(first_account["id"], 'DEV Example Project', 'DEV API Testing')
+```
 
 This creates a new Project called `Dev Example Project` with the description `DEV API Testing`
-
 
 ##### 3) Create a review
 
 We can now add a Review to our newly created Project using it's `id`
 
-    review = s.create_review(project['id'], 'DEV Review (api)','DEV Syncsketch API Testing')
-
+```python
+review = s.create_review(project['id'], 'DEV Review (api)','DEV Syncsketch API Testing')
+```
 
 ##### 4) Get list of reviews
 
-
-    print(s.get_reviews_by_project_id(project['id'])
-
+```python
+print(s.get_reviews_by_project_id(project['id'])
+```
 
 ##### 5) Upload a review item
 
 You can upload a file to the created review with the review id, we provided one example file in this repo under `examples/test.webm` for testing.
 
-    item_data = s.add_media(review['id'],'examples/test.webm')
-
+```python
+item_data = s.add_media(review['id'],'examples/test.webm')
+```
 
 If all steps were successful, you should see the following in the web-app. 
 
