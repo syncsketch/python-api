@@ -133,7 +133,7 @@ class SyncSketchAPI:
         method = method or "get"
         if postData or method == "post":
             method = "post"
-            r = requests.post(url, params=params, data=json.dumps(postData), headers=headers)
+            r = requests.post(url, params=params, data=json.dumps(postData) if postData else None, headers=headers)
         elif patchData or method == "patch":
             method = "patch"
             r = requests.patch(url, params=params, json=patchData, headers=headers)
