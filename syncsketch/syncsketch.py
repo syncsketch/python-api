@@ -1222,6 +1222,25 @@ class SyncSketchAPI:
 
         return self._get_json_response(url, method="post")
 
+    def shotgun_sync_new_item_notes(self, project_id, review_id, item_id):
+        """
+        Sync new notes from SyncSketch review item to the original shotgun playlist
+        Returns task id to use in get_shotgun_sync_review_notes_progress to get progress
+
+        :param item_id: <int>
+        :param project_id: <int>
+        :param review_id: <int>
+        :returns <dict>
+            sketch_upload_error=<BOOL> "True in case of error"
+            sketch=<INT> "Number of sketches synced"
+            comments=<INT> "Number of comments synced"
+            attachments=<INT> "Number of attachments synced"
+            item_name=<STR> "Name of item that was synced"
+        """
+        url = "/api/v2/shotgun/sync-notes/project/{}/review/{}/{}/".format(project_id, review_id, item_id)
+
+        return self._get_json_response(url, method="post")
+
     def get_shotgun_sync_review_notes_progress(self, task_id):
         """
         Returns status of review notes sync for the task id provided in shotgun_sync_review_notes
