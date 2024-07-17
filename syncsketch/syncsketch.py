@@ -1225,7 +1225,7 @@ class SyncSketchAPI:
     def shotgun_sync_new_item_notes(self, project_id, review_id, item_id):
         """
         Sync new notes from SyncSketch review item to the original shotgun playlist
-        Returns task id to use in get_shotgun_sync_review_notes_progress to get progress
+        Returns dict with information about the REST API call
 
         :param item_id: <int>
         :param project_id: <int>
