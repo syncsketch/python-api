@@ -169,14 +169,14 @@ review_data = s.get_review_by_uuid(review_uuid)
 
 ##### Adding a user to the project
 ```python
-  addedUsers = s.add_users_to_project(
+  added_users = s.add_users_to_project(
       project_id,
       [
           {'email': 'test@syncsketch.com', 'permission':'viewer'}
       ],
       "This is a note to include with the welcome email"
   )
-  print(addedUsers)
+  print(added_users)
 ```
 
 
