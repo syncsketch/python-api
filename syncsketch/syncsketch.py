@@ -197,7 +197,8 @@ class SyncSketchAPI:
     """
 
     def get_accounts(self):
-        """Summary
+        """
+        Get a list of workspaces the user has access to
 
         :return: List of workspaces the user has access to
         :rtype: list[dict]
@@ -258,7 +259,7 @@ class SyncSketchAPI:
         offset=0,
     ):
         """
-        Get a list of currently active projects
+        Get a list of currently active projects the user has access to
 
         :param bool include_deleted: if true, include deleted projects
         :param bool include_archived: if true, include archived projects
@@ -294,7 +295,7 @@ class SyncSketchAPI:
 
     def get_projects_by_name(self, name):
         """
-        Get a project by name regardless of status
+        Get a list of projects by name
 
         :param str name: Name to search for
         :return: List of projects
@@ -317,8 +318,14 @@ class SyncSketchAPI:
         """
         Get project storage usage in bytes
 
-        :param int project_id: Project id
+        .. code:: python
+
+            # Example response
+            {'storage': 12345}
+
+        :param int project_id: Project ID
         :return: Storage usage in bytes
+        :rtype: dict[str, int]
         """
         return self._get_json_response("/api/v2/project/%s/storage/" % project_id)
 
@@ -381,7 +388,8 @@ class SyncSketchAPI:
         Archive a project
 
         :param int project_id:
-        :return:
+        :return: Project data
+        :rtype: dict
         """
 
         return self._get_json_response("/api/v1/project/%s/" % project_id, patchData=dict(is_archived=True))
@@ -391,7 +399,8 @@ class SyncSketchAPI:
         Restore (unarchive) a project
 
         :param int project_id:
-        :return:
+        :return: Project data
+        :rtype: dict
         """
 
         return self._get_json_response("/api/v1/project/%s/" % project_id, patchData=dict(is_archived=False))
@@ -401,6 +410,16 @@ class SyncSketchAPI:
     """
 
     def create_review(self, project_id, name, description="", data=None):
+        """
+        Add a review to a project
+
+        :param int project_id:
+        :param str name:
+        :param str description:
+        :param dict data:
+        :return: Review data
+        :rtype: dict
+        """
         if data is None:
             data = {}
 
@@ -418,9 +437,19 @@ class SyncSketchAPI:
         """
         Get list of reviews by project id.
 
+        .. code:: python
+
+            # Example response
+            {
+                "meta": {...},
+                "objects": [...]
+            }
+
         :param int project_id: SyncSketch project id
+        :param int limit: Limit the number of results
+        :param int offset: Offset the results
         :return: Dict with meta information and an array of found projects
-        :rtype: list[dict]
+        :rtype: dict
         """
         get_params = {
             "project__id": project_id,
@@ -431,14 +460,21 @@ class SyncSketchAPI:
         }
         return self._get_json_response("/api/v1/review/", getData=get_params)
 
-    def get_review_by_name(self, name):
+    def get_review_by_name(self, name, limit=100, offset=0):
         """
-        Get reviews by name using a case insensitive startswith query
+        Get list of reviews by name using a case insensitive startswith query
 
-        :param name: String - Name of the review
+        :param str name: Name of the review
+        :param int limit: Limit the number of results
+        :param int offset: Offset the results
         :return: Dict with meta information and an array of found projects
         """
-        get_params = {"name__istartswith": name}
+        get_params = {
+            "name__istartswith": name,
+            "active": True,
+            "limit": limit,
+            "offset": offset,
+        }
         return self._get_json_response("/api/v1/review/", getData=get_params)
 
     def get_review_by_id(self, review_id):
@@ -446,7 +482,8 @@ class SyncSketchAPI:
         Get single review by id.
 
         :param review_id: Number
-        :return: Review Dict
+        :return: Review Data
+        :rtype: dict
         """
         return self._get_json_response("/api/v1/review/%s/" % review_id)
 
@@ -470,7 +507,7 @@ class SyncSketchAPI:
 
         :param int review_id: Review ID
         :return: Storage usage in bytes
-        :rtype: int
+        :rtype: dict[str, int]
         """
         return self._get_json_response("/api/v2/review/%s/storage/" % review_id)
 
@@ -525,7 +562,7 @@ class SyncSketchAPI:
         Archive a review
 
         :param int review_id:
-        :return: empty response
+        :return: Response object
         """
 
         return self._get_json_response("/api/v2/review/%s/archive/" % review_id, method="post", raw_response=True)
@@ -535,7 +572,7 @@ class SyncSketchAPI:
         Restore (unarchive) a review
 
         :param int review_id:
-        :return: empty response
+        :return: Response object
         """
 
         return self._get_json_response("/api/v2/review/%s/restore/" % review_id, method="post", raw_response=True)
@@ -545,7 +582,8 @@ class SyncSketchAPI:
         Delete a review by id.
 
         :param int review_id: Review ID to delete
-        :return:
+        :return: Review data
+        :rtype: dict
         """
         return self._get_json_response("/api/v1/review/%s/" % review_id, patchData=dict(active=False))
 
@@ -554,6 +592,14 @@ class SyncSketchAPI:
     """
 
     def get_item(self, item_id, data=None):
+        """
+        Get single item by id
+
+        :param int item_id:
+        :param dict data:
+        :return: Item data
+        :rtype: dict
+        """
         return self._get_json_response("/api/v1/item/{}/".format(item_id), getData=data)
 
     def update_item(self, item_id, data):
