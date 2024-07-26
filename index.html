@@ -1,0 +1,1518 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>SyncSketch Python API Library documentation &#8212; SyncSketch Python API Library 1.0.10.5 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=12dfc556" />
+    <script src="_static/documentation_options.js?v=8030fa53"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="syncsketch-python-api-library-documentation">
+<h1>SyncSketch Python API Library documentation<a class="headerlink" href="#syncsketch-python-api-library-documentation" title="Link to this heading">¶</a></h1>
+<p>autodoc_member_order = ‘bysource’</p>
+<div class="toctree-wrapper compound">
+</div>
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">syncsketch.</span></span><span class="sig-name descname"><span class="pre">SyncSketchAPI</span></span></dt>
+<dd><p>SyncSketchAPI is a class that provides a set of methods to interact with SyncSketch API.</p>
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">__init__(</span></span></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">auth,</span></span></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">api_key,</span></span></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">host=&quot;https://www.syncsketch.com&quot;,</span></span></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">useExpiringToken=False,</span></span></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">debug=False,</span></span></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">api_version=&quot;v1&quot;,</span></span></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">use_header_auth=False</span></span></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">)</span></span></dt>
+<dd><p>Constructor for SyncSketchAPI class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>auth</strong> (<em>str</em>) – The username of the user.</p></li>
+<li><p><strong>api_key</strong> (<em>str</em>) – The api key of the user.</p></li>
+<li><p><strong>host</strong> (<em>str</em>) – The host of the SyncSketch API.</p></li>
+<li><p><strong>useExpiringToken</strong> (<em>bool</em>) – If True, the token will expire after 1 hour.</p></li>
+<li><p><strong>debug</strong> (<em>bool</em>) – If True, the debug mode will be enabled.</p></li>
+<li><p><strong>api_version</strong> (<em>str</em>) – The version of the SyncSketch API.</p></li>
+<li><p><strong>use_header_auth</strong> (<em>bool</em>) – If True, the authentication will be done using headers.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>SyncSketchAPI object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>obj</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">syncsketch.</span></span><span class="sig-name descname"><span class="pre">SyncSketchAPI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">auth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'https://www.syncsketch.com'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">useExpiringToken</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'v1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_header_auth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Convenience API to communicate with the SyncSketch Service for collaborative online reviews</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.is_connected">
+<span class="sig-name descname"><span class="pre">is_connected</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.is_connected" title="Link to this definition">¶</a></dt>
+<dd><p>Convenience function to check if the API is connected to SyncSketch
+Will check against Status Code 200 and return False if not which most likely would be
+and authorization error</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Connection success</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.get_tree">
+<span class="sig-name descname"><span class="pre">get_tree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">withItems</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.get_tree" title="Link to this definition">¶</a></dt>
+<dd><p>Get nested tree of account, projects, reviews and optionally items for the current user</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>withItems</strong> (<em>bool</em>) – Include items in the response</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Tree data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.get_accounts">
+<span class="sig-name descname"><span class="pre">get_accounts</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.get_accounts" title="Link to this definition">¶</a></dt>
+<dd><p>Get a list of workspaces the user has access to</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List of workspaces the user has access to</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[dict]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.update_account">
+<span class="sig-name descname"><span class="pre">update_account</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">account_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.update_account" title="Link to this definition">¶</a></dt>
+<dd><p>Update a workspace / account</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>account_id</strong> (<em>int</em>) – the id of the item</p></li>
+<li><p><strong>data</strong> (<em>dict</em>) – normal dict with data for item</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Workspace / Account data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.create_project">
+<span class="sig-name descname"><span class="pre">create_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">account_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.create_project" title="Link to this definition">¶</a></dt>
+<dd><p>Add a project to your account. Please make sure to pass the accountId which you can query using the getAccounts command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>account_id</strong> (<em>int</em>) – id of the account to connect with</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – Name of the project</p></li>
+<li><p><strong>description</strong> (<em>str</em>) – Description of the project</p></li>
+<li><p><strong>data</strong> (<em>dict</em>) – additional information e.g is_public. Find out more about available fields at /api/v1/project/schema/.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Project data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.get_projects">
+<span class="sig-name descname"><span class="pre">get_projects</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_deleted</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_archived</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_tags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_connections</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.get_projects" title="Link to this definition">¶</a></dt>
+<dd><p>Get a list of currently active projects the user has access to</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>include_deleted</strong> (<em>bool</em>) – if true, include deleted projects</p></li>
+<li><p><strong>include_archived</strong> (<em>bool</em>) – if true, include archived projects</p></li>
+<li><p><strong>include_tags</strong> (<em>bool</em>) – if true, include tag list on the project object</p></li>
+<li><p><strong>include_connections</strong> (<em>bool</em>) – if true, include full user connections on the project object</p></li>
+<li><p><strong>limit</strong> (<em>int</em>) – limit the number of results</p></li>
+<li><p><strong>offset</strong> (<em>int</em>) – offset the results</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dict with meta information and an array of found projects</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[dict]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.get_projects_by_name">
+<span class="sig-name descname"><span class="pre">get_projects_by_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.get_projects_by_name" title="Link to this definition">¶</a></dt>
+<dd><p>Get a list of projects by name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – Name to search for</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of projects</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[dict]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.get_project_by_id">
+<span class="sig-name descname"><span class="pre">get_project_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.get_project_by_id" title="Link to this definition">¶</a></dt>
+<dd><p>Get single project by id</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>project_id</strong> (<em>int</em>) – Project id</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Project data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.get_project_storage">
+<span class="sig-name descname"><span class="pre">get_project_storage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.get_project_storage" title="Link to this definition">¶</a></dt>
+<dd><p>Get project storage usage in bytes</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example response</span>
+<span class="p">{</span><span class="s1">&#39;storage&#39;</span><span class="p">:</span> <span class="mi">12345</span><span class="p">}</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>project_id</strong> (<em>int</em>) – Project ID</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Storage usage in bytes</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.update_project">
+<span class="sig-name descname"><span class="pre">update_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.update_project" title="Link to this definition">¶</a></dt>
+<dd><p>Update a project</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>project_id</strong> (<em>int</em>) – the id of the item</p></li>
+<li><p><strong>data</strong> (<em>dict</em>) – dict with new data for item</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>updated project data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.delete_project">
+<span class="sig-name descname"><span class="pre">delete_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.delete_project" title="Link to this definition">¶</a></dt>
+<dd><p>Delete a project by id.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>project_id</strong> (<em>int</em>) – Project ID to delete</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.duplicate_project">
+<span class="sig-name descname"><span class="pre">duplicate_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy_reviews</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy_users</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy_settings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.duplicate_project" title="Link to this definition">¶</a></dt>
+<dd><p>Create a new project from an existing project</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>project_id</strong> (<em>int</em>) – Source project id</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – New project name</p></li>
+<li><p><strong>copy_reviews</strong> (<em>bool</em>) – Whether to copy reviews (without items)</p></li>
+<li><p><strong>copy_users</strong> (<em>bool</em>) – Whether to copy users</p></li>
+<li><p><strong>copy_settings</strong> (<em>bool</em>) – Whether to copy settings</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>New project data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.archive_project">
+<span class="sig-name descname"><span class="pre">archive_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.archive_project" title="Link to this definition">¶</a></dt>
+<dd><p>Archive a project</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>project_id</strong> (<em>int</em>)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Project data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.restore_project">
+<span class="sig-name descname"><span class="pre">restore_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.restore_project" title="Link to this definition">¶</a></dt>
+<dd><p>Restore (unarchive) a project</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>project_id</strong> (<em>int</em>)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Project data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.create_review">
+<span class="sig-name descname"><span class="pre">create_review</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.create_review" title="Link to this definition">¶</a></dt>
+<dd><p>Add a review to a project</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>project_id</strong> (<em>int</em>)</p></li>
+<li><p><strong>name</strong> (<em>str</em>)</p></li>
+<li><p><strong>description</strong> (<em>str</em>)</p></li>
+<li><p><strong>data</strong> (<em>dict</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Review data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.get_reviews_by_project_id">
+<span class="sig-name descname"><span class="pre">get_reviews_by_project_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.get_reviews_by_project_id" title="Link to this definition">¶</a></dt>
+<dd><p>Get list of reviews by project id.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example response</span>
+<span class="p">{</span>
+    <span class="s2">&quot;meta&quot;</span><span class="p">:</span> <span class="p">{</span><span class="o">...</span><span class="p">},</span>
+    <span class="s2">&quot;objects&quot;</span><span class="p">:</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>project_id</strong> (<em>int</em>) – SyncSketch project id</p></li>
+<li><p><strong>limit</strong> (<em>int</em>) – Limit the number of results</p></li>
+<li><p><strong>offset</strong> (<em>int</em>) – Offset the results</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dict with meta information and an array of found projects</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.get_review_by_name">
+<span class="sig-name descname"><span class="pre">get_review_by_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.get_review_by_name" title="Link to this definition">¶</a></dt>
+<dd><p>Get list of reviews by name using a case insensitive startswith query</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the review</p></li>
+<li><p><strong>limit</strong> (<em>int</em>) – Limit the number of results</p></li>
+<li><p><strong>offset</strong> (<em>int</em>) – Offset the results</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dict with meta information and an array of found projects</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.get_review_by_id">
+<span class="sig-name descname"><span class="pre">get_review_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">review_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.get_review_by_id" title="Link to this definition">¶</a></dt>
+<dd><p>Get single review by id.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>review_id</strong> – Number</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Review Data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.get_review_by_uuid">
+<span class="sig-name descname"><span class="pre">get_review_by_uuid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uuid</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.get_review_by_uuid" title="Link to this definition">¶</a></dt>
+<dd><p>Get single review by uuid.
+UUID can be found in the review URL e.g. syncsketch.com/sketch/&lt;uuid&gt;/</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>uuid</strong> (<em>str</em>) – UUID of the review.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Review dict</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.get_review_storage">
+<span class="sig-name descname"><span class="pre">get_review_storage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">review_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.get_review_storage" title="Link to this definition">¶</a></dt>
+<dd><p>Get review storage usage in bytes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>review_id</strong> (<em>int</em>) – Review ID</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Storage usage in bytes</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.update_review">
+<span class="sig-name descname"><span class="pre">update_review</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">review_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.update_review" title="Link to this definition">¶</a></dt>
+<dd><p>Update a review</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>review_id</strong> (<em>int</em>) – the id of the item</p></li>
+<li><p><strong>data</strong> (<em>dict</em>) – dict with data for item</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>updated review data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.sort_review_items">
+<span class="sig-name descname"><span class="pre">sort_review_items</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">review_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">items</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.sort_review_items" title="Link to this definition">¶</a></dt>
+<dd><p>Update a review</p>
+<p>Example <cite>items</cite> param</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">items</span> <span class="o">=</span> <span class="p">[{</span>
+    <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="c1"># item id</span>
+    <span class="s2">&quot;sortorder&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="c1"># sortorder, starting at 0</span>
+<span class="p">}]</span>
+</pre></div>
+</div>
+<p>Method output example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># number of successful items sort updated</span>
+<span class="p">{</span> <span class="s2">&quot;updated_items&quot;</span><span class="p">:</span> <span class="nb">int</span> <span class="p">}</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>review_id</strong> (<em>int</em>) – the id of the item</p></li>
+<li><p><strong>items</strong> (<em>list</em>) – payload</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>response</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.archive_review">
+<span class="sig-name descname"><span class="pre">archive_review</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">review_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.archive_review" title="Link to this definition">¶</a></dt>
+<dd><p>Archive a review</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>review_id</strong> (<em>int</em>)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Response object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.restore_review">
+<span class="sig-name descname"><span class="pre">restore_review</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">review_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.restore_review" title="Link to this definition">¶</a></dt>
+<dd><p>Restore (unarchive) a review</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>review_id</strong> (<em>int</em>)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Response object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.delete_review">
+<span class="sig-name descname"><span class="pre">delete_review</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">review_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.delete_review" title="Link to this definition">¶</a></dt>
+<dd><p>Delete a review by id.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>review_id</strong> (<em>int</em>) – Review ID to delete</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Review data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.get_item">
+<span class="sig-name descname"><span class="pre">get_item</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.get_item" title="Link to this definition">¶</a></dt>
+<dd><p>Get single item by id</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>item_id</strong> (<em>int</em>)</p></li>
+<li><p><strong>data</strong> (<em>dict</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Item data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.update_item">
+<span class="sig-name descname"><span class="pre">update_item</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.update_item" title="Link to this definition">¶</a></dt>
+<dd><p>Update an item</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>item_id</strong> (<em>int</em>) – the id of the item</p></li>
+<li><p><strong>data</strong> (<em>dict</em>) – dict with data for item</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>updated item data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.add_item">
+<span class="sig-name descname"><span class="pre">add_item</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">review_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">additional_data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.add_item" title="Link to this definition">¶</a></dt>
+<dd><p>create a media item record and connect it to a review. This should be used in case you want to add items with externaly hosted
+media by passing in the external_url and external_thumbnail_url to the additionalData dict e.g</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">additionalData</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">external_url</span><span class="p">:</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">52.24.98.51</span><span class="o">/</span><span class="n">wp</span><span class="o">-</span><span class="n">content</span><span class="o">/</span><span class="n">uploads</span><span class="o">/</span><span class="mi">2017</span><span class="o">/</span><span class="mi">03</span><span class="o">/</span><span class="n">rain</span><span class="o">.</span><span class="n">jpg</span>
+    <span class="n">external_thumbnail_url</span><span class="p">:</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">52.24.98.51</span><span class="o">/</span><span class="n">wp</span><span class="o">-</span><span class="n">content</span><span class="o">/</span><span class="n">uploads</span><span class="o">/</span><span class="mi">2017</span><span class="o">/</span><span class="mi">03</span><span class="o">/</span><span class="n">rain</span><span class="o">.</span><span class="n">jpg</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">additionalData</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">width</span><span class="p">:</span><span class="mi">1024</span>
+    <span class="n">height</span><span class="p">:</span><span class="mi">720</span>
+    <span class="n">artist</span><span class="p">:</span> <span class="s2">&quot;Brady Endres&quot;</span>
+    <span class="n">duration</span><span class="p">:</span><span class="mi">3</span> <span class="p">(</span><span class="ow">in</span> <span class="n">seconds</span><span class="p">)</span>
+    <span class="n">description</span><span class="p">:</span> <span class="n">the</span> <span class="n">description</span> <span class="n">here</span>
+    <span class="n">size</span><span class="p">:</span> <span class="n">size</span> <span class="ow">in</span> <span class="n">byte</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="n">image</span> <span class="o">|</span> <span class="n">video</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>NOTE: you always need to pass in FPS for SyncSketch to work!</p>
+<p>For a complete list of available fields to set, please
+visit <a class="reference external" href="https://www.syncsketch.com/api/v1/item/schema/">https://www.syncsketch.com/api/v1/item/schema/</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>review_id</strong> (<em>int</em>) – Required review_id</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – Name of the item</p></li>
+<li><p><strong>fps</strong> (<em>float</em>) – The frame per second is very important for syncsketch to determine the correct number of frames</p></li>
+<li><p><strong>additional_data</strong> (<em>dict</em>) – dictionary with item info</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Item data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.add_media">
+<span class="sig-name descname"><span class="pre">add_media</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">review_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artist_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noConvertFlag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">itemParentId</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.add_media" title="Link to this definition">¶</a></dt>
+<dd><p>Convenience function to upload a file to a review. It will automatically create
+an Item and attach it to the review. NOTE - if you are hosting your own media, please
+use the addItem function and pass in the external_url and external_thumbnail_url</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>review_id</strong> (<em>int</em>) – Required review_id</p></li>
+<li><p><strong>filepath</strong> (<em>str</em>) – path for the file on disk e.g /tmp/movie.webm</p></li>
+<li><p><strong>artist_name</strong> (<em>str</em>) – The name of the artist you want associated with this media file</p></li>
+<li><p><strong>file_name</strong> (<em>str</em>) – The name of the file. Please make sure to pass the correct file extension</p></li>
+<li><p><strong>noConvertFlag</strong> (<em>bool</em>) – the video you are uploading is already in a browser compatible format</p></li>
+<li><p><strong>itemParentId</strong> (<em>int</em>) – (Optional) set when you want to add a new version of an item. itemParentId is the id of the item you want to upload a new version for</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Item data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.add_media_by_url">
+<span class="sig-name descname"><span class="pre">add_media_by_url</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">review_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">media_url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artist_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noConvertFlag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.add_media_by_url" title="Link to this definition">¶</a></dt>
+<dd><p>Convenience function to upload a mediaURl to a review. Please use this function when you already have your files in the cloud, e.g
+AWS, Dropbox, Shotgrid, etc…</p>
+<p>We will automatically create an Item and attach it to the review.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>review_id</strong> (<em>int</em>) – Required review_id</p></li>
+<li><p><strong>media_url</strong> (<em>str</em>) – url to the media you are trying to upload</p></li>
+<li><p><strong>artist_name</strong> (<em>str</em>) – The name of the artist you want associated with this media file</p></li>
+<li><p><strong>noConvertFlag</strong> (<em>bool</em>) – the video you are uploading is already in a browser compatible format and does not need to be converted</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Item data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.add_media_v2">
+<span class="sig-name descname"><span class="pre">add_media_v2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">review_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item_uuid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noConvertFlag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.add_media_v2" title="Link to this definition">¶</a></dt>
+<dd><p>Similar to add_media method, but uploads the media file directly to SyncSketche’s internal S3 instead of to
+the SyncSketch server. In some cases, using this method over add_media can improve upload performance and
+stability. Unlike add_media this method does not return as much data about the created item.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>review_id</strong> (<em>int</em>) – Required review_id.</p></li>
+<li><p><strong>filepath</strong> (<em>str</em>) – path for the file on disk e.g /tmp/movie.webm.</p></li>
+<li><p><strong>file_name</strong> (<em>str</em>) – The name of the file. Please make sure to pass the correct file extension.</p></li>
+<li><p><strong>noConvertFlag</strong> (<em>bool</em>) – the video you are uploading is already in a browser compatible format.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dict, containing “item_id” and “uuid” or None on failure.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[dict]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.get_media">
+<span class="sig-name descname"><span class="pre">get_media</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">searchCriteria</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.get_media" title="Link to this definition">¶</a></dt>
+<dd><p>This is a general search function. You can search media items by</p>
+<ul class="simple">
+<li><p>‘id’</p></li>
+<li><p>‘name’</p></li>
+<li><p>‘status’</p></li>
+<li><p>‘active’</p></li>
+<li><p>‘creator’: ALL_WITH_RELATIONS, &lt;– these are foreign key queries</p></li>
+<li><p>‘reviews’: ALL_WITH_RELATIONS, &lt;– these are foreign key queries</p></li>
+<li><p>‘created’ using ‘exact’, ‘range’, ‘gt’, ‘gte’, ‘lt’, ‘lte’</p></li>
+</ul>
+<p>To query items by foreign keys please use the foreign key syntax described in the Django search definition:
+<a class="reference external" href="https://docs.djangoproject.com/en/1.11/topics/db/queries/">https://docs.djangoproject.com/en/1.11/topics/db/queries/</a></p>
+<p>If you want to query by “review name” for example you would pass in</p>
+<p>reviews__name = NAME TO SEARCH</p>
+<p>Using the “__” syntax you can even search for items by project like</p>
+<p>reviews__project__name = $PROJECT NAME TO SEARCH</p>
+<p>To speed up a query you can also pass in a limit e.g limit:10</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">results</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">getMedia</span><span class="p">({</span><span class="s1">&#39;reviews__project__name&#39;</span><span class="p">:</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="s1">&#39;limit&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;active&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>NOTE: Please make sure to include the active:1 query if you only want active media. Deleted files are currently
+only deactivated and kept for a certain period of time before they are “purged” from the system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>searchCriteria</strong> (<em>dict</em>) – Search params</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of media items</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[dict]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.get_items_by_review_id">
+<span class="sig-name descname"><span class="pre">get_items_by_review_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">review_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.get_items_by_review_id" title="Link to this definition">¶</a></dt>
+<dd><p>Get all items in a review</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>review_id</strong> (<em>int</em>) – Review ID</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of media items</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[dict]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.delete_item">
+<span class="sig-name descname"><span class="pre">delete_item</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.delete_item" title="Link to this definition">¶</a></dt>
+<dd><p>Delete a item by id.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>item_id</strong> (<em>int</em>) – Item ID to delete</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.bulk_delete_items">
+<span class="sig-name descname"><span class="pre">bulk_delete_items</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item_ids</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.bulk_delete_items" title="Link to this definition">¶</a></dt>
+<dd><p>Delete multiple items by id.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>item_ids</strong> (<em>list</em><em>[</em><em>int</em><em>]</em>) – List of item IDs to delete</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.move_items">
+<span class="sig-name descname"><span class="pre">move_items</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_review_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item_data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.move_items" title="Link to this definition">¶</a></dt>
+<dd><p>Move items from one review to another</p>
+<p>item_data should be a list of dictionaries with the old review id and the item id.
+The items in the list will be moved to the new review for the param new_review_id</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example item_data</span>
+<span class="c1"># review_id is the current review an item is in</span>
+<span class="c1"># it will be moved to the new_review_id</span>
+<span class="n">items_to_move</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;review_id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;item_id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;review_id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;item_id&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;review_id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;item_id&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">},</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>new_review_id</strong> (<em>int</em>) – The review id to move the items to</p></li>
+<li><p><strong>item_data</strong> (<em>list</em><em>[</em><em>dict</em><em>]</em>) – List of dictionaries with the old review id and the item id</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.add_comment">
+<span class="sig-name descname"><span class="pre">add_comment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">review_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.add_comment" title="Link to this definition">¶</a></dt>
+<dd><p>Add a comment to an item</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>item_id</strong> (<em>int</em>) – Item to add the comment to</p></li>
+<li><p><strong>text</strong> (<em>str</em>) – Comment text</p></li>
+<li><p><strong>review_id</strong> (<em>int</em>) – Review you are adding the comment to</p></li>
+<li><p><strong>frame</strong> (<em>int</em>) – Frame number of the video to add the comment to (if applicable)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.get_annotations">
+<span class="sig-name descname"><span class="pre">get_annotations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">revisionId</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">review_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.get_annotations" title="Link to this definition">¶</a></dt>
+<dd><p>Get sketches and comments for an item. Frames have a revision id which signifies a “set of notes”.
+When querying an item you’ll get the available revisions for this item. If you wish to get only the latest
+revision, please get the revisionId for the latest revision.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>item_id</strong> (<em>int</em>) – id of the media item you are querying.</p></li>
+<li><p><strong>revisionId</strong> (<em>int</em>) – Optional revisionId to narrow down the results</p></li>
+<li><p><strong>review_id</strong> (<em>int</em>) – RECOMMENDED - retrieve annotations for a specific review only.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.get_flattened_annotations">
+<span class="sig-name descname"><span class="pre">get_flattened_annotations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">review_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_tracing_paper</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_as_base64</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.get_flattened_annotations" title="Link to this definition">¶</a></dt>
+<dd><p>Returns a list of sketches either as signed urls from s3 or base64 encoded strings.
+The sketches are composited over the background frame of the item.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>review_id</strong> (<em>int</em>) – Review ID</p></li>
+<li><p><strong>item_id</strong> (<em>int</em>) – Item ID</p></li>
+<li><p><strong>with_tracing_paper</strong> (<em>bool</em>) – Include tracing paper in the response</p></li>
+<li><p><strong>return_as_base64</strong> (<em>bool</em>) – Return sketches as base64 encoded strings</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of sketches as signed urls from s3 or base64 encoded strings</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.get_grease_pencil_overlays">
+<span class="sig-name descname"><span class="pre">get_grease_pencil_overlays</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">review_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">homedir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.get_grease_pencil_overlays" title="Link to this definition">¶</a></dt>
+<dd><p>Download overlay sketches for Maya Greasepencil.</p>
+<p>Download overlay sketches for Maya Greasepencil. Function will download
+a zip file which contains an XML and the sketches as png files. Maya
+can load the zip file to overlay the sketches over the 3D model!</p>
+<p>For more information visit:
+<a class="reference external" href="https://knowledge.autodesk.com/support/maya/learn-explore/caas/CloudHelp/cloudhelp/2015/ENU/Maya/files/Grease-Pencil-Tool-htm.html">https://knowledge.autodesk.com/support/maya/learn-explore/caas/CloudHelp/cloudhelp/2015/ENU/Maya/files/Grease-Pencil-Tool-htm.html</a></p>
+<p>PLEASE make sure that /tmp is writable</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>review_id</strong> (<em>int</em>) – Review ID</p></li>
+<li><p><strong>item_id</strong> (<em>int</em>) – Item ID</p></li>
+<li><p><strong>homedir</strong> (<em>str</em>) – Optional path to download the zip file to</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>filePath to the zip file with the greasePencil data.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.get_users_by_name">
+<span class="sig-name descname"><span class="pre">get_users_by_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.get_users_by_name" title="Link to this definition">¶</a></dt>
+<dd><p>Name is a combined search and will search in first_name, last_name and email</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – Name to search for</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of users</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[dict]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.get_user_by_email">
+<span class="sig-name descname"><span class="pre">get_user_by_email</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">email</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.get_user_by_email" title="Link to this definition">¶</a></dt>
+<dd><p>Get user by email</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>email</strong> (<em>str</em>) – Email to search for</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>User data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.get_users_by_project_id">
+<span class="sig-name descname"><span class="pre">get_users_by_project_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.get_users_by_project_id" title="Link to this definition">¶</a></dt>
+<dd><p>Get all users in a project</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>project_id</strong> (<em>int</em>)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of users</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[dict]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.get_connections_by_user_id">
+<span class="sig-name descname"><span class="pre">get_connections_by_user_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">account_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_inactive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_archived</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.get_connections_by_user_id" title="Link to this definition">¶</a></dt>
+<dd><p>Get all project and account connections for a user. Good for checking access for a user that might have left…</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>user_id</strong> (<em>int</em>) – User ID to get connections for</p></li>
+<li><p><strong>account_id</strong> (<em>int</em>) – Account ID to get connections for</p></li>
+<li><p><strong>include_inactive</strong> (<em>bool</em>) – Include inactive projects</p></li>
+<li><p><strong>include_archived</strong> (<em>bool</em>) – Include archived projects</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of connections</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[dict]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.get_user_by_id">
+<span class="sig-name descname"><span class="pre">get_user_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.get_user_by_id" title="Link to this definition">¶</a></dt>
+<dd><p>Get a user by ID</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>user_id</strong> (<em>int</em>)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>User data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.add_users_to_workspace">
+<span class="sig-name descname"><span class="pre">add_users_to_workspace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">users</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">note</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.add_users_to_workspace" title="Link to this definition">¶</a></dt>
+<dd><p>Add Users to Workspace</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">users</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;email&quot;</span><span class="p">:</span><span class="s2">&quot;test@test.de&quot;</span><span class="p">,</span><span class="s2">&quot;permission&quot;</span><span class="p">:</span><span class="s2">&quot;admin&quot;</span><span class="p">}]</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>workspace_id</strong> (<em>int</em>) – id of the workspace</p></li>
+<li><p><strong>users</strong> (<em>list</em>) – list of new users - possible permissions “admin”, “manager”</p></li>
+<li><p><strong>note</strong> (<em>str</em>) – (Optional) message for the invitation email</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>response</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.remove_users_from_workspace">
+<span class="sig-name descname"><span class="pre">remove_users_from_workspace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">users</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.remove_users_from_workspace" title="Link to this definition">¶</a></dt>
+<dd><p>Remove a list of users from a workspace
+Can remove by id or email</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">users</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;email&quot;</span><span class="p">:</span><span class="s2">&quot;test@test.de&quot;</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span><span class="mi">12345</span><span class="p">}]</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>workspace_id</strong> (<em>int</em>) – id of the workspace</p></li>
+<li><p><strong>users</strong> (<em>list</em>) – list of users to remove - either remove by user email or id</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>response</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.add_users_to_project">
+<span class="sig-name descname"><span class="pre">add_users_to_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">users</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">note</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.add_users_to_project" title="Link to this definition">¶</a></dt>
+<dd><p>Add Users to Project</p>
+<p>possible permissions</p>
+<ul class="simple">
+<li><p>admin</p></li>
+<li><p>member</p></li>
+<li><p>viewer</p></li>
+<li><p>reviewer</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">users</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;email&quot;</span><span class="p">:</span><span class="s2">&quot;test@test.de&quot;</span><span class="p">,</span><span class="s2">&quot;permission&quot;</span><span class="p">:</span><span class="s2">&quot;viewer&quot;</span><span class="p">}]</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>project_id</strong> (<em>int</em>) – id of the project</p></li>
+<li><p><strong>users</strong> (<em>list</em><em>[</em><em>dict</em><em>]</em>) – list of new users</p></li>
+<li><p><strong>note</strong> (<em>str</em>) – (Optional) message for the invitation email</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>response</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.remove_users_from_project">
+<span class="sig-name descname"><span class="pre">remove_users_from_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">users</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.remove_users_from_project" title="Link to this definition">¶</a></dt>
+<dd><p>Remove a list of users from a project</p>
+<p>remove by user email or id</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">users</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;email&quot;</span><span class="p">:</span><span class="s2">&quot;test@test.de&quot;</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span><span class="mi">12345</span><span class="p">}]</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>project_id</strong> (<em>int</em>) – id of the project</p></li>
+<li><p><strong>users</strong> (<em>list</em>) – list of users to remove - either remove by user email or id</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.shotgrid_create_config">
+<span class="sig-name descname"><span class="pre">shotgrid_create_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">syncsketch_account_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">syncsketch_project_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.shotgrid_create_config" title="Link to this definition">¶</a></dt>
+<dd><p>Create a new Shotgrid configuration for a SyncSketch workspace and optionally a project</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syncsketch_account_id</strong> (<em>int</em>)</p></li>
+<li><p><strong>syncsketch_project_id</strong> (<em>int</em>)</p></li>
+<li><p><strong>data</strong> (<em>dict</em>) – Configuration data.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.shotgrid_get_playlists">
+<span class="sig-name descname"><span class="pre">shotgrid_get_playlists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">syncsketch_account_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">syncsketch_project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shotgun_project_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.shotgrid_get_playlists" title="Link to this definition">¶</a></dt>
+<dd><p>Returns list of Shotgrid playlists modified in the last 120 days
+If the syncsketch project is directly linked to a shotgrid by the workspace admin, the
+param shotgun_project_id will be ignored and can be omitted during the function call</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syncsketch_account_id</strong> (<em>int</em>) – SyncSketch account id</p></li>
+<li><p><strong>syncsketch_project_id</strong> (<em>int</em>) – SyncSketch project id</p></li>
+<li><p><strong>shotgun_project_id</strong> (<em>int</em>) – (optional) Shotgrid project id</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>list of Shotgrid playlists</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.shotgrid_sync_review_notes">
+<span class="sig-name descname"><span class="pre">shotgrid_sync_review_notes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">review_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.shotgrid_sync_review_notes" title="Link to this definition">¶</a></dt>
+<dd><p>Sync notes from SyncSketch review to the original shotgrid playlist
+Returns task id to use in get_shotgun_sync_review_notes_progress to get progress</p>
+<p>returns dict with information about the REST API call:</p>
+<ul class="simple">
+<li><p>message=&lt;STR&gt; “Shotgrid review notes sync started”</p></li>
+<li><p>status=&lt;STR&gt; processing/done/failed</p></li>
+<li><p>progress_url=&lt;STR&gt; Full url to call for progress/results</p></li>
+<li><p>task_id=&lt;STR&gt; task_ids pass this value to the get_shotgun_sync_review_items_progress function</p></li>
+<li><p>percent_complete=&lt;INT&gt; 0-100 value of percent complete</p></li>
+<li><p>total_items=&lt;INT&gt; number of items being synced from shotgrid</p></li>
+<li><p>remaining_items=&lt;INT&gt; number of items not yet pulled from shotgrid</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>review_id</strong> (<em>int</em>) – SyncSketch review id</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Progress information</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.shotgrid_sync_new_item_notes">
+<span class="sig-name descname"><span class="pre">shotgrid_sync_new_item_notes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">review_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.shotgrid_sync_new_item_notes" title="Link to this definition">¶</a></dt>
+<dd><p>Sync new notes from SyncSketch review item to the original shotgrid playlist
+Returns dict with information about the REST API call</p>
+<ul class="simple">
+<li><p>sketch_upload_error=&lt;BOOL&gt; “True in case of error”</p></li>
+<li><p>sketches=&lt;INT&gt; “Number of sketches synced”</p></li>
+<li><p>comments=&lt;INT&gt; “Number of comments synced”</p></li>
+<li><p>attachments=&lt;INT&gt; “Number of attachments synced”</p></li>
+<li><p>item_name=&lt;STR&gt; “Name of item that was synced”</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>project_id</strong> (<em>int</em>) – SyncSketch project id</p></li>
+<li><p><strong>review_id</strong> (<em>int</em>) – SyncSketch review id</p></li>
+<li><p><strong>item_id</strong> (<em>int</em>) – SyncSketch item id</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.get_shotgrid_sync_review_notes_progress">
+<span class="sig-name descname"><span class="pre">get_shotgrid_sync_review_notes_progress</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.get_shotgrid_sync_review_notes_progress" title="Link to this definition">¶</a></dt>
+<dd><p>Returns status of review notes sync for the task id provided in shotgun_sync_review_notes</p>
+<p>Returns a dict with the following keys:</p>
+<ul class="simple">
+<li><p>message=&lt;STR&gt; “Shotgrid review notes sync started”</p></li>
+<li><p>status=&lt;STR&gt; processing/done/failed</p></li>
+<li><p>progress_url=&lt;STR&gt; Full url to call for progress/results</p></li>
+<li><p>task_id=&lt;STR&gt; task_ids pass this value to the get_shotgun_sync_review_items_progress function</p></li>
+<li><p>percent_complete=&lt;INT&gt; 0-100 value of percent complete</p></li>
+<li><p>total_items=&lt;INT&gt; number of items being synced from shotgrid</p></li>
+<li><p>remaining_items=&lt;INT&gt; number of items not yet pulled from shotgrid</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>task_id</strong> (<em>str</em>) – UUID of the task returned by shotgrid_sync_review_notes</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Progress information</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.shotgrid_sync_review_items">
+<span class="sig-name descname"><span class="pre">shotgrid_sync_review_items</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">syncsketch_project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">playlist_code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">playlist_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">review_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.shotgrid_sync_review_items" title="Link to this definition">¶</a></dt>
+<dd><p>Create or update SyncSketch review with shotgrid playlist items
+Returns task id to use in get_shotgun_sync_review_items_progress to get progress</p>
+<p>Response format:</p>
+<ul class="simple">
+<li><p>message=&lt;STR&gt; “Shotgrid review item sync started”,</p></li>
+<li><p>status=&lt;STR&gt; processing/done/failed,</p></li>
+<li><p>progress_url=&lt;STR&gt; Full url to call for progress/results,</p></li>
+<li><p>task_id=&lt;STR&gt; task_ids - pass this value to the get_shotgun_sync_review_items_progress function,</p></li>
+<li><p>percent_complete=&lt;INT&gt; 0-100 value of percent complete,</p></li>
+<li><p>total_items=&lt;INT&gt; number of items being synced from shotgrid,</p></li>
+<li><p>remaining_items=&lt;INT&gt; number of items not yet pulled from shotgrid,</p></li>
+<li><p>data=&lt;dict&gt;</p></li>
+<li><p>review_id=&lt;INT&gt; review.id,</p></li>
+<li><p>review_link=&lt;STR&gt; url link to the syncsketch player with the review pulled from shotgrid,</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syncsketch_project_id</strong> (<em>int</em>)</p></li>
+<li><p><strong>playlist_code</strong> (<em>str</em>)</p></li>
+<li><p><strong>playlist_id</strong> (<em>int</em>)</p></li>
+<li><p><strong>review_id</strong> (<em>int</em>) – (optional)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.get_shotgrid_sync_review_items_progress">
+<span class="sig-name descname"><span class="pre">get_shotgrid_sync_review_items_progress</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.get_shotgrid_sync_review_items_progress" title="Link to this definition">¶</a></dt>
+<dd><p>Returns status of review items sync for the task id provided in shotgun_sync_review_items</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>task_id</strong> (<em>str</em>) – UUID of the task returned by shotgrid_sync_review_items</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DeprecationWarning</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.add_media_v1">
+<span class="sig-name descname"><span class="pre">add_media_v1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">review_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artist_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noConvertFlag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">itemParentId</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.add_media_v1" title="Link to this definition">¶</a></dt>
+<dd><p>Convenience function to upload a file to a review. It will automatically create
+an Item and attach it to the review. NOTE - if you are hosting your own media, please
+use the addItem function and pass in the external_url and external_thumbnail_url</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>review_id</strong> (<em>int</em>) – Required review_id</p></li>
+<li><p><strong>filepath</strong> (<em>str</em>) – path for the file on disk e.g /tmp/movie.webm</p></li>
+<li><p><strong>artist_name</strong> (<em>str</em>) – The name of the artist you want associated with this media file</p></li>
+<li><p><strong>file_name</strong> (<em>str</em>) – The name of the file. Please make sure to pass the correct file extension</p></li>
+<li><p><strong>noConvertFlag</strong> (<em>bool</em>) – the video you are uploading is already in a browser compatible format</p></li>
+<li><p><strong>itemParentId</strong> (<em>int</em>) – (Optional) set when you want to add a new version of an item. itemParentId is the id of the item you want to upload a new version for</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Item data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.get_shotgun_sync_review_items_progress">
+<span class="sig-name descname"><span class="pre">get_shotgun_sync_review_items_progress</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.get_shotgun_sync_review_items_progress" title="Link to this definition">¶</a></dt>
+<dd><p>Returns status of review items sync for the task id provided in shotgun_sync_review_items</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>task_id</strong> (<em>str</em>) – UUID of the task returned by shotgrid_sync_review_items</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DeprecationWarning</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.shotgun_sync_review_items">
+<span class="sig-name descname"><span class="pre">shotgun_sync_review_items</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">syncsketch_project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">playlist_code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">playlist_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">review_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.shotgun_sync_review_items" title="Link to this definition">¶</a></dt>
+<dd><p>Create or update SyncSketch review with shotgrid playlist items
+Returns task id to use in get_shotgun_sync_review_items_progress to get progress</p>
+<p>Response format:</p>
+<ul class="simple">
+<li><p>message=&lt;STR&gt; “Shotgrid review item sync started”,</p></li>
+<li><p>status=&lt;STR&gt; processing/done/failed,</p></li>
+<li><p>progress_url=&lt;STR&gt; Full url to call for progress/results,</p></li>
+<li><p>task_id=&lt;STR&gt; task_ids - pass this value to the get_shotgun_sync_review_items_progress function,</p></li>
+<li><p>percent_complete=&lt;INT&gt; 0-100 value of percent complete,</p></li>
+<li><p>total_items=&lt;INT&gt; number of items being synced from shotgrid,</p></li>
+<li><p>remaining_items=&lt;INT&gt; number of items not yet pulled from shotgrid,</p></li>
+<li><p>data=&lt;dict&gt;</p></li>
+<li><p>review_id=&lt;INT&gt; review.id,</p></li>
+<li><p>review_link=&lt;STR&gt; url link to the syncsketch player with the review pulled from shotgrid,</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syncsketch_project_id</strong> (<em>int</em>)</p></li>
+<li><p><strong>playlist_code</strong> (<em>str</em>)</p></li>
+<li><p><strong>playlist_id</strong> (<em>int</em>)</p></li>
+<li><p><strong>review_id</strong> (<em>int</em>) – (optional)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.shotgun_sync_new_item_notes">
+<span class="sig-name descname"><span class="pre">shotgun_sync_new_item_notes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">review_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.shotgun_sync_new_item_notes" title="Link to this definition">¶</a></dt>
+<dd><p>Sync new notes from SyncSketch review item to the original shotgrid playlist
+Returns dict with information about the REST API call</p>
+<ul class="simple">
+<li><p>sketch_upload_error=&lt;BOOL&gt; “True in case of error”</p></li>
+<li><p>sketches=&lt;INT&gt; “Number of sketches synced”</p></li>
+<li><p>comments=&lt;INT&gt; “Number of comments synced”</p></li>
+<li><p>attachments=&lt;INT&gt; “Number of attachments synced”</p></li>
+<li><p>item_name=&lt;STR&gt; “Name of item that was synced”</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>project_id</strong> (<em>int</em>) – SyncSketch project id</p></li>
+<li><p><strong>review_id</strong> (<em>int</em>) – SyncSketch review id</p></li>
+<li><p><strong>item_id</strong> (<em>int</em>) – SyncSketch item id</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.shotgun_sync_review_notes">
+<span class="sig-name descname"><span class="pre">shotgun_sync_review_notes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">review_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.shotgun_sync_review_notes" title="Link to this definition">¶</a></dt>
+<dd><p>Sync notes from SyncSketch review to the original shotgrid playlist
+Returns task id to use in get_shotgun_sync_review_notes_progress to get progress</p>
+<p>returns dict with information about the REST API call:</p>
+<ul class="simple">
+<li><p>message=&lt;STR&gt; “Shotgrid review notes sync started”</p></li>
+<li><p>status=&lt;STR&gt; processing/done/failed</p></li>
+<li><p>progress_url=&lt;STR&gt; Full url to call for progress/results</p></li>
+<li><p>task_id=&lt;STR&gt; task_ids pass this value to the get_shotgun_sync_review_items_progress function</p></li>
+<li><p>percent_complete=&lt;INT&gt; 0-100 value of percent complete</p></li>
+<li><p>total_items=&lt;INT&gt; number of items being synced from shotgrid</p></li>
+<li><p>remaining_items=&lt;INT&gt; number of items not yet pulled from shotgrid</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>review_id</strong> (<em>int</em>) – SyncSketch review id</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Progress information</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.shotgun_get_playlists">
+<span class="sig-name descname"><span class="pre">shotgun_get_playlists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">syncsketch_account_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">syncsketch_project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shotgun_project_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.shotgun_get_playlists" title="Link to this definition">¶</a></dt>
+<dd><p>Returns list of Shotgrid playlists modified in the last 120 days
+If the syncsketch project is directly linked to a shotgrid by the workspace admin, the
+param shotgun_project_id will be ignored and can be omitted during the function call</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syncsketch_account_id</strong> (<em>int</em>) – SyncSketch account id</p></li>
+<li><p><strong>syncsketch_project_id</strong> (<em>int</em>) – SyncSketch project id</p></li>
+<li><p><strong>shotgun_project_id</strong> (<em>int</em>) – (optional) Shotgrid project id</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>list of Shotgrid playlists</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.shotgun_create_config">
+<span class="sig-name descname"><span class="pre">shotgun_create_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">syncsketch_account_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">syncsketch_project_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.shotgun_create_config" title="Link to this definition">¶</a></dt>
+<dd><p>Create a new Shotgrid configuration for a SyncSketch workspace and optionally a project</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syncsketch_account_id</strong> (<em>int</em>)</p></li>
+<li><p><strong>syncsketch_project_id</strong> (<em>int</em>)</p></li>
+<li><p><strong>data</strong> (<em>dict</em>) – Configuration data.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="syncsketch.SyncSketchAPI.shotgun_get_projects">
+<span class="sig-name descname"><span class="pre">shotgun_get_projects</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">syncsketch_project_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#syncsketch.SyncSketchAPI.shotgun_get_projects" title="Link to this definition">¶</a></dt>
+<dd><p>Returns list of Shotgrid projects connected to your account</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>syncsketch_project_id</strong> (<em>int</em>) – SyncSketch project id</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="#">SyncSketch Python API Library</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, Brady Endres, Phil Floetotto, Nicholas Kegler dos Santos, Tyler Nickerson.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.4.7</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
