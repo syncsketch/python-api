@@ -7,11 +7,20 @@ This package provides methods to communicate with the syncsketch servers and wra
 ![PyPI - License](https://img.shields.io/pypi/l/syncsketch)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
+Sign up for an account at
+[SyncSketch.com](https://syncsketch.com)
+
+API access requires an enterprise level account.
+
+# Documentation
+
+[Read the full documentation here](https://syncsketch.github.io/python-api/)
+
+You can also find example code snippets below
+
 # Overview
 
 SyncSketch is a synchronized visual review tool for the Film/TV/Games industry.
-
-API access requires an enterprise level account.  For help or more info reach out to us.
 
 ### Getting Started
 
