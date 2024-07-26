@@ -806,13 +806,13 @@ class SyncSketchAPI:
         """
         This is a general search function. You can search media items by
 
-        'id'
-        'name'
-        'status'
-        'active'
-        'creator': ALL_WITH_RELATIONS, <-- these are foreign key queries
-        'reviews': ALL_WITH_RELATIONS, <-- these are foreign key queries
-        'created' using 'exact', 'range', 'gt', 'gte', 'lt', 'lte'
+        - 'id'
+        - 'name'
+        - 'status'
+        - 'active'
+        - 'creator': ALL_WITH_RELATIONS, <-- these are foreign key queries
+        - 'reviews': ALL_WITH_RELATIONS, <-- these are foreign key queries
+        - 'created' using 'exact', 'range', 'gt', 'gte', 'lt', 'lte'
 
         To query items by foreign keys please use the foreign key syntax described in the Django search definition:
         https://docs.djangoproject.com/en/1.11/topics/db/queries/
@@ -827,7 +827,9 @@ class SyncSketchAPI:
 
         To speed up a query you can also pass in a limit e.g limit:10
 
-        results = s.getMedia({'reviews__project__name':'test', 'limit': 1, 'active': 1})
+        .. code:: python
+
+            results = s.getMedia({'reviews__project__name':'test', 'limit': 1, 'active': 1})
 
         NOTE: Please make sure to include the active:1 query if you only want active media. Deleted files are currently
         only deactivated and kept for a certain period of time before they are "purged" from the system.
