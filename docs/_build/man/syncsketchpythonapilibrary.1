@@ -1,0 +1,1567 @@
+.\" Man page generated from reStructuredText.
+.
+.
+.nr rst2man-indent-level 0
+.
+.de1 rstReportMargin
+\\$1 \\n[an-margin]
+level \\n[rst2man-indent-level]
+level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
+-
+\\n[rst2man-indent0]
+\\n[rst2man-indent1]
+\\n[rst2man-indent2]
+..
+.de1 INDENT
+.\" .rstReportMargin pre:
+. RS \\$1
+. nr rst2man-indent\\n[rst2man-indent-level] \\n[an-margin]
+. nr rst2man-indent-level +1
+.\" .rstReportMargin post:
+..
+.de UNINDENT
+. RE
+.\" indent \\n[an-margin]
+.\" old: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.nr rst2man-indent-level -1
+.\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.in \\n[rst2man-indent\\n[rst2man-indent-level]]u
+..
+.TH "SYNCSKETCHPYTHONAPILIBRARY" "1" "Jul 25, 2024" "" "SyncSketch Python API Library"
+.SH NAME
+syncsketchpythonapilibrary \- SyncSketch Python API Library 1.0.10.5
+.sp
+autodoc_member_order = ‘bysource’
+.INDENT 0.0
+.TP
+.B class syncsketch.SyncSketchAPI
+SyncSketchAPI is a class that provides a set of methods to interact with SyncSketch API.
+.INDENT 7.0
+.TP
+.B __init__(
+.TP
+.B auth,
+.TP
+.B api_key,
+.TP
+.B host=\(dqhttps://www.syncsketch.com\(dq,
+.TP
+.B useExpiringToken=False,
+.TP
+.B debug=False,
+.TP
+.B api_version=\(dqv1\(dq,
+.TP
+.B use_header_auth=False
+.TP
+.B )
+Constructor for SyncSketchAPI class.
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBauth\fP (\fIstr\fP) – The username of the user.
+.IP \(bu 2
+\fBapi_key\fP (\fIstr\fP) – The api key of the user.
+.IP \(bu 2
+\fBhost\fP (\fIstr\fP) – The host of the SyncSketch API.
+.IP \(bu 2
+\fBuseExpiringToken\fP (\fIbool\fP) – If True, the token will expire after 1 hour.
+.IP \(bu 2
+\fBdebug\fP (\fIbool\fP) – If True, the debug mode will be enabled.
+.IP \(bu 2
+\fBapi_version\fP (\fIstr\fP) – The version of the SyncSketch API.
+.IP \(bu 2
+\fBuse_header_auth\fP (\fIbool\fP) – If True, the authentication will be done using headers.
+.UNINDENT
+.TP
+.B Returns
+SyncSketchAPI object.
+.TP
+.B Return type
+obj
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+.B class syncsketch.SyncSketchAPI(auth, api_key, host=\(aqhttps://www.syncsketch.com\(aq, useExpiringToken=False, debug=False, api_version=\(aqv1\(aq, use_header_auth=False)
+Bases: \fBobject\fP
+.sp
+Convenience API to communicate with the SyncSketch Service for collaborative online reviews
+.INDENT 7.0
+.TP
+.B is_connected()
+Convenience function to check if the API is connected to SyncSketch
+Will check against Status Code 200 and return False if not which most likely would be
+and authorization error
+.INDENT 7.0
+.TP
+.B Returns
+Connection success
+.TP
+.B Return type
+bool
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B get_tree(withItems=False)
+Get nested tree of account, projects, reviews and optionally items for the current user
+.INDENT 7.0
+.TP
+.B Parameters
+\fBwithItems\fP (\fIbool\fP) – Include items in the response
+.TP
+.B Returns
+Tree data
+.TP
+.B Return type
+dict
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B get_accounts()
+Summary
+.INDENT 7.0
+.TP
+.B Returns
+List of workspaces the user has access to
+.TP
+.B Return type
+list[dict]
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B update_account(account_id, data)
+Update a workspace / account
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBaccount_id\fP (\fIint\fP) – the id of the item
+.IP \(bu 2
+\fBdata\fP (\fIdict\fP) – normal dict with data for item
+.UNINDENT
+.TP
+.B Returns
+Workspace / Account data
+.TP
+.B Return type
+dict
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B create_project(account_id, name, description=\(aq\(aq, data=None)
+Add a project to your account. Please make sure to pass the accountId which you can query using the getAccounts command.
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBaccount_id\fP (\fIint\fP) – id of the account to connect with
+.IP \(bu 2
+\fBname\fP (\fIstr\fP) – Name of the project
+.IP \(bu 2
+\fBdescription\fP (\fIstr\fP) – Description of the project
+.IP \(bu 2
+\fBdata\fP (\fIdict\fP) – additional information e.g is_public. Find out more about available fields at /api/v1/project/schema/.
+.UNINDENT
+.TP
+.B Returns
+Project data
+.TP
+.B Return type
+dict
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B get_projects(include_deleted=False, include_archived=False, include_tags=False, include_connections=False, limit=100, offset=0)
+Get a list of currently active projects
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBinclude_deleted\fP (\fIbool\fP) – if true, include deleted projects
+.IP \(bu 2
+\fBinclude_archived\fP (\fIbool\fP) – if true, include archived projects
+.IP \(bu 2
+\fBinclude_tags\fP (\fIbool\fP) – if true, include tag list on the project object
+.IP \(bu 2
+\fBinclude_connections\fP (\fIbool\fP) – if true, include full user connections on the project object
+.IP \(bu 2
+\fBlimit\fP (\fIint\fP) – limit the number of results
+.IP \(bu 2
+\fBoffset\fP (\fIint\fP) – offset the results
+.UNINDENT
+.TP
+.B Returns
+Dict with meta information and an array of found projects
+.TP
+.B Return type
+list[dict]
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B get_projects_by_name(name)
+Get a project by name regardless of status
+.INDENT 7.0
+.TP
+.B Parameters
+\fBname\fP (\fIstr\fP) – Name to search for
+.TP
+.B Returns
+List of projects
+.TP
+.B Return type
+list[dict]
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B get_project_by_id(project_id)
+Get single project by id
+.INDENT 7.0
+.TP
+.B Parameters
+\fBproject_id\fP (\fIint\fP) – Project id
+.TP
+.B Returns
+Project data
+.TP
+.B Return type
+dict
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B get_project_storage(project_id)
+Get project storage usage in bytes
+.INDENT 7.0
+.TP
+.B Parameters
+\fBproject_id\fP (\fIint\fP) – Project id
+.TP
+.B Returns
+Storage usage in bytes
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B update_project(project_id, data)
+Update a project
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBproject_id\fP (\fIint\fP) – the id of the item
+.IP \(bu 2
+\fBdata\fP (\fIdict\fP) – dict with new data for item
+.UNINDENT
+.TP
+.B Returns
+updated project data
+.TP
+.B Return type
+dict
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B delete_project(project_id)
+Delete a project by id.
+.INDENT 7.0
+.TP
+.B Parameters
+\fBproject_id\fP (\fIint\fP) – Project ID to delete
+.TP
+.B Returns
+
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B duplicate_project(project_id, name=None, copy_reviews=False, copy_users=False, copy_settings=False)
+Create a new project from an existing project
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBproject_id\fP (\fIint\fP) – Source project id
+.IP \(bu 2
+\fBname\fP (\fIstr\fP) – New project name
+.IP \(bu 2
+\fBcopy_reviews\fP (\fIbool\fP) – Whether to copy reviews (without items)
+.IP \(bu 2
+\fBcopy_users\fP (\fIbool\fP) – Whether to copy users
+.IP \(bu 2
+\fBcopy_settings\fP (\fIbool\fP) – Whether to copy settings
+.UNINDENT
+.TP
+.B Returns
+New project data
+.TP
+.B Return type
+dict[str, Any]
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B archive_project(project_id)
+Archive a project
+.INDENT 7.0
+.TP
+.B Parameters
+\fBproject_id\fP (\fIint\fP)
+.TP
+.B Returns
+
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B restore_project(project_id)
+Restore (unarchive) a project
+.INDENT 7.0
+.TP
+.B Parameters
+\fBproject_id\fP (\fIint\fP)
+.TP
+.B Returns
+
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B get_reviews_by_project_id(project_id, limit=100, offset=0)
+Get list of reviews by project id.
+.INDENT 7.0
+.TP
+.B Parameters
+\fBproject_id\fP (\fIint\fP) – SyncSketch project id
+.TP
+.B Returns
+Dict with meta information and an array of found projects
+.TP
+.B Return type
+list[dict]
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B get_review_by_name(name)
+Get reviews by name using a case insensitive startswith query
+.INDENT 7.0
+.TP
+.B Parameters
+\fBname\fP – String \- Name of the review
+.TP
+.B Returns
+Dict with meta information and an array of found projects
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B get_review_by_id(review_id)
+Get single review by id.
+.INDENT 7.0
+.TP
+.B Parameters
+\fBreview_id\fP – Number
+.TP
+.B Returns
+Review Dict
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B get_review_by_uuid(uuid)
+Get single review by uuid.
+UUID can be found in the review URL e.g. syncsketch.com/sketch/<uuid>/
+.INDENT 7.0
+.TP
+.B Parameters
+\fBuuid\fP (\fIstr\fP) – UUID of the review.
+.TP
+.B Returns
+Review dict
+.TP
+.B Return type
+dict
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B get_review_storage(review_id)
+Get review storage usage in bytes
+.INDENT 7.0
+.TP
+.B Parameters
+\fBreview_id\fP (\fIint\fP) – Review ID
+.TP
+.B Returns
+Storage usage in bytes
+.TP
+.B Return type
+int
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B update_review(review_id, data)
+Update a review
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBreview_id\fP (\fIint\fP) – the id of the item
+.IP \(bu 2
+\fBdata\fP (\fIdict\fP) – dict with data for item
+.UNINDENT
+.TP
+.B Returns
+updated review data
+.TP
+.B Return type
+dict
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B sort_review_items(review_id, items)
+Update a review
+.sp
+Example \fIitems\fP param
+.INDENT 7.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+items = [{
+    \(dqid\(dq: 1, # item id
+    \(dqsortorder\(dq: 0, # sortorder, starting at 0
+}]
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+Method output example:
+.INDENT 7.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+# number of successful items sort updated
+{ \(dqupdated_items\(dq: int }
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBreview_id\fP (\fIint\fP) – the id of the item
+.IP \(bu 2
+\fBitems\fP (\fIlist\fP) – payload
+.UNINDENT
+.TP
+.B Returns
+response
+.TP
+.B Return type
+dict
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B archive_review(review_id)
+Archive a review
+.INDENT 7.0
+.TP
+.B Parameters
+\fBreview_id\fP (\fIint\fP)
+.TP
+.B Returns
+empty response
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B restore_review(review_id)
+Restore (unarchive) a review
+.INDENT 7.0
+.TP
+.B Parameters
+\fBreview_id\fP (\fIint\fP)
+.TP
+.B Returns
+empty response
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B delete_review(review_id)
+Delete a review by id.
+.INDENT 7.0
+.TP
+.B Parameters
+\fBreview_id\fP (\fIint\fP) – Review ID to delete
+.TP
+.B Returns
+
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B update_item(item_id, data)
+Update an item
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBitem_id\fP (\fIint\fP) – the id of the item
+.IP \(bu 2
+\fBdata\fP (\fIdict\fP) – dict with data for item
+.UNINDENT
+.TP
+.B Returns
+updated item data
+.TP
+.B Return type
+dict
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B add_item(review_id, name, fps, additional_data)
+create a media item record and connect it to a review. This should be used in case you want to add items with externaly hosted
+media by passing in the external_url and external_thumbnail_url to the additionalData dict e.g
+.INDENT 7.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+additionalData = {
+    external_url: http://52.24.98.51/wp\-content/uploads/2017/03/rain.jpg
+    external_thumbnail_url: http://52.24.98.51/wp\-content/uploads/2017/03/rain.jpg
+}
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+or
+.INDENT 7.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+additionalData = {
+    width:1024
+    height:720
+    artist: \(dqBrady Endres\(dq
+    duration:3 (in seconds)
+    description: the description here
+    size: size in byte
+    type: image | video
+}
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+NOTE: you always need to pass in FPS for SyncSketch to work!
+.sp
+For a complete list of available fields to set, please
+visit \X'tty: link https://www.syncsketch.com/api/v1/item/schema/'\fI\%https://www.syncsketch.com/api/v1/item/schema/\fP\X'tty: link'
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBreview_id\fP (\fIint\fP) – Required review_id
+.IP \(bu 2
+\fBname\fP (\fIstr\fP) – Name of the item
+.IP \(bu 2
+\fBfps\fP (\fIfloat\fP) – The frame per second is very important for syncsketch to determine the correct number of frames
+.IP \(bu 2
+\fBadditional_data\fP (\fIdict\fP) – dictionary with item info
+.UNINDENT
+.TP
+.B Returns
+Item data
+.TP
+.B Return type
+dict
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B add_media(review_id, filepath, artist_name=\(aq\(aq, file_name=\(aq\(aq, noConvertFlag=False, itemParentId=False)
+Convenience function to upload a file to a review. It will automatically create
+an Item and attach it to the review. NOTE \- if you are hosting your own media, please
+use the addItem function and pass in the external_url and external_thumbnail_url
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBreview_id\fP (\fIint\fP) – Required review_id
+.IP \(bu 2
+\fBfilepath\fP (\fIstr\fP) – path for the file on disk e.g /tmp/movie.webm
+.IP \(bu 2
+\fBartist_name\fP (\fIstr\fP) – The name of the artist you want associated with this media file
+.IP \(bu 2
+\fBfile_name\fP (\fIstr\fP) – The name of the file. Please make sure to pass the correct file extension
+.IP \(bu 2
+\fBnoConvertFlag\fP (\fIbool\fP) – the video you are uploading is already in a browser compatible format
+.IP \(bu 2
+\fBitemParentId\fP (\fIint\fP) – (Optional) set when you want to add a new version of an item. itemParentId is the id of the item you want to upload a new version for
+.UNINDENT
+.TP
+.B Returns
+Item data
+.TP
+.B Return type
+dict
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B add_media_by_url(review_id, media_url, artist_name=\(aq\(aq, noConvertFlag=False)
+Convenience function to upload a mediaURl to a review. Please use this function when you already have your files in the cloud, e.g
+AWS, Dropbox, Shotgrid, etc…
+.sp
+We will automatically create an Item and attach it to the review.
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBreview_id\fP (\fIint\fP) – Required review_id
+.IP \(bu 2
+\fBmedia_url\fP (\fIstr\fP) – url to the media you are trying to upload
+.IP \(bu 2
+\fBartist_name\fP (\fIstr\fP) – The name of the artist you want associated with this media file
+.IP \(bu 2
+\fBnoConvertFlag\fP (\fIbool\fP) – the video you are uploading is already in a browser compatible format and does not need to be converted
+.UNINDENT
+.TP
+.B Returns
+Item data
+.TP
+.B Return type
+dict
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B add_media_v2(review_id, filepath, file_name=\(aq\(aq, item_uuid=None, noConvertFlag=False)
+Similar to add_media method, but uploads the media file directly to SyncSketche’s internal S3 instead of to
+the SyncSketch server. In some cases, using this method over add_media can improve upload performance and
+stability. Unlike add_media this method does not return as much data about the created item.
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBreview_id\fP (\fIint\fP) – Required review_id.
+.IP \(bu 2
+\fBfilepath\fP (\fIstr\fP) – path for the file on disk e.g /tmp/movie.webm.
+.IP \(bu 2
+\fBfile_name\fP (\fIstr\fP) – The name of the file. Please make sure to pass the correct file extension.
+.IP \(bu 2
+\fBnoConvertFlag\fP (\fIbool\fP) – the video you are uploading is already in a browser compatible format.
+.UNINDENT
+.TP
+.B Returns
+A dict, containing “item_id” and “uuid” or None on failure.
+.TP
+.B Return type
+Optional[dict]
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B get_media(searchCriteria)
+This is a general search function. You can search media items by
+.sp
+‘id’
+‘name’
+‘status’
+‘active’
+‘creator’: ALL_WITH_RELATIONS, <– these are foreign key queries
+‘reviews’: ALL_WITH_RELATIONS, <– these are foreign key queries
+‘created’ using ‘exact’, ‘range’, ‘gt’, ‘gte’, ‘lt’, ‘lte’
+.sp
+To query items by foreign keys please use the foreign key syntax described in the Django search definition:
+\X'tty: link https://docs.djangoproject.com/en/1.11/topics/db/queries/'\fI\%https://docs.djangoproject.com/en/1.11/topics/db/queries/\fP\X'tty: link'
+.sp
+If you want to query by “review name” for example you would pass in
+.sp
+reviews__name = NAME TO SEARCH
+.sp
+Using the “__” syntax you can even search for items by project like
+.sp
+reviews__project__name = $PROJECT NAME TO SEARCH
+.sp
+To speed up a query you can also pass in a limit e.g limit:10
+.sp
+results = s.getMedia({‘reviews__project__name’:’test’, ‘limit’: 1, ‘active’: 1})
+.sp
+NOTE: Please make sure to include the active:1 query if you only want active media. Deleted files are currently
+only deactivated and kept for a certain period of time before they are “purged” from the system.
+.INDENT 7.0
+.TP
+.B Parameters
+\fBsearchCriteria\fP (\fIdict\fP) – Search params
+.TP
+.B Returns
+List of media items
+.TP
+.B Return type
+list[dict]
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B get_items_by_review_id(review_id)
+Get all items in a review
+.INDENT 7.0
+.TP
+.B Parameters
+\fBreview_id\fP (\fIint\fP) – Review ID
+.TP
+.B Returns
+List of media items
+.TP
+.B Return type
+list[dict]
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B delete_item(item_id)
+Delete a item by id.
+.INDENT 7.0
+.TP
+.B Parameters
+\fBitem_id\fP (\fIint\fP) – Item ID to delete
+.TP
+.B Returns
+
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B bulk_delete_items(item_ids)
+Delete multiple items by id.
+.INDENT 7.0
+.TP
+.B Parameters
+\fBitem_ids\fP (\fIlist\fP\fI[\fP\fIint\fP\fI]\fP) – List of item IDs to delete
+.TP
+.B Returns
+
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B move_items(new_review_id, item_data)
+Move items from one review to another
+.sp
+item_data should be a list of dictionaries with the old review id and the item id.
+The items in the list will be moved to the new review for the param new_review_id
+.INDENT 7.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+# Example item_data
+# review_id is the current review an item is in
+# it will be moved to the new_review_id
+items_to_move = [
+    {\(dqreview_id\(dq: 1, \(dqitem_id\(dq: 1},
+    {\(dqreview_id\(dq: 1, \(dqitem_id\(dq: 2},
+    {\(dqreview_id\(dq: 1, \(dqitem_id\(dq: 3},
+]
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBnew_review_id\fP (\fIint\fP) – The review id to move the items to
+.IP \(bu 2
+\fBitem_data\fP (\fIlist\fP\fI[\fP\fIdict\fP\fI]\fP) – List of dictionaries with the old review id and the item id
+.UNINDENT
+.TP
+.B Returns
+
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B add_comment(item_id, text, review_id, frame=0)
+Add a comment to an item
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBitem_id\fP (\fIint\fP) – Item to add the comment to
+.IP \(bu 2
+\fBtext\fP (\fIstr\fP) – Comment text
+.IP \(bu 2
+\fBreview_id\fP (\fIint\fP) – Review you are adding the comment to
+.IP \(bu 2
+\fBframe\fP (\fIint\fP) – Frame number of the video to add the comment to (if applicable)
+.UNINDENT
+.TP
+.B Returns
+
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B get_annotations(item_id, revisionId=False, review_id=False)
+Get sketches and comments for an item. Frames have a revision id which signifies a “set of notes”.
+When querying an item you’ll get the available revisions for this item. If you wish to get only the latest
+revision, please get the revisionId for the latest revision.
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBitem_id\fP (\fIint\fP) – id of the media item you are querying.
+.IP \(bu 2
+\fBrevisionId\fP (\fIint\fP) – Optional revisionId to narrow down the results
+.IP \(bu 2
+\fBreview_id\fP (\fIint\fP) – RECOMMENDED \- retrieve annotations for a specific review only.
+.UNINDENT
+.TP
+.B Returns
+dict
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B get_flattened_annotations(review_id, item_id, with_tracing_paper=False, return_as_base64=False)
+Returns a list of sketches either as signed urls from s3 or base64 encoded strings.
+The sketches are composited over the background frame of the item.
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBreview_id\fP (\fIint\fP) – Review ID
+.IP \(bu 2
+\fBitem_id\fP (\fIint\fP) – Item ID
+.IP \(bu 2
+\fBwith_tracing_paper\fP (\fIbool\fP) – Include tracing paper in the response
+.IP \(bu 2
+\fBreturn_as_base64\fP (\fIbool\fP) – Return sketches as base64 encoded strings
+.UNINDENT
+.TP
+.B Returns
+List of sketches as signed urls from s3 or base64 encoded strings
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B get_grease_pencil_overlays(review_id, item_id, homedir=None)
+Download overlay sketches for Maya Greasepencil.
+.sp
+Download overlay sketches for Maya Greasepencil. Function will download
+a zip file which contains an XML and the sketches as png files. Maya
+can load the zip file to overlay the sketches over the 3D model!
+.sp
+For more information visit:
+\X'tty: link https://knowledge.autodesk.com/support/maya/learn-explore/caas/CloudHelp/cloudhelp/2015/ENU/Maya/files/Grease-Pencil-Tool-htm.html'\fI\%https://knowledge.autodesk.com/support/maya/learn\-explore/caas/CloudHelp/cloudhelp/2015/ENU/Maya/files/Grease\-Pencil\-Tool\-htm.html\fP\X'tty: link'
+.sp
+PLEASE make sure that /tmp is writable
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBreview_id\fP (\fIint\fP) – Review ID
+.IP \(bu 2
+\fBitem_id\fP (\fIint\fP) – Item ID
+.IP \(bu 2
+\fBhomedir\fP (\fIstr\fP) – Optional path to download the zip file to
+.UNINDENT
+.TP
+.B Returns
+filePath to the zip file with the greasePencil data.
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B get_users_by_name(name)
+Name is a combined search and will search in first_name, last_name and email
+.INDENT 7.0
+.TP
+.B Parameters
+\fBname\fP (\fIstr\fP) – Name to search for
+.TP
+.B Returns
+List of users
+.TP
+.B Return type
+list[dict]
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B get_user_by_email(email)
+Get user by email
+.INDENT 7.0
+.TP
+.B Parameters
+\fBemail\fP (\fIstr\fP) – Email to search for
+.TP
+.B Returns
+User data
+.TP
+.B Return type
+dict
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B get_users_by_project_id(project_id)
+Get all users in a project
+.INDENT 7.0
+.TP
+.B Parameters
+\fBproject_id\fP (\fIint\fP)
+.TP
+.B Returns
+List of users
+.TP
+.B Return type
+list[dict]
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B get_connections_by_user_id(user_id, account_id, include_inactive=None, include_archived=None)
+Get all project and account connections for a user. Good for checking access for a user that might have left…
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBuser_id\fP (\fIint\fP) – User ID to get connections for
+.IP \(bu 2
+\fBaccount_id\fP (\fIint\fP) – Account ID to get connections for
+.IP \(bu 2
+\fBinclude_inactive\fP (\fIbool\fP) – Include inactive projects
+.IP \(bu 2
+\fBinclude_archived\fP (\fIbool\fP) – Include archived projects
+.UNINDENT
+.TP
+.B Returns
+List of connections
+.TP
+.B Return type
+list[dict]
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B get_user_by_id(user_id)
+Get a user by ID
+.INDENT 7.0
+.TP
+.B Parameters
+\fBuser_id\fP (\fIint\fP)
+.TP
+.B Returns
+User data
+.TP
+.B Return type
+dict
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B add_users_to_workspace(workspace_id, users, note=\(aq\(aq)
+Add Users to Workspace
+.INDENT 7.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+users=[{\(dqemail\(dq:\(dqtest@test.de\(dq,\(dqpermission\(dq:\(dqadmin\(dq}]
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBworkspace_id\fP (\fIint\fP) – id of the workspace
+.IP \(bu 2
+\fBusers\fP (\fIlist\fP) – list of new users \- possible permissions “admin”, “manager”
+.IP \(bu 2
+\fBnote\fP (\fIstr\fP) – (Optional) message for the invitation email
+.UNINDENT
+.TP
+.B Returns
+response
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B remove_users_from_workspace(workspace_id, users)
+Remove a list of users from a workspace
+Can remove by id or email
+.INDENT 7.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+users=[{\(dqemail\(dq:\(dqtest@test.de\(dq}, {\(dqid\(dq:12345}]
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBworkspace_id\fP (\fIint\fP) – id of the workspace
+.IP \(bu 2
+\fBusers\fP (\fIlist\fP) – list of users to remove \- either remove by user email or id
+.UNINDENT
+.TP
+.B Returns
+response
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B add_users_to_project(project_id, users, note=\(aq\(aq)
+Add Users to Project
+.sp
+possible permissions
+.INDENT 7.0
+.IP \(bu 2
+admin
+.IP \(bu 2
+member
+.IP \(bu 2
+viewer
+.IP \(bu 2
+reviewer
+.UNINDENT
+.INDENT 7.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+users=[{\(dqemail\(dq:\(dqtest@test.de\(dq,\(dqpermission\(dq:\(dqviewer\(dq}]
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBproject_id\fP (\fIint\fP) – id of the project
+.IP \(bu 2
+\fBusers\fP (\fIlist\fP\fI[\fP\fIdict\fP\fI]\fP) – list of new users
+.IP \(bu 2
+\fBnote\fP (\fIstr\fP) – (Optional) message for the invitation email
+.UNINDENT
+.TP
+.B Returns
+response
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B remove_users_from_project(project_id, users)
+Remove a list of users from a project
+.sp
+remove by user email or id
+.INDENT 7.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+users=[{\(dqemail\(dq:\(dqtest@test.de\(dq}, {\(dqid\(dq:12345}]
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBproject_id\fP (\fIint\fP) – id of the project
+.IP \(bu 2
+\fBusers\fP (\fIlist\fP) – list of users to remove \- either remove by user email or id
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B shotgrid_create_config(syncsketch_account_id, syncsketch_project_id=None, data=None)
+Create a new Shotgrid configuration for a SyncSketch workspace and optionally a project
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBsyncsketch_account_id\fP (\fIint\fP)
+.IP \(bu 2
+\fBsyncsketch_project_id\fP (\fIint\fP)
+.IP \(bu 2
+\fBdata\fP (\fIdict\fP) – Configuration data.
+.UNINDENT
+.TP
+.B Returns
+
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B shotgrid_get_playlists(syncsketch_account_id, syncsketch_project_id, shotgun_project_id=None)
+Returns list of Shotgrid playlists modified in the last 120 days
+If the syncsketch project is directly linked to a shotgrid by the workspace admin, the
+param shotgun_project_id will be ignored and can be omitted during the function call
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBsyncsketch_account_id\fP (\fIint\fP) – SyncSketch account id
+.IP \(bu 2
+\fBsyncsketch_project_id\fP (\fIint\fP) – SyncSketch project id
+.IP \(bu 2
+\fBshotgun_project_id\fP (\fIint\fP) – (optional) Shotgrid project id
+.UNINDENT
+.TP
+.B Returns
+list of Shotgrid playlists
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B shotgrid_sync_review_notes(review_id)
+Sync notes from SyncSketch review to the original shotgrid playlist
+Returns task id to use in get_shotgun_sync_review_notes_progress to get progress
+.sp
+returns dict with information about the REST API call:
+.INDENT 7.0
+.IP \(bu 2
+message=<STR> “Shotgrid review notes sync started”
+.IP \(bu 2
+status=<STR> processing/done/failed
+.IP \(bu 2
+progress_url=<STR> Full url to call for progress/results
+.IP \(bu 2
+task_id=<STR> task_ids pass this value to the get_shotgun_sync_review_items_progress function
+.IP \(bu 2
+percent_complete=<INT> 0\-100 value of percent complete
+.IP \(bu 2
+total_items=<INT> number of items being synced from shotgrid
+.IP \(bu 2
+remaining_items=<INT> number of items not yet pulled from shotgrid
+.UNINDENT
+.INDENT 7.0
+.TP
+.B Parameters
+\fBreview_id\fP (\fIint\fP) – SyncSketch review id
+.TP
+.B Returns
+Progress information
+.TP
+.B Return type
+dict
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B shotgrid_sync_new_item_notes(project_id, review_id, item_id)
+Sync new notes from SyncSketch review item to the original shotgrid playlist
+Returns dict with information about the REST API call
+.INDENT 7.0
+.IP \(bu 2
+sketch_upload_error=<BOOL> “True in case of error”
+.IP \(bu 2
+sketches=<INT> “Number of sketches synced”
+.IP \(bu 2
+comments=<INT> “Number of comments synced”
+.IP \(bu 2
+attachments=<INT> “Number of attachments synced”
+.IP \(bu 2
+item_name=<STR> “Name of item that was synced”
+.UNINDENT
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBproject_id\fP (\fIint\fP) – SyncSketch project id
+.IP \(bu 2
+\fBreview_id\fP (\fIint\fP) – SyncSketch review id
+.IP \(bu 2
+\fBitem_id\fP (\fIint\fP) – SyncSketch item id
+.UNINDENT
+.TP
+.B Returns
+
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B get_shotgrid_sync_review_notes_progress(task_id)
+Returns status of review notes sync for the task id provided in shotgun_sync_review_notes
+.sp
+Returns a dict with the following keys:
+.INDENT 7.0
+.IP \(bu 2
+message=<STR> “Shotgrid review notes sync started”
+.IP \(bu 2
+status=<STR> processing/done/failed
+.IP \(bu 2
+progress_url=<STR> Full url to call for progress/results
+.IP \(bu 2
+task_id=<STR> task_ids pass this value to the get_shotgun_sync_review_items_progress function
+.IP \(bu 2
+percent_complete=<INT> 0\-100 value of percent complete
+.IP \(bu 2
+total_items=<INT> number of items being synced from shotgrid
+.IP \(bu 2
+remaining_items=<INT> number of items not yet pulled from shotgrid
+.UNINDENT
+.INDENT 7.0
+.TP
+.B Parameters
+\fBtask_id\fP (\fIstr\fP) – UUID of the task returned by shotgrid_sync_review_notes
+.TP
+.B Returns
+Progress information
+.TP
+.B Return type
+dict
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B shotgrid_sync_review_items(syncsketch_project_id, playlist_code, playlist_id, review_id=None)
+Create or update SyncSketch review with shotgrid playlist items
+Returns task id to use in get_shotgun_sync_review_items_progress to get progress
+.sp
+Response format:
+.INDENT 7.0
+.IP \(bu 2
+message=<STR> “Shotgrid review item sync started”,
+.IP \(bu 2
+status=<STR> processing/done/failed,
+.IP \(bu 2
+progress_url=<STR> Full url to call for progress/results,
+.IP \(bu 2
+task_id=<STR> task_ids \- pass this value to the get_shotgun_sync_review_items_progress function,
+.IP \(bu 2
+percent_complete=<INT> 0\-100 value of percent complete,
+.IP \(bu 2
+total_items=<INT> number of items being synced from shotgrid,
+.IP \(bu 2
+remaining_items=<INT> number of items not yet pulled from shotgrid,
+.IP \(bu 2
+data=<dict>
+.IP \(bu 2
+review_id=<INT> review.id,
+.IP \(bu 2
+review_link=<STR> url link to the syncsketch player with the review pulled from shotgrid,
+.UNINDENT
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBsyncsketch_project_id\fP (\fIint\fP)
+.IP \(bu 2
+\fBplaylist_code\fP (\fIstr\fP)
+.IP \(bu 2
+\fBplaylist_id\fP (\fIint\fP)
+.IP \(bu 2
+\fBreview_id\fP (\fIint\fP) – (optional)
+.UNINDENT
+.TP
+.B Returns
+
+.TP
+.B Return type
+dict
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B get_shotgrid_sync_review_items_progress(task_id)
+Returns status of review items sync for the task id provided in shotgun_sync_review_items
+.INDENT 7.0
+.TP
+.B Parameters
+\fBtask_id\fP (\fIstr\fP) – UUID of the task returned by shotgrid_sync_review_items
+.TP
+.B Returns
+DeprecationWarning
+.TP
+.B Return type
+dict
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B add_media_v1(review_id, filepath, artist_name=\(aq\(aq, file_name=\(aq\(aq, noConvertFlag=False, itemParentId=False)
+Convenience function to upload a file to a review. It will automatically create
+an Item and attach it to the review. NOTE \- if you are hosting your own media, please
+use the addItem function and pass in the external_url and external_thumbnail_url
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBreview_id\fP (\fIint\fP) – Required review_id
+.IP \(bu 2
+\fBfilepath\fP (\fIstr\fP) – path for the file on disk e.g /tmp/movie.webm
+.IP \(bu 2
+\fBartist_name\fP (\fIstr\fP) – The name of the artist you want associated with this media file
+.IP \(bu 2
+\fBfile_name\fP (\fIstr\fP) – The name of the file. Please make sure to pass the correct file extension
+.IP \(bu 2
+\fBnoConvertFlag\fP (\fIbool\fP) – the video you are uploading is already in a browser compatible format
+.IP \(bu 2
+\fBitemParentId\fP (\fIint\fP) – (Optional) set when you want to add a new version of an item. itemParentId is the id of the item you want to upload a new version for
+.UNINDENT
+.TP
+.B Returns
+Item data
+.TP
+.B Return type
+dict
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B get_shotgun_sync_review_items_progress(task_id)
+Returns status of review items sync for the task id provided in shotgun_sync_review_items
+.INDENT 7.0
+.TP
+.B Parameters
+\fBtask_id\fP (\fIstr\fP) – UUID of the task returned by shotgrid_sync_review_items
+.TP
+.B Returns
+DeprecationWarning
+.TP
+.B Return type
+dict
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B shotgun_sync_review_items(syncsketch_project_id, playlist_code, playlist_id, review_id=None)
+Create or update SyncSketch review with shotgrid playlist items
+Returns task id to use in get_shotgun_sync_review_items_progress to get progress
+.sp
+Response format:
+.INDENT 7.0
+.IP \(bu 2
+message=<STR> “Shotgrid review item sync started”,
+.IP \(bu 2
+status=<STR> processing/done/failed,
+.IP \(bu 2
+progress_url=<STR> Full url to call for progress/results,
+.IP \(bu 2
+task_id=<STR> task_ids \- pass this value to the get_shotgun_sync_review_items_progress function,
+.IP \(bu 2
+percent_complete=<INT> 0\-100 value of percent complete,
+.IP \(bu 2
+total_items=<INT> number of items being synced from shotgrid,
+.IP \(bu 2
+remaining_items=<INT> number of items not yet pulled from shotgrid,
+.IP \(bu 2
+data=<dict>
+.IP \(bu 2
+review_id=<INT> review.id,
+.IP \(bu 2
+review_link=<STR> url link to the syncsketch player with the review pulled from shotgrid,
+.UNINDENT
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBsyncsketch_project_id\fP (\fIint\fP)
+.IP \(bu 2
+\fBplaylist_code\fP (\fIstr\fP)
+.IP \(bu 2
+\fBplaylist_id\fP (\fIint\fP)
+.IP \(bu 2
+\fBreview_id\fP (\fIint\fP) – (optional)
+.UNINDENT
+.TP
+.B Returns
+
+.TP
+.B Return type
+dict
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B shotgun_sync_new_item_notes(project_id, review_id, item_id)
+Sync new notes from SyncSketch review item to the original shotgrid playlist
+Returns dict with information about the REST API call
+.INDENT 7.0
+.IP \(bu 2
+sketch_upload_error=<BOOL> “True in case of error”
+.IP \(bu 2
+sketches=<INT> “Number of sketches synced”
+.IP \(bu 2
+comments=<INT> “Number of comments synced”
+.IP \(bu 2
+attachments=<INT> “Number of attachments synced”
+.IP \(bu 2
+item_name=<STR> “Name of item that was synced”
+.UNINDENT
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBproject_id\fP (\fIint\fP) – SyncSketch project id
+.IP \(bu 2
+\fBreview_id\fP (\fIint\fP) – SyncSketch review id
+.IP \(bu 2
+\fBitem_id\fP (\fIint\fP) – SyncSketch item id
+.UNINDENT
+.TP
+.B Returns
+
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B shotgun_sync_review_notes(review_id)
+Sync notes from SyncSketch review to the original shotgrid playlist
+Returns task id to use in get_shotgun_sync_review_notes_progress to get progress
+.sp
+returns dict with information about the REST API call:
+.INDENT 7.0
+.IP \(bu 2
+message=<STR> “Shotgrid review notes sync started”
+.IP \(bu 2
+status=<STR> processing/done/failed
+.IP \(bu 2
+progress_url=<STR> Full url to call for progress/results
+.IP \(bu 2
+task_id=<STR> task_ids pass this value to the get_shotgun_sync_review_items_progress function
+.IP \(bu 2
+percent_complete=<INT> 0\-100 value of percent complete
+.IP \(bu 2
+total_items=<INT> number of items being synced from shotgrid
+.IP \(bu 2
+remaining_items=<INT> number of items not yet pulled from shotgrid
+.UNINDENT
+.INDENT 7.0
+.TP
+.B Parameters
+\fBreview_id\fP (\fIint\fP) – SyncSketch review id
+.TP
+.B Returns
+Progress information
+.TP
+.B Return type
+dict
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B shotgun_get_playlists(syncsketch_account_id, syncsketch_project_id, shotgun_project_id=None)
+Returns list of Shotgrid playlists modified in the last 120 days
+If the syncsketch project is directly linked to a shotgrid by the workspace admin, the
+param shotgun_project_id will be ignored and can be omitted during the function call
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBsyncsketch_account_id\fP (\fIint\fP) – SyncSketch account id
+.IP \(bu 2
+\fBsyncsketch_project_id\fP (\fIint\fP) – SyncSketch project id
+.IP \(bu 2
+\fBshotgun_project_id\fP (\fIint\fP) – (optional) Shotgrid project id
+.UNINDENT
+.TP
+.B Returns
+list of Shotgrid playlists
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B shotgun_create_config(syncsketch_account_id, syncsketch_project_id=None, data=None)
+Create a new Shotgrid configuration for a SyncSketch workspace and optionally a project
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBsyncsketch_account_id\fP (\fIint\fP)
+.IP \(bu 2
+\fBsyncsketch_project_id\fP (\fIint\fP)
+.IP \(bu 2
+\fBdata\fP (\fIdict\fP) – Configuration data.
+.UNINDENT
+.TP
+.B Returns
+
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B shotgun_get_projects(syncsketch_project_id)
+Returns list of Shotgrid projects connected to your account
+.INDENT 7.0
+.TP
+.B Parameters
+\fBsyncsketch_project_id\fP (\fIint\fP) – SyncSketch project id
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.SH AUTHOR
+Brady Endres, Phil Floetotto, Nicholas Kegler dos Santos, Tyler Nickerson
+.SH COPYRIGHT
+2024, Brady Endres, Phil Floetotto, Nicholas Kegler dos Santos, Tyler Nickerson
+.\" Generated by docutils manpage writer.
+.

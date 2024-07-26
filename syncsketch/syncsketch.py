@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
-"""Summary"""
 # @Author: floepi
 # @Date:   2015-06-04 17:42:44
 # @Last Modified by: Brady Endres
 # @Last Modified time: 2024-04-04
-#!/usr/local/bin/python
 
 from __future__ import absolute_import, division, print_function
 
@@ -43,15 +41,18 @@ class SyncSketchAPI:
         api_version="v1",
         use_header_auth=False,
     ):
-        """Summary
+        """
+        Setup the SyncSketch API class.
 
-        Args:
-            user_auth (str): Your email or username
-            api_key (str): Your SyncSketch API Key, found in the settings tab
-            host (str): Used for testing or local installs
-            useExpiringToken (bool, optional): When using the expiring tokens for authentication.
-            Expiring tokens are generated behind a authenticated URL like https://syncsketch.com/users/getToken/
-            which returns JSON when the authentication is successful
+        :param str auth: Your email or username
+        :param str api_key:: Your SyncSketch API Key, found in the settings tab
+        :param str host: Used for testing or local installs
+        :param bool useExpiringToken: (Optional) When using the expiring tokens for authentication. Expiring tokens are generated behind a authenticated URL like https://syncsketch.com/users/getToken/ which returns JSON when the authentication is successful
+        :param bool debug: (Optional) Print debug information
+        :param str api_version: (Optional) The version of the API to use
+        :param bool use_header_auth: (Optional) Use header authentication instead of query parameters
+        :return: SyncSketchAPI
+        :rtype: SyncSketchAPI
         """
         # set initial values
         self.user_auth = auth
@@ -97,7 +98,6 @@ class SyncSketchAPI:
         :param str base: The "base" path to append to.
         :param path_segments: Additional strings to be appened to the path.
         :type path_segments: List[str]
-
         :returns: A "/" terminated string containing base and path_segments delimited by "/".
         """
         # remove preceeding "/" from entries to avoid absolute path behavior with os.path.join
@@ -168,7 +168,9 @@ class SyncSketchAPI:
         Convenience function to check if the API is connected to SyncSketch
         Will check against Status Code 200 and return False if not which most likely would be
         and authorization error
-        :return:
+
+        :return: Connection success
+        :rtype: bool
         """
         url = "/api/v1/person/connected/"
         params = self.api_params.copy()
@@ -181,36 +183,36 @@ class SyncSketchAPI:
 
     def get_tree(self, withItems=False):
         """
-            get nested tree of account, projects, reviews and optionally items for the current user
-        :param withItems:
-        :return:
+        Get nested tree of account, projects, reviews and optionally items for the current user
+
+        :param bool withItems: Include items in the response
+        :return: Tree data
+        :rtype: dict
         """
         get_params = {"fetchItems": 1} if withItems else {}
         return self._get_json_response("/api/v1/person/tree/", getData=get_params)
 
     """
-    Accounts
+    Workspace / Account
     """
 
     def get_accounts(self):
         """Summary
 
-        Returns:
-            TYPE: Account
+        :return: List of workspaces the user has access to
+        :rtype: list[dict]
         """
         get_params = {"active": 1}
         return self._get_json_response("/api/v1/account/", getData=get_params)
 
     def update_account(self, account_id, data):
         """
-        Update a project
+        Update a workspace / account
 
-        Args:
-            account_id (TYPE): the id of the item
-            data (dict): normal dict with data for item
-
-        Returns:
-            TYPE: item
+        :param int account_id: the id of the item
+        :param dict data: normal dict with data for item
+        :return: Workspace / Account data
+        :rtype: dict
         """
         if not isinstance(data, dict):
             print("Please make sure you pass a dict as data")
@@ -228,9 +230,10 @@ class SyncSketchAPI:
 
         :param int account_id: id of the account to connect with
         :param str name: Name of the project
-        :param description: String
+        :param str description: Description of the project
         :param dict data: additional information e.g is_public. Find out more about available fields at /api/v1/project/schema/.
-        :return:
+        :return: Project data
+        :rtype: dict
         """
         if data is None:
             data = {}
@@ -257,12 +260,14 @@ class SyncSketchAPI:
         """
         Get a list of currently active projects
 
-        :param include_deleted: boolean: if true, include deleted projects
-        :param include_archived: boolean: if true, include archived projects
-        :param include_tags: boolean: if true, include tag list on the project object
-
-        Returns:
-            TYPE: Dict with meta information and an array of found projects
+        :param bool include_deleted: if true, include deleted projects
+        :param bool include_archived: if true, include archived projects
+        :param bool include_tags: if true, include tag list on the project object
+        :param bool include_connections: if true, include full user connections on the project object
+        :param int limit: limit the number of results
+        :param int offset: offset the results
+        :return: Dict with meta information and an array of found projects
+        :rtype: list[dict]
         """
         get_params = {
             "active": 1,
@@ -291,8 +296,9 @@ class SyncSketchAPI:
         """
         Get a project by name regardless of status
 
-        Returns:
-            TYPE: Dict with meta information and an array of found projects
+        :param str name: Name to search for
+        :return: List of projects
+        :rtype: list[dict]
         """
         get_params = {"name__istartswith": name}
         return self._get_json_response("/api/v1/project/", getData=get_params)
@@ -300,16 +306,19 @@ class SyncSketchAPI:
     def get_project_by_id(self, project_id):
         """
         Get single project by id
-        :param project_id: Number
-        :return:
+
+        :param int project_id: Project id
+        :return: Project data
+        :rtype: dict
         """
         return self._get_json_response("/api/v1/project/%s/" % project_id)
 
     def get_project_storage(self, project_id):
         """
         Get project storage usage in bytes
-        :param project_id: Number
-        :return:
+
+        :param int project_id: Project id
+        :return: Storage usage in bytes
         """
         return self._get_json_response("/api/v2/project/%s/storage/" % project_id)
 
@@ -317,12 +326,10 @@ class SyncSketchAPI:
         """
         Update a project
 
-        Args:
-            project_id (TYPE): the id of the item
-            data (dict): normal dict with data for item
-
-        Returns:
-            TYPE: item
+        :param int project_id: the id of the item
+        :param dict data: dict with new data for item
+        :return: updated project data
+        :rtype: dict
         """
         if not isinstance(data, dict):
             print("Please make sure you pass a dict as data")
@@ -332,8 +339,9 @@ class SyncSketchAPI:
 
     def delete_project(self, project_id):
         """
-        Get single project by id.
-        :param project_id: Number
+        Delete a project by id.
+
+        :param int project_id: Project ID to delete
         :return:
         """
         return self._get_json_response("/api/v1/project/%s/" % project_id, patchData=dict(active=False))
@@ -349,12 +357,13 @@ class SyncSketchAPI:
         """
         Create a new project from an existing project
 
-        :param project_id: Int
-        :param name: Str
-        :param copy_reviews: Bool
-        :param copy_users: Bool
-        :param copy_settings: Bool
+        :param int project_id: Source project id
+        :param str name: New project name
+        :param bool copy_reviews: Whether to copy reviews (without items)
+        :param bool copy_users: Whether to copy users
+        :param bool copy_settings: Whether to copy settings
         :return: New project data
+        :rtype: dict[str, Any]
         """
 
         config = dict(
@@ -408,8 +417,10 @@ class SyncSketchAPI:
     def get_reviews_by_project_id(self, project_id, limit=100, offset=0):
         """
         Get list of reviews by project id.
-        :param project_id: Number
+
+        :param int project_id: SyncSketch project id
         :return: Dict with meta information and an array of found projects
+        :rtype: list[dict]
         """
         get_params = {
             "project__id": project_id,
@@ -423,6 +434,7 @@ class SyncSketchAPI:
     def get_review_by_name(self, name):
         """
         Get reviews by name using a case insensitive startswith query
+
         :param name: String - Name of the review
         :return: Dict with meta information and an array of found projects
         """
@@ -432,6 +444,7 @@ class SyncSketchAPI:
     def get_review_by_id(self, review_id):
         """
         Get single review by id.
+
         :param review_id: Number
         :return: Review Dict
         """
@@ -440,8 +453,11 @@ class SyncSketchAPI:
     def get_review_by_uuid(self, uuid):
         """
         Get single review by uuid.
-        :param uuid:
+        UUID can be found in the review URL e.g. syncsketch.com/sketch/<uuid>/
+
+        :param str uuid: UUID of the review.
         :return: Review dict
+        :rtype: dict
         """
         data = self._get_json_response("/api/v1/review/", getData={"uuid": uuid})
         if "objects" in data and len(data["objects"]) > 0:
@@ -451,8 +467,10 @@ class SyncSketchAPI:
     def get_review_storage(self, review_id):
         """
         Get review storage usage in bytes
-        :param review_id: Number
-        :return:
+
+        :param int review_id: Review ID
+        :return: Storage usage in bytes
+        :rtype: int
         """
         return self._get_json_response("/api/v2/review/%s/storage/" % review_id)
 
@@ -460,12 +478,10 @@ class SyncSketchAPI:
         """
         Update a review
 
-        Args:
-            review_id (TYPE): the id of the item
-            data (dict): normal dict with data for item
-
-        Returns:
-            TYPE: item
+        :param int review_id: the id of the item
+        :param dict data: dict with data for item
+        :return: updated review data
+        :rtype: dict
         """
         if not isinstance(data, dict):
             print("Please make sure you pass a dict as data")
@@ -477,20 +493,26 @@ class SyncSketchAPI:
         """
         Update a review
 
-        Args:
-            review_id (TYPE): the id of the item
-            items (list): payload
-                e.g.
-                [
-                    {
-                        "id": 1, # item id
-                        "sortorder": 0, # sortorder, starting at 0
-                    }
-                ]
+        Example `items` param
 
-        Returns:
-            TYPE: dict
-                { "updated_items": int }  # number of successful items sort updated
+        .. code:: python
+
+            items = [{
+                "id": 1, # item id
+                "sortorder": 0, # sortorder, starting at 0
+            }]
+
+        Method output example:
+
+        .. code:: python
+
+            # number of successful items sort updated
+            { "updated_items": int }
+
+        :param int review_id: the id of the item
+        :param list items: payload
+        :return: response
+        :rtype: dict
         """
         if not isinstance(items, list):
             print("Please make sure you pass a list as data")
@@ -520,8 +542,9 @@ class SyncSketchAPI:
 
     def delete_review(self, review_id):
         """
-        Get single review by id.
-        :param review_id: Int
+        Delete a review by id.
+
+        :param int review_id: Review ID to delete
         :return:
         """
         return self._get_json_response("/api/v1/review/%s/" % review_id, patchData=dict(active=False))
@@ -534,14 +557,13 @@ class SyncSketchAPI:
         return self._get_json_response("/api/v1/item/{}/".format(item_id), getData=data)
 
     def update_item(self, item_id, data):
-        """Summary
+        """
+        Update an item
 
-        Args:
-            item_id (TYPE): the id of the item
-            data (dict): normal dict with data for item
-
-        Returns:
-            TYPE: item
+        :param int item_id: the id of the item
+        :param dict data: dict with data for item
+        :return: updated item data
+        :rtype: dict
         """
         if not isinstance(data, dict):
             print("Please make sure you pass a dict as data")
@@ -554,21 +576,18 @@ class SyncSketchAPI:
         create a media item record and connect it to a review. This should be used in case you want to add items with externaly hosted
         media by passing in the external_url and external_thumbnail_url to the additionalData dict e.g
 
-        additionalData = {
-            external_url: http://52.24.98.51/wp-content/uploads/2017/03/rain.jpg
-            external_thumbnail_url: http://52.24.98.51/wp-content/uploads/2017/03/rain.jpg
-        }
+        .. code:: python
 
-        NOTE: you always need to pass in FPS for SyncSketch to work!
+            additionalData = {
+                external_url: http://52.24.98.51/wp-content/uploads/2017/03/rain.jpg
+                external_thumbnail_url: http://52.24.98.51/wp-content/uploads/2017/03/rain.jpg
+            }
 
-        For a complete list of available fields to set, please
-        visit https://www.syncsketch.com/api/v1/item/schema/
+        or
 
-        Args:
-            review_id (TYPE): Required review_id
-            name (TYPE): Name of the item
-            fps (TYPE): The frame per second is very important for syncsketch to determine the correct number of frames
-            additional_data (TYPE): dictionary with item info like {
+        .. code:: python
+
+            additionalData = {
                 width:1024
                 height:720
                 artist: "Brady Endres"
@@ -578,8 +597,17 @@ class SyncSketchAPI:
                 type: image | video
             }
 
-        Returns:
-            TYPE: Item
+        NOTE: you always need to pass in FPS for SyncSketch to work!
+
+        For a complete list of available fields to set, please
+        visit https://www.syncsketch.com/api/v1/item/schema/
+
+        :param int review_id: Required review_id
+        :param str name: Name of the item
+        :param float fps: The frame per second is very important for syncsketch to determine the correct number of frames
+        :param dict additional_data: dictionary with item info
+        :return: Item data
+        :rtype: dict
         """
 
         postData = {
@@ -603,21 +631,18 @@ class SyncSketchAPI:
         itemParentId=False,
     ):
         """
-            Convenience function to upload a file to a review. It will automatically create
-            an Item and attach it to the review. NOTE - if you are hosting your own media, please
-            use the addItem function and pass in the external_url and external_thumbnail_url
+        Convenience function to upload a file to a review. It will automatically create
+        an Item and attach it to the review. NOTE - if you are hosting your own media, please
+        use the addItem function and pass in the external_url and external_thumbnail_url
 
-        Args:
-            review_id (int): Required review_id
-            filepath (string): path for the file on disk e.g /tmp/movie.webm
-            artist_name (string): The name of the artist you want associated with this media file
-            file_name (string): The name of the file. Please make sure to pass the correct file extension
-            noConvertFlag (bool): the video you are uploading is already in a browser compatible format
-            itemParentId (int): set when you want to add a new version of an item.
-                                itemParentId is the id of the item you want to upload a new version for
-
-        Returns:
-            TYPE: Description
+        :param int review_id: Required review_id
+        :param str filepath: path for the file on disk e.g /tmp/movie.webm
+        :param str artist_name: The name of the artist you want associated with this media file
+        :param str file_name: The name of the file. Please make sure to pass the correct file extension
+        :param bool noConvertFlag: the video you are uploading is already in a browser compatible format
+        :param int itemParentId: (Optional) set when you want to add a new version of an item. itemParentId is the id of the item you want to upload a new version for
+        :return: Item data
+        :rtype: dict
         """
         get_params = self.api_params.copy()
 
@@ -648,18 +673,17 @@ class SyncSketchAPI:
 
     def add_media_by_url(self, review_id, media_url, artist_name="", noConvertFlag=False):
         """
-            Convenience function to upload a mediaURl to a review. Please use this function when you already have your files in the cloud, e.g
-            AWS, Dropbox, Shotgrid, etc...
+        Convenience function to upload a mediaURl to a review. Please use this function when you already have your files in the cloud, e.g
+        AWS, Dropbox, Shotgrid, etc...
 
-            We will automatically create an Item and attach it to the review.
+        We will automatically create an Item and attach it to the review.
 
-        Args:
-            review_id (int): Required review_id
-            media_url (string): url to the media you are trying to upload
-            noConvertFlag (bool): the video you are uploading is already in a browser compatible format and does not need to be converted
-
-        Returns:
-            TYPE: Description
+        :param int review_id: Required review_id
+        :param str media_url: url to the media you are trying to upload
+        :param str artist_name: The name of the artist you want associated with this media file
+        :param bool noConvertFlag: the video you are uploading is already in a browser compatible format and does not need to be converted
+        :return: Item data
+        :rtype: dict
         """
         get_params = self.api_params.copy()
 
@@ -687,7 +711,8 @@ class SyncSketchAPI:
             print(r.text)
 
     def add_media_v2(self, review_id, filepath, file_name="", item_uuid=None, noConvertFlag=False):
-        """Similar to add_media method, but uploads the media file directly to SyncSketche's internal S3 instead of to
+        """
+        Similar to add_media method, but uploads the media file directly to SyncSketche's internal S3 instead of to
         the SyncSketch server. In some cases, using this method over add_media can improve upload performance and
         stability. Unlike add_media this method does not return as much data about the created item.
 
@@ -695,7 +720,6 @@ class SyncSketchAPI:
         :param str filepath: path for the file on disk e.g /tmp/movie.webm.
         :param str file_name: The name of the file. Please make sure to pass the correct file extension.
         :param bool noConvertFlag: the video you are uploading is already in a browser compatible format.
-
         :return: A dict, containing "item_id" and "uuid" or None on failure.
         :rtype: Optional[dict]
         """
@@ -808,31 +832,29 @@ class SyncSketchAPI:
         NOTE: Please make sure to include the active:1 query if you only want active media. Deleted files are currently
         only deactivated and kept for a certain period of time before they are "purged" from the system.
 
-        Args:
-            searchCriteria (dict): dictionary
-
-        Returns:
-            dict: search results
+        :param dict searchCriteria: Search params
+        :return: List of media items
+        :rtype: list[dict]
         """
 
         return self._get_json_response("/api/v1/item/", getData=searchCriteria)
 
-    def get_media_by_review_id(self, review_id):
-        """Summary
+    def get_items_by_review_id(self, review_id):
+        """
+        Get all items in a review
 
-        Args:
-            review_id (TYPE): Description
-
-        Returns:
-            TYPE: Description
+        :param int review_id: Review ID
+        :return: List of media items
+        :rtype: list[dict]
         """
         get_params = {"reviews__id": review_id, "active": 1}
         return self._get_json_response("/api/v1/item/", getData=get_params)
 
     def delete_item(self, item_id):
         """
-        Get single item by id.
-        :param item_id: Int
+        Delete a item by id.
+
+        :param int item_id: Item ID to delete
         :return:
         """
         return self._get_json_response("/api/v1/item/%s/" % item_id, patchData=dict(active=False))
@@ -840,7 +862,9 @@ class SyncSketchAPI:
     def bulk_delete_items(self, item_ids):
         """
         Delete multiple items by id.
-        :param item_ids: Array[Int}
+
+        :param list[int] item_ids: List of item IDs to delete
+        :return:
         """
         return self._get_json_response(
             "/api/v2/bulk-delete-items/",
@@ -861,8 +885,19 @@ class SyncSketchAPI:
         item_data should be a list of dictionaries with the old review id and the item id.
         The items in the list will be moved to the new review for the param new_review_id
 
-        :param new_review_id: int
-        :param item_data: list [ dict { review_id: int, item_id: int} ]
+        .. code:: python
+
+            # Example item_data
+            # review_id is the current review an item is in
+            # it will be moved to the new_review_id
+            items_to_move = [
+                {"review_id": 1, "item_id": 1},
+                {"review_id": 1, "item_id": 2},
+                {"review_id": 1, "item_id": 3},
+            ]
+
+        :param int new_review_id: The review id to move the items to
+        :param list[dict] item_data: List of dictionaries with the old review id and the item id
         :return:
         """
 
@@ -878,6 +913,15 @@ class SyncSketchAPI:
     """
 
     def add_comment(self, item_id, text, review_id, frame=0):
+        """
+        Add a comment to an item
+
+        :param int item_id: Item to add the comment to
+        :param str text: Comment text
+        :param int review_id: Review you are adding the comment to
+        :param int frame: Frame number of the video to add the comment to (if applicable)
+        :return:
+        """
         item = self.get_item(item_id, data={"review_id": review_id})
 
         # Ugly method of getting revision id from item data, should fix this with api v2
@@ -900,9 +944,10 @@ class SyncSketchAPI:
         Get sketches and comments for an item. Frames have a revision id which signifies a "set of notes".
         When querying an item you'll get the available revisions for this item. If you wish to get only the latest
         revision, please get the revisionId for the latest revision.
-        :param item_id: id of the media item you are querying.
-        :param (number) revisionId: Optional revisionId to narrow down the results
-        :param (number) review_id: RECOMMENDED - retrieve annotations for a specific review only.
+
+        :param int item_id: id of the media item you are querying.
+        :param int revisionId: Optional revisionId to narrow down the results
+        :param int review_id: RECOMMENDED - retrieve annotations for a specific review only.
         :return: dict
         """
         get_params = {"item__id": item_id, "active": 1}
@@ -920,10 +965,11 @@ class SyncSketchAPI:
         Returns a list of sketches either as signed urls from s3 or base64 encoded strings.
         The sketches are composited over the background frame of the item.
 
-        :param syncsketch_review_id: <int>
-        :param syncsketch_item_id: <int>
-        :param with_tracing_paper: <bool>
-        :param return_as_base64: <bool>
+        :param int review_id: Review ID
+        :param int item_id: Item ID
+        :param bool with_tracing_paper: Include tracing paper in the response
+        :param bool return_as_base64: Return sketches as base64 encoded strings
+        :return: List of sketches as signed urls from s3 or base64 encoded strings
         """
         getData = {
             "include_data": 1,
@@ -937,19 +983,22 @@ class SyncSketchAPI:
         return self._get_json_response(url, method="post", getData=getData)
 
     def get_grease_pencil_overlays(self, review_id, item_id, homedir=None):
-        """Download overlay sketches for Maya Greasepencil.
+        """
+        Download overlay sketches for Maya Greasepencil.
 
-            Download overlay sketches for Maya Greasepencil. Function will download
-            a zip file which contains an XML and the sketches as png files. Maya
-            can load the zip file to overlay the sketches over the 3D model!
+        Download overlay sketches for Maya Greasepencil. Function will download
+        a zip file which contains an XML and the sketches as png files. Maya
+        can load the zip file to overlay the sketches over the 3D model!
 
-            For more information visit:
-            https://knowledge.autodesk.com/support/maya/learn-explore/caas/CloudHelp/cloudhelp/2015/ENU/Maya/files/Grease-Pencil-Tool-htm.html
-
-        :return: filePath to the zip file with the greasePencil data.
+        For more information visit:
+        https://knowledge.autodesk.com/support/maya/learn-explore/caas/CloudHelp/cloudhelp/2015/ENU/Maya/files/Grease-Pencil-Tool-htm.html
 
         PLEASE make sure that /tmp is writable
 
+        :param int review_id: Review ID
+        :param int item_id: Item ID
+        :param str homedir: Optional path to download the zip file to
+        :return: filePath to the zip file with the greasePencil data.
         """
         url = "%s/api/v2/downloads/greasePencil/%s/%s/" % (
             self.HOST,
@@ -1012,12 +1061,20 @@ class SyncSketchAPI:
     def get_users_by_name(self, name):
         """
         Name is a combined search and will search in first_name, last_name and email
+
+        :param str name: Name to search for
+        :return: List of users
+        :rtype: list[dict]
         """
         return self._get_json_response("/api/v1/simpleperson/", getData={"name": name})
 
     def get_user_by_email(self, email):
         """
         Get user by email
+
+        :param str email: Email to search for
+        :return: User data
+        :rtype: dict
         """
         response = self._get_json_response(
             "/api/v1/simpleperson/", getData={"email__iexact": email}, raw_response=True
@@ -1030,11 +1087,25 @@ class SyncSketchAPI:
             return None
 
     def get_users_by_project_id(self, project_id):
+        """
+        Get all users in a project
+
+        :param int project_id:
+        :return: List of users
+        :rtype: list[dict]
+        """
         return self._get_json_response("/api/v2/all-project-users/{}/".format(project_id))
 
     def get_connections_by_user_id(self, user_id, account_id, include_inactive=None, include_archived=None):
         """
         Get all project and account connections for a user. Good for checking access for a user that might have left...
+
+        :param int user_id: User ID to get connections for
+        :param int account_id: Account ID to get connections for
+        :param bool include_inactive: Include inactive projects
+        :param bool include_archived: Include archived projects
+        :return: List of connections
+        :rtype: list[dict]
         """
         data = {}
         if include_inactive is not None:
@@ -1046,22 +1117,31 @@ class SyncSketchAPI:
             getData=data,
         )
 
-    def get_user_by_id(self, userId):
-        return self._get_json_response("/api/v1/simpleperson/%s/" % userId)
+    def get_user_by_id(self, user_id):
+        """
+        Get a user by ID
+
+        :param int user_id:
+        :return: User data
+        :rtype: dict
+        """
+        return self._get_json_response("/api/v1/simpleperson/%s/" % user_id)
 
     def get_current_user(self):
         return self._get_json_response("/api/v1/simpleperson/currentUser/")
 
     def add_users_to_workspace(self, workspace_id, users, note=""):
-        """Add Users to Workspace
+        """
+        Add Users to Workspace
 
-        Args:
-            workspace_id (Number): id of the workspace
-            users (List): list with dicts e.g users=[{"email":"test@test.de","permission":"admin"}] - possible permissions "admin"
-            note (String): Optional message for the invitation email
+        .. code:: python
 
-        Returns:
-            TYPE: Description
+            users=[{"email":"test@test.de","permission":"admin"}]
+
+        :param int workspace_id: id of the workspace
+        :param list users: list of new users - possible permissions "admin", "manager"
+        :param str note: (Optional) message for the invitation email
+        :return: response
         """
         if not isinstance(users, list):
             print("Please add users by list with user items e.g users=[{'email':'test@test.de','permission':'admin'}]")
@@ -1077,12 +1157,17 @@ class SyncSketchAPI:
         return self._get_json_response("/api/v2/add-users/", postData=post_data)
 
     def remove_users_from_workspace(self, workspace_id, users):
-        """Remove a list of users from a workspace
+        """
+        Remove a list of users from a workspace
+        Can remove by id or email
 
-        Args:
-            workspace_id (Number): id of the workspace
-            users (List): list with dicts e.g users=[{"email":"test@test.de"}, {"id":12345}] - either remove by user email or id
+        .. code:: python
 
+            users=[{"email":"test@test.de"}, {"id":12345}]
+
+        :param int workspace_id: id of the workspace
+        :param list users: list of users to remove - either remove by user email or id
+        :return: response
         """
         if not isinstance(users, list):
             print("Please add users by list with user items e.g users=[{'email':'test@test.de'}]")
@@ -1097,15 +1182,24 @@ class SyncSketchAPI:
         return self._get_json_response("/api/v2/remove-users/", postData=post_data)
 
     def add_users_to_project(self, project_id, users, note=""):
-        """Add Users to Project
+        """
+        Add Users to Project
 
-        Args:
-            project_id (Number): id of the project
-            users (List): list with dicts e.g users=[{"email":"test@test.de","permission":"viewer"}] - possible permissions "admin, member, viewer or reviewer"
-            note (String): Optional message for the invitation email
+        possible permissions
 
-        Returns:
-            TYPE: Description
+        - admin
+        - member
+        - viewer
+        - reviewer
+
+        .. code:: python
+
+            users=[{"email":"test@test.de","permission":"viewer"}]
+
+        :param int project_id: id of the project
+        :param list[dict] users: list of new users
+        :param str note: (Optional) message for the invitation email
+        :return: response
         """
         if not isinstance(users, list):
             print(
@@ -1123,12 +1217,17 @@ class SyncSketchAPI:
         return self._get_json_response("/api/v2/add-users/", postData=post_data)
 
     def remove_users_from_project(self, project_id, users):
-        """Remove a list of users from a project
+        """
+        Remove a list of users from a project
 
-        Args:
-            project_id (Number): id of the project
-            users (List): list with dicts e.g users=[{"email":"test@test.de"}, {"id":12345}] - either remove by user email or id
+        remove by user email or id
 
+        .. code:: python
+
+            users=[{"email":"test@test.de"}, {"id":12345}]
+
+        :param int project_id: id of the project
+        :param list users: list of users to remove - either remove by user email or id
         """
         if not isinstance(users, list):
             print("Please add users by list with user items e.g users=[{'email':'test@test.de']")
@@ -1150,7 +1249,7 @@ class SyncSketchAPI:
         """
         Returns list of Shotgrid projects connected to your account
 
-        :param syncsketch_project_id: <int>
+        :param int syncsketch_project_id: SyncSketch project id
         """
         print("DEPRECATED!  Please use Shotgrid's API")
         print("https://github.com/shotgunsoftware/python-api")
@@ -1160,6 +1259,7 @@ class SyncSketchAPI:
     def shotgrid_create_config(self, syncsketch_account_id, syncsketch_project_id=None, data=None):
         """
         Create a new Shotgrid configuration for a SyncSketch workspace and optionally a project
+
         :param int syncsketch_account_id:
         :param int syncsketch_project_id:
         :param dict data: Configuration data.
@@ -1194,7 +1294,6 @@ class SyncSketchAPI:
         :param int syncsketch_project_id: SyncSketch project id
         :param int shotgun_project_id: (optional) Shotgrid project id
         :return: list of Shotgrid playlists
-
         """
         url = "/api/v2/shotgun/playlists/{}/".format(syncsketch_account_id)
         if syncsketch_project_id:
@@ -1208,15 +1307,19 @@ class SyncSketchAPI:
         Sync notes from SyncSketch review to the original shotgrid playlist
         Returns task id to use in get_shotgun_sync_review_notes_progress to get progress
 
+        returns dict with information about the REST API call:
+
+        - message=<STR> "Shotgrid review notes sync started"
+        - status=<STR> processing/done/failed
+        - progress_url=<STR> Full url to call for progress/results
+        - task_id=<STR> task_ids pass this value to the get_shotgun_sync_review_items_progress function
+        - percent_complete=<INT> 0-100 value of percent complete
+        - total_items=<INT> number of items being synced from shotgrid
+        - remaining_items=<INT> number of items not yet pulled from shotgrid
+
         :param int review_id: SyncSketch review id
-        :returns <dict>
-            message=<STR> "Shotgrid review notes sync started"
-            status=<STR> processing/done/failed
-            progress_url=<STR> Full url to call for progress/results
-            task_id=<STR> task_ids *pass this value to the get_shotgun_sync_review_items_progress function
-            percent_complete=<INT> 0-100 value of percent complete
-            total_items=<INT> number of items being synced from shotgrid
-            remaining_items=<INT> number of items not yet pulled from shotgrid
+        :return: Progress information
+        :rtype: dict
         """
         url = "/api/v2/shotgun/sync-review-notes/review/{}/".format(review_id)
 
@@ -1227,15 +1330,16 @@ class SyncSketchAPI:
         Sync new notes from SyncSketch review item to the original shotgrid playlist
         Returns dict with information about the REST API call
 
+        - sketch_upload_error=<BOOL> "True in case of error"
+        - sketches=<INT> "Number of sketches synced"
+        - comments=<INT> "Number of comments synced"
+        - attachments=<INT> "Number of attachments synced"
+        - item_name=<STR> "Name of item that was synced"
+
         :param int project_id: SyncSketch project id
         :param int review_id: SyncSketch review id
         :param int item_id: SyncSketch item id
-        :returns <dict>
-            sketch_upload_error=<BOOL> "True in case of error"
-            sketches=<INT> "Number of sketches synced"
-            comments=<INT> "Number of comments synced"
-            attachments=<INT> "Number of attachments synced"
-            item_name=<STR> "Name of item that was synced"
+        :return:
         """
         url = "/api/v2/shotgun/sync-notes/project/{}/review/{}/{}/".format(project_id, review_id, item_id)
 
@@ -1245,15 +1349,19 @@ class SyncSketchAPI:
         """
         Returns status of review notes sync for the task id provided in shotgun_sync_review_notes
 
-        :param task_id: <str/uuid>
-        :returns <dict>
-            message=<STR> "Shotgrid review notes sync started"
-            status=<STR> processing/done/failed
-            progress_url=<STR> Full url to call for progress/results
-            task_id=<STR> task_ids *pass this value to the get_shotgun_sync_review_items_progress function
-            percent_complete=<INT> 0-100 value of percent complete
-            total_items=<INT> number of items being synced from shotgrid
-            remaining_items=<INT> number of items not yet pulled from shotgrid
+        Returns a dict with the following keys:
+
+        - message=<STR> "Shotgrid review notes sync started"
+        - status=<STR> processing/done/failed
+        - progress_url=<STR> Full url to call for progress/results
+        - task_id=<STR> task_ids pass this value to the get_shotgun_sync_review_items_progress function
+        - percent_complete=<INT> 0-100 value of percent complete
+        - total_items=<INT> number of items being synced from shotgrid
+        - remaining_items=<INT> number of items not yet pulled from shotgrid
+
+        :param str task_id: UUID of the task returned by shotgrid_sync_review_notes
+        :return: Progress information
+        :rtype: dict
         """
         url = "/api/v2/shotgun/sync-review-notes/{}/".format(task_id)
 
@@ -1264,22 +1372,25 @@ class SyncSketchAPI:
         Create or update SyncSketch review with shotgrid playlist items
         Returns task id to use in get_shotgun_sync_review_items_progress to get progress
 
+        Response format:
+
+        - message=<STR> "Shotgrid review item sync started",
+        - status=<STR> processing/done/failed,
+        - progress_url=<STR> Full url to call for progress/results,
+        - task_id=<STR> task_ids - pass this value to the get_shotgun_sync_review_items_progress function,
+        - percent_complete=<INT> 0-100 value of percent complete,
+        - total_items=<INT> number of items being synced from shotgrid,
+        - remaining_items=<INT> number of items not yet pulled from shotgrid,
+        - data=<dict>
+        -    review_id=<INT> review.id,
+        -    review_link=<STR> url link to the syncsketch player with the review pulled from shotgrid,
+
         :param int syncsketch_project_id:
         :param str playlist_code:
         :param int playlist_id:
         :param int review_id: (optional)
-        :returns <dict>
-            message=<STR> "Shotgrid review item sync started",
-            status=<STR> processing/done/failed,
-            progress_url=<STR> Full url to call for progress/results,
-            task_id=<STR> task_ids *pass this value to the get_shotgun_sync_review_items_progress function,
-            percent_complete=<INT> 0-100 value of percent complete,
-            total_items=<INT> number of items being synced from shotgrid,
-            remaining_items=<INT> number of items not yet pulled from shotgrid,
-            data=<dict>
-                review_id=<INT> review.id,
-                review_link=<STR> url link to the syncsketch player with the review pulled from shotgrid,
-        )
+        :return:
+        :rtype: dict
         """
         url = "/api/v2/shotgun/sync-items/project/{}/".format(syncsketch_project_id)
         if review_id:
@@ -1317,18 +1428,11 @@ class SyncSketchAPI:
         """
         Returns status of review items sync for the task id provided in shotgun_sync_review_items
 
-        :param task_id: <str/uuid>
-        :returns <dict>
-            message=<STR> "Shotgrid review item sync started",
-            status=<STR> processing/done/failed,
-            progress_url=<STR> Full url to call for progress/results,
-            task_id=<STR> task_ids *pass this value to the get_shotgun_sync_review_items_progress function,
-            percent_complete=<INT> 0-100 value of percent complete,
-            total_items=<INT> number of items being synced from shotgrid,
-            remaining_items=<INT> number of items not yet pulled from shotgrid,
-        )
+        :param str task_id: UUID of the task returned by shotgrid_sync_review_items
+        :returns: DeprecationWarning
+        :rtype: dict
         """
-        print("Deprecated.  Response is printed in the shotgrid_sync_review_items() function")
+        raise DeprecationWarning("DEPRECATED!  Response is printed in the shotgrid_sync_review_items() function")
 
     # alias methods to <name>_v1 if they have a v2
     add_media_v1 = add_media
@@ -1349,7 +1453,8 @@ class SyncSketchAPI:
     updateItem = update_item
     addMedia = add_media
     addMediaByURL = add_media_by_url
-    getMediaByReviewId = get_media_by_review_id
+    getMediaByReviewId = get_items_by_review_id
+    get_media_by_review_id = get_items_by_review_id
     getMedia = get_media
     connectItemToReview = connect_item_to_review
     deleteReview = delete_review

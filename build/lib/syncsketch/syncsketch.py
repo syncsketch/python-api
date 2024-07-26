@@ -133,7 +133,7 @@ class SyncSketchAPI:
         method = method or "get"
         if postData or method == "post":
             method = "post"
-            r = requests.post(url, params=params, data=json.dumps(postData), headers=headers)
+            r = requests.post(url, params=params, data=json.dumps(postData) if postData else None, headers=headers)
         elif patchData or method == "patch":
             method = "patch"
             r = requests.patch(url, params=params, json=patchData, headers=headers)
@@ -1146,7 +1146,7 @@ class SyncSketchAPI:
     Shotgrid API
     """
 
-    def shotgun_get_projects(self, syncsketch_project_id):
+    def shotgrid_get_projects(self, syncsketch_project_id):
         """
         Returns list of Shotgrid projects connected to your account
 
@@ -1157,7 +1157,7 @@ class SyncSketchAPI:
 
         raise DeprecationWarning("DEPRECATED!  Please use Shotgrid's API.")
 
-    def shotgun_create_config(self, syncsketch_account_id, syncsketch_project_id=None, data=None):
+    def shotgrid_create_config(self, syncsketch_account_id, syncsketch_project_id=None, data=None):
         """
         Create a new Shotgrid configuration for a SyncSketch workspace and optionally a project
         :param int syncsketch_account_id:
@@ -1184,16 +1184,16 @@ class SyncSketchAPI:
         else:
             raise Exception("Shotgrid configuration test failed. Please check your Shotgrid config settings.")
 
-    def shotgun_get_playlists(self, syncsketch_account_id, syncsketch_project_id, shotgun_project_id=None):
+    def shotgrid_get_playlists(self, syncsketch_account_id, syncsketch_project_id, shotgun_project_id=None):
         """
         Returns list of Shotgrid playlists modified in the last 120 days
+        If the syncsketch project is directly linked to a shotgrid by the workspace admin, the
+        param shotgun_project_id will be ignored and can be omitted during the function call
 
         :param int syncsketch_account_id: SyncSketch account id
         :param int syncsketch_project_id: SyncSketch project id
         :param int shotgun_project_id: (optional) Shotgrid project id
-
-        If the syncsketch project is directly linked to a shotgun by the workspace admin, the
-        param shotgun_project_id will be ignored and can be omitted during the function call
+        :return: list of Shotgrid playlists
 
         """
         url = "/api/v2/shotgun/playlists/{}/".format(syncsketch_account_id)
@@ -1203,26 +1203,45 @@ class SyncSketchAPI:
         data = {"shotgun_project_id": shotgun_project_id}
         return self._get_json_response(url, method="get", getData=data)
 
-    def shotgun_sync_review_notes(self, review_id):
+    def shotgrid_sync_review_notes(self, review_id):
         """
-        Sync notes from SyncSketch review to the original shotgun playlist
+        Sync notes from SyncSketch review to the original shotgrid playlist
         Returns task id to use in get_shotgun_sync_review_notes_progress to get progress
 
-        :param review_id: <int>
+        :param int review_id: SyncSketch review id
         :returns <dict>
             message=<STR> "Shotgrid review notes sync started"
             status=<STR> processing/done/failed
             progress_url=<STR> Full url to call for progress/results
             task_id=<STR> task_ids *pass this value to the get_shotgun_sync_review_items_progress function
             percent_complete=<INT> 0-100 value of percent complete
-            total_items=<INT> number of items being synced from shotgun
-            remaining_items=<INT> number of items not yet pulled from shotgun
+            total_items=<INT> number of items being synced from shotgrid
+            remaining_items=<INT> number of items not yet pulled from shotgrid
         """
         url = "/api/v2/shotgun/sync-review-notes/review/{}/".format(review_id)
 
         return self._get_json_response(url, method="post")
 
-    def get_shotgun_sync_review_notes_progress(self, task_id):
+    def shotgrid_sync_new_item_notes(self, project_id, review_id, item_id):
+        """
+        Sync new notes from SyncSketch review item to the original shotgrid playlist
+        Returns dict with information about the REST API call
+
+        :param int project_id: SyncSketch project id
+        :param int review_id: SyncSketch review id
+        :param int item_id: SyncSketch item id
+        :returns <dict>
+            sketch_upload_error=<BOOL> "True in case of error"
+            sketches=<INT> "Number of sketches synced"
+            comments=<INT> "Number of comments synced"
+            attachments=<INT> "Number of attachments synced"
+            item_name=<STR> "Name of item that was synced"
+        """
+        url = "/api/v2/shotgun/sync-notes/project/{}/review/{}/{}/".format(project_id, review_id, item_id)
+
+        return self._get_json_response(url, method="post")
+
+    def get_shotgrid_sync_review_notes_progress(self, task_id):
         """
         Returns status of review notes sync for the task id provided in shotgun_sync_review_notes
 
@@ -1233,33 +1252,33 @@ class SyncSketchAPI:
             progress_url=<STR> Full url to call for progress/results
             task_id=<STR> task_ids *pass this value to the get_shotgun_sync_review_items_progress function
             percent_complete=<INT> 0-100 value of percent complete
-            total_items=<INT> number of items being synced from shotgun
-            remaining_items=<INT> number of items not yet pulled from shotgun
+            total_items=<INT> number of items being synced from shotgrid
+            remaining_items=<INT> number of items not yet pulled from shotgrid
         """
         url = "/api/v2/shotgun/sync-review-notes/{}/".format(task_id)
 
         return self._get_json_response(url, method="get")
 
-    def shotgun_sync_review_items(self, syncsketch_project_id, playlist_code, playlist_id, review_id=None):
+    def shotgrid_sync_review_items(self, syncsketch_project_id, playlist_code, playlist_id, review_id=None):
         """
-        Create or update SyncSketch review with shotgun playlist items
+        Create or update SyncSketch review with shotgrid playlist items
         Returns task id to use in get_shotgun_sync_review_items_progress to get progress
 
-        :param syncsketch_project_id
-        :param playlist_code
-        :param playlist_id
-        :param review_id (optional)
+        :param int syncsketch_project_id:
+        :param str playlist_code:
+        :param int playlist_id:
+        :param int review_id: (optional)
         :returns <dict>
             message=<STR> "Shotgrid review item sync started",
             status=<STR> processing/done/failed,
             progress_url=<STR> Full url to call for progress/results,
             task_id=<STR> task_ids *pass this value to the get_shotgun_sync_review_items_progress function,
             percent_complete=<INT> 0-100 value of percent complete,
-            total_items=<INT> number of items being synced from shotgun,
-            remaining_items=<INT> number of items not yet pulled from shotgun,
+            total_items=<INT> number of items being synced from shotgrid,
+            remaining_items=<INT> number of items not yet pulled from shotgrid,
             data=<dict>
                 review_id=<INT> review.id,
-                review_link=<STR> url link to the syncsketch player with the review pulled from shotgun,
+                review_link=<STR> url link to the syncsketch player with the review pulled from shotgrid,
         )
         """
         url = "/api/v2/shotgun/sync-items/project/{}/".format(syncsketch_project_id)
@@ -1294,7 +1313,7 @@ class SyncSketchAPI:
                     print(item_data)
         return result
 
-    def get_shotgun_sync_review_items_progress(self, task_id):
+    def get_shotgrid_sync_review_items_progress(self, task_id):
         """
         Returns status of review items sync for the task id provided in shotgun_sync_review_items
 
@@ -1305,11 +1324,11 @@ class SyncSketchAPI:
             progress_url=<STR> Full url to call for progress/results,
             task_id=<STR> task_ids *pass this value to the get_shotgun_sync_review_items_progress function,
             percent_complete=<INT> 0-100 value of percent complete,
-            total_items=<INT> number of items being synced from shotgun,
-            remaining_items=<INT> number of items not yet pulled from shotgun,
+            total_items=<INT> number of items being synced from shotgrid,
+            remaining_items=<INT> number of items not yet pulled from shotgrid,
         )
         """
-        print("Deprecated.  Response is printed in the shotgun_sync_review_items() function")
+        print("Deprecated.  Response is printed in the shotgrid_sync_review_items() function")
 
     # alias methods to <name>_v1 if they have a v2
     add_media_v1 = add_media
@@ -1344,3 +1363,11 @@ class SyncSketchAPI:
     getGreasePencilOverlays = get_grease_pencil_overlays
     getTree = get_tree
     getAnnotations = get_annotations
+    get_shotgun_sync_review_items_progress = get_shotgrid_sync_review_items_progress
+    shotgun_sync_review_items = shotgrid_sync_review_items
+    get_shotgun_sync_review_notes_progress = get_shotgrid_sync_review_notes_progress
+    shotgun_sync_new_item_notes = shotgrid_sync_new_item_notes
+    shotgun_sync_review_notes = shotgrid_sync_review_notes
+    shotgun_get_playlists = shotgrid_get_playlists
+    shotgun_create_config = shotgrid_create_config
+    shotgun_get_projects = shotgrid_get_projects
