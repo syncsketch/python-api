@@ -163,6 +163,14 @@ class SyncSketchAPI:
 
             return {"objects": []}
 
+    @staticmethod
+    def _update_params(key, value, params):
+        if value:
+            if type(value) is list:
+                value = ",".join(value)
+
+            params.update({key: value})
+
     def is_connected(self):
         """
         Convenience function to check if the API is connected to SyncSketch
@@ -196,14 +204,17 @@ class SyncSketchAPI:
     Workspace / Account
     """
 
-    def get_accounts(self):
+    def get_accounts(self, fields=None):
         """
         Get a list of workspaces the user has access to
 
+        :param list|str|int|bool fields: fields to fetch from backend
         :return: List of workspaces the user has access to
         :rtype: list[dict]
         """
         get_params = {"active": 1}
+        self._update_params("fields", fields, get_params)
+
         return self._get_json_response("/api/v1/account/", getData=get_params)
 
     def update_account(self, account_id, data):
@@ -257,6 +268,7 @@ class SyncSketchAPI:
         include_connections=False,
         limit=100,
         offset=0,
+        fields=None
     ):
         """
         Get a list of currently active projects the user has access to
@@ -267,6 +279,7 @@ class SyncSketchAPI:
         :param bool include_connections: if true, include full user connections on the project object
         :param int limit: limit the number of results
         :param int offset: offset the results
+        :param list|str|int|bool fields: fields to fetch from backend
         :return: Dict with meta information and an array of found projects
         :rtype: list[dict]
         """
@@ -277,6 +290,8 @@ class SyncSketchAPI:
             "limit": limit,
             "offset": offset,
         }
+
+        self._update_params("fields", fields, get_params)
 
         if include_connections:
             get_params["withFullConnections"] = True
@@ -293,26 +308,33 @@ class SyncSketchAPI:
 
         return self._get_json_response("/api/v1/project/", getData=get_params)
 
-    def get_projects_by_name(self, name):
+    def get_projects_by_name(self, name, fields=None):
         """
         Get a list of projects by name
 
         :param str name: Name to search for
+        :param list|str|int|bool fields: fields to fetch from backend
         :return: List of projects
         :rtype: list[dict]
         """
         get_params = {"name__istartswith": name}
+        self._update_params("fields", fields, get_params)
+
         return self._get_json_response("/api/v1/project/", getData=get_params)
 
-    def get_project_by_id(self, project_id):
+    def get_project_by_id(self, project_id, fields=None):
         """
         Get single project by id
 
         :param int project_id: Project id
+        :param list|str|int|bool fields: fields to fetch from backend
         :return: Project data
         :rtype: dict
         """
-        return self._get_json_response("/api/v1/project/%s/" % project_id)
+        get_params = {}
+        self._update_params("fields", fields, get_params)
+
+        return self._get_json_response("/api/v1/project/%s/" % project_id, getData=get_params)
 
     def get_project_storage(self, project_id):
         """
@@ -433,7 +455,7 @@ class SyncSketchAPI:
 
         return self._get_json_response("/api/v1/review/", postData=postData)
 
-    def get_reviews_by_project_id(self, project_id, limit=100, offset=0):
+    def get_reviews_by_project_id(self, project_id, limit=100, offset=0, fields=None):
         """
         Get list of reviews by project id.
 
@@ -448,6 +470,7 @@ class SyncSketchAPI:
         :param int project_id: SyncSketch project id
         :param int limit: Limit the number of results
         :param int offset: Offset the results
+        :param list|str|int|bool fields: fields to fetch from backend
         :return: Dict with meta information and an array of found projects
         :rtype: dict
         """
@@ -458,15 +481,18 @@ class SyncSketchAPI:
             "limit": limit,
             "offset": offset,
         }
+        self._update_params("fields", fields, get_params)
+
         return self._get_json_response("/api/v1/review/", getData=get_params)
 
-    def get_review_by_name(self, name, limit=100, offset=0):
+    def get_review_by_name(self, name, limit=100, offset=0, fields=None):
         """
         Get list of reviews by name using a case insensitive startswith query
 
         :param str name: Name of the review
         :param int limit: Limit the number of results
         :param int offset: Offset the results
+        :param list|str|int|bool fields: fields to fetch from backend
         :return: Dict with meta information and an array of found projects
         """
         get_params = {
@@ -475,28 +501,37 @@ class SyncSketchAPI:
             "limit": limit,
             "offset": offset,
         }
+        self._update_params("fields", fields, get_params)
+
         return self._get_json_response("/api/v1/review/", getData=get_params)
 
-    def get_review_by_id(self, review_id):
+    def get_review_by_id(self, review_id, fields=None):
         """
         Get single review by id.
 
         :param review_id: Number
+        :param list|str|int|bool fields: fields to fetch from backend
         :return: Review Data
         :rtype: dict
         """
-        return self._get_json_response("/api/v1/review/%s/" % review_id)
+        get_params = {}
+        self._update_params("fields", fields, get_params)
 
-    def get_review_by_uuid(self, uuid):
+        return self._get_json_response("/api/v1/review/%s/" % review_id, getData=get_params)
+
+    def get_review_by_uuid(self, uuid, fields=None):
         """
         Get single review by uuid.
         UUID can be found in the review URL e.g. syncsketch.com/sketch/<uuid>/
 
         :param str uuid: UUID of the review.
+        :param list|str|int|bool fields: fields to fetch from backend
         :return: Review dict
         :rtype: dict
         """
-        data = self._get_json_response("/api/v1/review/", getData={"uuid": uuid})
+        get_params = {"uuid": uuid}
+        self._update_params("fields", fields, get_params)
+        data = self._get_json_response("/api/v1/review/", getData=get_params)
         if "objects" in data and len(data["objects"]) > 0:
             return data["objects"][0]
         return None
@@ -591,16 +626,19 @@ class SyncSketchAPI:
     Items
     """
 
-    def get_item(self, item_id, data=None):
+    def get_item(self, item_id, data=None, fields=None):
         """
         Get single item by id
 
         :param int item_id:
         :param dict data:
+        :param list|str|int|bool fields: fields to fetch from backend
         :return: Item data
         :rtype: dict
         """
-        return self._get_json_response("/api/v1/item/{}/".format(item_id), getData=data)
+        get_params = data if data else {}
+        self._update_params("fields", fields, get_params)
+        return self._get_json_response("/api/v1/item/{}/".format(item_id), getData=get_params)
 
     def update_item(self, item_id, data):
         """
@@ -848,7 +886,7 @@ class SyncSketchAPI:
             raw_response=True,
         )
 
-    def get_media(self, searchCriteria):
+    def get_media(self, searchCriteria, fields=None):
         """
         This is a general search function. You can search media items by
 
@@ -881,21 +919,24 @@ class SyncSketchAPI:
         only deactivated and kept for a certain period of time before they are "purged" from the system.
 
         :param dict searchCriteria: Search params
+        :param list|str|int|bool fields: fields to fetch from backend
         :return: List of media items
         :rtype: list[dict]
         """
-
+        self._update_params("fields", fields, searchCriteria)
         return self._get_json_response("/api/v1/item/", getData=searchCriteria)
 
-    def get_items_by_review_id(self, review_id):
+    def get_items_by_review_id(self, review_id, fields=None):
         """
         Get all items in a review
 
         :param int review_id: Review ID
+        :param list|str|int|bool fields: fields to fetch from backend
         :return: List of media items
         :rtype: list[dict]
         """
         get_params = {"reviews__id": review_id, "active": 1}
+        self._update_params("fields", fields, get_params)
         return self._get_json_response("/api/v1/item/", getData=get_params)
 
     def delete_item(self, item_id):
@@ -1106,26 +1147,32 @@ class SyncSketchAPI:
 
         return self.add_users_to_project(project_id=project_id, users=users)
 
-    def get_users_by_name(self, name):
+    def get_users_by_name(self, name, fields=None):
         """
         Name is a combined search and will search in first_name, last_name and email
 
         :param str name: Name to search for
+        :param list|str|int|bool fields: fields to fetch from backend
         :return: List of users
         :rtype: list[dict]
         """
-        return self._get_json_response("/api/v1/simpleperson/", getData={"name": name})
+        get_params = {"name": name}
+        self._update_params("fields", fields, get_params)
+        return self._get_json_response("/api/v1/simpleperson/", getData=get_params)
 
-    def get_user_by_email(self, email):
+    def get_user_by_email(self, email, fields=None):
         """
         Get user by email
 
         :param str email: Email to search for
+        :param list|str|int|bool fields: fields to fetch from backend
         :return: User data
         :rtype: dict
         """
+        get_params = {"email__iexact": email}
+        self._update_params("fields", fields, get_params)
         response = self._get_json_response(
-            "/api/v1/simpleperson/", getData={"email__iexact": email}, raw_response=True
+            "/api/v1/simpleperson/", getData=get_params, raw_response=True
         )
 
         try:
@@ -1165,15 +1212,18 @@ class SyncSketchAPI:
             getData=data,
         )
 
-    def get_user_by_id(self, user_id):
+    def get_user_by_id(self, user_id, fields=None):
         """
         Get a user by ID
 
         :param int user_id:
+        :param list|str|int|bool fields: fields to fetch from backend
         :return: User data
         :rtype: dict
         """
-        return self._get_json_response("/api/v1/simpleperson/%s/" % user_id)
+        get_params = {}
+        self._update_params("fields", fields, get_params)
+        return self._get_json_response("/api/v1/simpleperson/%s/" % user_id, getData=get_params)
 
     def get_current_user(self):
         return self._get_json_response("/api/v1/simpleperson/currentUser/")
