@@ -141,8 +141,7 @@ class SyncSketchAPI:
             method = "put"
             r = requests.put(url, params=params, json=putData, headers=headers)
         elif method == "delete":
-            method = "delete"
-            r = requests.patch(url, params=params, data={"active": False}, headers=headers)
+            r = requests.delete(url, params=params, headers=headers)
         else:
             r = requests.get(url, params=params, headers=headers)
 
@@ -665,6 +664,74 @@ class SyncSketchAPI:
         """
         return self._get_json_response(
             "/api/v1/review/%s/" % review_id, patchData=dict(active=False), raw_response=raw_response
+        )
+
+    def create_review_section(self, review_id, name, item_ids, uuid=None, raw_response=False):
+        """
+        Create a new review section
+
+        :param int review_id: Review ID
+        :param str name: Section name
+        :param list item_ids: List of item IDs to add to the section
+        :param str uuid: Optional UUID for the section
+        :param bool raw_response: Get whole response from REST API.
+        :return: Section data
+        :rtype: dict
+        """
+        postData = {
+            "name": name,
+            "itemIds": item_ids,
+        }
+
+        if uuid:
+            postData["uuid"] = uuid
+
+        return self._get_json_response(
+            "/api/v2/review/{}/sections/create/".format(review_id), postData=postData, raw_response=raw_response
+        )
+
+    def update_review_sections(self, review_id, data, raw_response=False):
+        """
+        Update one or more review sections
+
+        .. code:: python
+
+            # Example data
+            sections_to_update = [
+                {
+                    "uuid": "section-uuid",
+                    "name": "New Section Name",
+                    "itemIds": [1, 2, 3],
+                }
+            ]
+
+        :param int review_id: Review ID
+        :param list[dict] data: Section data
+        :param bool raw_response: Get whole response from REST API.
+        :return: Section data
+        :rtype: dict
+        """
+        return self._get_json_response(
+            "/api/v2/review/{}/sections/bulk-update/".format(review_id),
+            method="put",
+            putData=data,
+            raw_response=raw_response,
+        )
+
+    def delete_review_section(self, review_id, section_uuid, raw_response=False):
+        """
+        Delete a review section
+
+        :param int review_id: Review ID
+        :param str section_uuid: Section UUID
+        :param bool raw_response: Get whole response from REST API.
+        :return: Section data
+        :rtype: dict
+        """
+        return self._get_json_response(
+            "/api/v2/review/{}/sections/{}/".format(review_id, section_uuid),
+            method="delete",
+            raw_response=raw_response,
         )
 
     """
