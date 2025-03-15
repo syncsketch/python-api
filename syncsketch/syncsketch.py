@@ -1019,9 +1019,8 @@ class SyncSketchAPI:
         max_workers=None,
     ):
         """
-        Upload a file to a review using multipart upload for large files.
-        This method will automatically choose between regular upload and multipart upload
-        based on file size. Files larger than 5GB will use multipart upload.
+        Upload a file to a review using multipart upload.
+        This uses direct to s3 multipart upload to upload large files in chunks.
 
         :param int review_id: Required review_id
         :param str filepath: Path for the file on disk e.g /tmp/movie.webm
