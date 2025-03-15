@@ -33,6 +33,7 @@ This library was tested with and confirmed on python versions:
 - 3.9
 - 3.10
 - 3.11
+- 3.12
 
 #### Installation
 
@@ -154,7 +155,7 @@ print(s.get_reviews_by_project_id(project['id'])
 You can upload a file to the created review with the review id, we provided one example file in this repo under `examples/test.webm` for testing.
 
 ```python
-item_data = s.add_media(review['id'],'examples/test.webm')
+item_data = s.upload_file(review['id'], 'examples/test.webm')
 ```
 
 If all steps were successful, you should see the following in the web-app. 

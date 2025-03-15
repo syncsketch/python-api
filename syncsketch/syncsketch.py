@@ -2,7 +2,7 @@
 # @Author: floepi
 # @Date:   2015-06-04 17:42:44
 # @Last Modified by: Brady Endres
-# @Last Modified time: 2024-12-12
+# @Last Modified time: 2025-03-14
 
 from __future__ import absolute_import, division, print_function
 
@@ -17,9 +17,56 @@ import requests
 try:
     # Python 2
     from urllib import urlencode
-except:
+except ImportError:
     # Python 3
     from urllib.parse import urlencode
+
+# Import appropriate threading/queue modules for Python 2/3 compatibility
+try:
+    # Python 3
+    from queue import Queue
+    from concurrent.futures import ThreadPoolExecutor
+except ImportError:
+    # Python 2
+    from Queue import Queue
+    import threading
+
+    # Define a simple ThreadPoolExecutor-like class for Python 2
+    class ThreadPoolExecutor(object):
+        def __init__(self, max_workers):
+            self.max_workers = max_workers
+            self.tasks = Queue()
+            self.results = {}
+            self.workers = []
+
+        def submit(self, fn, *args, **kwargs):
+            task_id = len(self.results)
+            self.tasks.put((task_id, fn, args, kwargs))
+            self.results[task_id] = None
+            return task_id
+
+        def _worker(self):
+            while not self.tasks.empty():
+                try:
+                    task_id, fn, args, kwargs = self.tasks.get(block=False)
+                    self.results[task_id] = fn(*args, **kwargs)
+                except:
+                    pass
+
+        def __enter__(self):
+            for _ in range(self.max_workers):
+                worker = threading.Thread(target=self._worker)
+                worker.daemon = True
+                worker.start()
+                self.workers.append(worker)
+            return self
+
+        def __exit__(self, exc_type, exc_val, exc_tb):
+            for worker in self.workers:
+                worker.join()
+
+        def result(self, task_id):
+            return self.results.get(task_id)
 
 
 # NOTE - PLEASE INSTALL THE REQUEST MODULE FOR UPLOADING MEDIA
@@ -78,7 +125,7 @@ class SyncSketchAPI:
 
         self.api_version = api_version
         self.debug = debug
-        self.HOST = host
+        self.HOST = host.rstrip("/")
 
     def get_api_base_url(self, api_version=None):
         return self.join_url_path(self.HOST, "/api/{}/".format(api_version or self.api_version))
@@ -103,6 +150,7 @@ class SyncSketchAPI:
         # remove preceeding "/" from entries to avoid absolute path behavior with os.path.join
         # and append an empty string so that os.path.join will add a terminating "/" if needed
         path_segments = [base.rstrip("/")] + [path_segment.strip("/") for path_segment in path_segments] + [""]
+
         return "/".join(path_segments)
 
     def _get_unversioned_api_url(self, path):
@@ -133,7 +181,12 @@ class SyncSketchAPI:
         method = method or "get"
         if postData or method == "post":
             method = "post"
-            r = requests.post(url, params=params, data=json.dumps(postData) if postData else None, headers=headers)
+            r = requests.post(
+                url,
+                params=params,
+                data=json.dumps(postData) if postData else None,
+                headers=headers,
+            )
         elif patchData or method == "patch":
             method = "patch"
             r = requests.patch(url, params=params, json=patchData, headers=headers)
@@ -146,7 +199,7 @@ class SyncSketchAPI:
             r = requests.get(url, params=params, headers=headers)
 
         if self.debug:
-            print("%s URL: %s, params: %s" % (method, url, params))
+            print(f"{method} URL: {url}, params: {params}, headers: {headers}, status_code: {r.status_code}")
 
         if raw_response:
             # Return the whole response object, not {"objects": []}
@@ -165,7 +218,7 @@ class SyncSketchAPI:
     @staticmethod
     def _update_params(key, value, params):
         if value:
-            if type(value) is list:
+            if isinstance(value, (list, tuple)):
                 value = ",".join(value)
 
             params.update({key: value})
@@ -235,7 +288,11 @@ class SyncSketchAPI:
             print("Please make sure you pass a dict as data")
             return False
 
-        return self._get_json_response("/api/v1/account/%s/" % account_id, patchData=data, raw_response=raw_response)
+        return self._get_json_response(
+            "/api/v1/account/%s/" % account_id,
+            patchData=data,
+            raw_response=raw_response,
+        )
 
     """
     Projects
@@ -345,7 +402,9 @@ class SyncSketchAPI:
         self._update_params("fields", fields, get_params)
 
         return self._get_json_response(
-            "/api/v1/project/%s/" % project_id, getData=get_params, raw_response=raw_response
+            "/api/v1/project/%s/" % project_id,
+            getData=get_params,
+            raw_response=raw_response,
         )
 
     def get_project_storage(self, project_id, raw_response=False):
@@ -378,7 +437,11 @@ class SyncSketchAPI:
             print("Please make sure you pass a dict as data")
             return False
 
-        return self._get_json_response("/api/v1/project/%s/" % project_id, patchData=data, raw_response=raw_response)
+        return self._get_json_response(
+            "/api/v1/project/%s/" % project_id,
+            patchData=data,
+            raw_response=raw_response,
+        )
 
     def delete_project(self, project_id, raw_response=False):
         """
@@ -389,11 +452,19 @@ class SyncSketchAPI:
         :return:
         """
         return self._get_json_response(
-            "/api/v1/project/%s/" % project_id, patchData=dict(active=False), raw_response=raw_response
+            "/api/v1/project/%s/" % project_id,
+            patchData=dict(active=False),
+            raw_response=raw_response,
         )
 
     def duplicate_project(
-        self, project_id, name=None, copy_reviews=False, copy_users=False, copy_settings=False, raw_response=False
+        self,
+        project_id,
+        name=None,
+        copy_reviews=False,
+        copy_users=False,
+        copy_settings=False,
+        raw_response=False,
     ):
         """
         Create a new project from an existing project
@@ -417,7 +488,9 @@ class SyncSketchAPI:
             config["name"] = name
 
         return self._get_json_response(
-            "/api/v2/project/%s/duplicate/" % project_id, postData=config, raw_response=raw_response
+            "/api/v2/project/%s/duplicate/" % project_id,
+            postData=config,
+            raw_response=raw_response,
         )
 
     def archive_project(self, project_id, raw_response=False):
@@ -431,7 +504,9 @@ class SyncSketchAPI:
         """
 
         return self._get_json_response(
-            "/api/v1/project/%s/" % project_id, patchData=dict(is_archived=True), raw_response=raw_response
+            "/api/v1/project/%s/" % project_id,
+            patchData=dict(is_archived=True),
+            raw_response=raw_response,
         )
 
     def restore_project(self, project_id, raw_response=False):
@@ -445,7 +520,9 @@ class SyncSketchAPI:
         """
 
         return self._get_json_response(
-            "/api/v1/project/%s/" % project_id, patchData=dict(is_archived=False), raw_response=raw_response
+            "/api/v1/project/%s/" % project_id,
+            patchData=dict(is_archived=False),
+            raw_response=raw_response,
         )
 
     """
@@ -541,7 +618,11 @@ class SyncSketchAPI:
         """
         get_params = {}
         self._update_params("fields", fields, get_params)
-        return self._get_json_response("/api/v1/review/%s/" % review_id, getData=get_params, raw_response=raw_response)
+        return self._get_json_response(
+            "/api/v1/review/%s/" % review_id,
+            getData=get_params,
+            raw_response=raw_response,
+        )
 
     def get_review_by_uuid(self, uuid, fields=None, raw_response=False):
         """
@@ -624,7 +705,9 @@ class SyncSketchAPI:
             return False
 
         return self._get_json_response(
-            "/api/v2/review/%s/sort_items/" % review_id, putData=dict(items=items), raw_response=raw_response
+            "/api/v2/review/%s/sort_items/" % review_id,
+            putData=dict(items=items),
+            raw_response=raw_response,
         )
 
     def archive_review(self, review_id, raw_response=True):
@@ -637,7 +720,9 @@ class SyncSketchAPI:
         """
 
         return self._get_json_response(
-            "/api/v2/review/%s/archive/" % review_id, method="post", raw_response=raw_response
+            "/api/v2/review/%s/archive/" % review_id,
+            method="post",
+            raw_response=raw_response,
         )
 
     def restore_review(self, review_id, raw_response=True):
@@ -650,7 +735,9 @@ class SyncSketchAPI:
         """
 
         return self._get_json_response(
-            "/api/v2/review/%s/restore/" % review_id, method="post", raw_response=raw_response
+            "/api/v2/review/%s/restore/" % review_id,
+            method="post",
+            raw_response=raw_response,
         )
 
     def delete_review(self, review_id, raw_response=False):
@@ -663,7 +750,9 @@ class SyncSketchAPI:
         :rtype: dict
         """
         return self._get_json_response(
-            "/api/v1/review/%s/" % review_id, patchData=dict(active=False), raw_response=raw_response
+            "/api/v1/review/%s/" % review_id,
+            patchData=dict(active=False),
+            raw_response=raw_response,
         )
 
     def create_review_section(self, review_id, name, item_ids, uuid=None, raw_response=False):
@@ -687,7 +776,9 @@ class SyncSketchAPI:
             postData["uuid"] = uuid
 
         return self._get_json_response(
-            "/api/v2/review/{}/sections/create/".format(review_id), postData=postData, raw_response=raw_response
+            "/api/v2/review/{}/sections/create/".format(review_id),
+            postData=postData,
+            raw_response=raw_response,
         )
 
     def update_review_sections(self, review_id, data, raw_response=False):
@@ -753,7 +844,9 @@ class SyncSketchAPI:
         self._update_params("fields", fields, get_params)
 
         return self._get_json_response(
-            "/api/v1/item/{}/".format(item_id), getData=get_params, raw_response=raw_response
+            "/api/v1/item/{}/".format(item_id),
+            getData=get_params,
+            raw_response=raw_response,
         )
 
     def update_item(self, item_id, data, raw_response=False):
@@ -868,6 +961,9 @@ class SyncSketchAPI:
             headers=self.headers,
         )
 
+        if self.debug:
+            print("URL: %s, params: %s" % (uploadURL, get_params))
+
         try:
             return json.loads(r.text)
         except Exception:
@@ -912,6 +1008,292 @@ class SyncSketchAPI:
         except Exception:
             print(r.text)
 
+    def upload_file(
+        self,
+        review_id,
+        filepath,
+        file_name="",
+        item_uuid=None,
+        noConvertFlag=False,
+        chunk_size=5 * 1024 * 1024,
+        max_workers=None,
+    ):
+        """
+        Upload a file to a review using multipart upload for large files.
+        This method will automatically choose between regular upload and multipart upload
+        based on file size. Files larger than 5GB will use multipart upload.
+
+        :param int review_id: Required review_id
+        :param str filepath: Path for the file on disk e.g /tmp/movie.webm
+        :param str file_name: The name of the file. Please make sure to pass the correct file extension
+        :param str item_uuid: Optional UUID for the item. If not provided, a new one will be generated by the server
+        :param bool noConvertFlag: The video you are uploading is already in a browser compatible format
+        :param int chunk_size: Size of each chunk in bytes for multipart upload (default: 5MB)
+        :param int max_workers: Maximum number of parallel upload workers (default: auto-detected based on system capabilities)
+        :return: A dict containing item information including "id" and "uuid" or None on failure
+        :rtype: Optional[dict]
+        """
+        if not self.headers:
+            print("upload_file failed. use_header_auth must be set to true.")
+            return None
+
+        # Determine optimal number of workers based on system capabilities
+        if max_workers is None:
+            try:
+                import multiprocessing
+
+                cpu_count = multiprocessing.cpu_count()
+                # Set max_workers based on CPU count, but capped between 2 and 8
+                # For network-bound operations, we don't want to overload with too many threads
+                max_workers = max(2, min(cpu_count * 2, 8))
+                if self.debug:
+                    print(f"Auto-detected {max_workers} workers based on {cpu_count} CPU cores")
+            except (ImportError, NotImplementedError):
+                # Fall back to 4 if we can't determine CPU count
+                max_workers = 4
+                if self.debug:
+                    print("Could not detect CPU count, defaulting to 4 workers")
+
+        # Get file information
+        file_size = os.stat(filepath).st_size
+        if not file_name:
+            file_name = os.path.basename(filepath)
+        elif not os.path.splitext(file_name)[1]:
+            file_name += os.path.splitext(filepath)[1]
+
+        content_type = mimetypes.guess_type(filepath, strict=False)[0]
+
+        # Step 1: Start the upload process
+        start_upload_data = {
+            "review_id": review_id,
+            "item_name": file_name,
+            "item_data": {
+                "upload_type": "s3",
+                "uuid": item_uuid,
+                "size": file_size,
+                "content_type": content_type,
+            },
+        }
+
+        start_upload_response = self._get_json_response(
+            url="/uploads/stats/upload-start/",
+            method="post",
+            postData=start_upload_data,
+            raw_response=True,
+        )
+
+        if not start_upload_response.ok:
+            print(f"Failed to start multipart upload: {start_upload_response.text}")
+            return None
+
+        start_upload_data = start_upload_response.json()
+
+        item_id = start_upload_data.get("item_id")
+
+        # The server may generate and return a UUID if one was not provided
+        item_uuid = start_upload_data.get("item_uuid", item_uuid)
+
+        # Step 2: Initialize multipart upload
+        multipart_init_data = {
+            "review_id": review_id,
+            "item_data": {
+                "name": file_name,
+                "uuid": item_uuid,
+                "noConvertFlag": noConvertFlag,
+                "size": file_size,
+                "content_type": content_type,
+            },
+        }
+
+        multipart_response = self._get_json_response(
+            url="/uploads/multipart-upload/",
+            method="post",
+            postData=multipart_init_data,
+            raw_response=True,
+        )
+
+        if not multipart_response.ok:
+            print(f"Failed to initialize multipart upload: {multipart_response.text}")
+            return None
+
+        multipart_data = multipart_response.json()
+
+        # Extract necessary information for uploading parts
+        upload_id = multipart_data.get("uploadId")
+        upload_key = multipart_data.get("key")
+
+        if not all([upload_id, upload_key]):
+            print("Missing required multipart upload information")
+            return None
+
+        # Step 3: Prepare chunks for parallel upload
+        chunks = []
+        with open(filepath, "rb") as f:
+            part_number = 1
+            while True:
+                chunk = f.read(chunk_size)
+                if not chunk:
+                    break
+                chunks.append((part_number, chunk))
+                part_number += 1
+
+        total_parts = len(chunks)
+        if self.debug:
+            print(f"Prepared {total_parts} chunks for parallel upload")
+
+        # Define function to upload a single part with retry
+        def upload_part(part_number, chunk_data):
+            max_retries = 3
+            retry_delay = 1  # Start with 1 second delay
+
+            for attempt in range(1, max_retries + 1):
+                try:
+                    # Request a signed URL for this part
+                    sign_part_url = f"/uploads/multipart-upload/{upload_id}/sign-part/{part_number}/"
+
+                    sign_part_response = self._get_json_response(
+                        url=sign_part_url,
+                        method="get",
+                        getData={"key": upload_key},
+                        raw_response=True,
+                    )
+
+                    if not sign_part_response.ok:
+                        if self.debug:
+                            print(
+                                f"Attempt {attempt}: Failed to get signed URL for part {part_number}: {sign_part_response.text}"
+                            )
+                        if attempt < max_retries:
+                            time.sleep(retry_delay)
+                            retry_delay *= 2  # Exponential backoff
+                            continue
+                        return None
+
+                    part_url = sign_part_response.json().get("url")
+                    if not part_url:
+                        if self.debug:
+                            print(f"Attempt {attempt}: No signed URL returned for part {part_number}")
+                        if attempt < max_retries:
+                            time.sleep(retry_delay)
+                            retry_delay *= 2
+                            continue
+                        return None
+
+                    # Upload the part
+                    part_response = requests.put(
+                        part_url,
+                        data=chunk_data,
+                        headers={"Content-Type": content_type},
+                    )
+
+                    if not part_response.ok:
+                        if self.debug:
+                            print(f"Attempt {attempt}: Failed to upload part {part_number}: {part_response.text}")
+                        if attempt < max_retries:
+                            time.sleep(retry_delay)
+                            retry_delay *= 2
+                            continue
+                        return None
+
+                    # Get the ETag from the response headers
+                    etag = part_response.headers.get("ETag")
+                    if not etag:
+                        if self.debug:
+                            print(f"Attempt {attempt}: No ETag returned for part {part_number}")
+                        if attempt < max_retries:
+                            time.sleep(retry_delay)
+                            retry_delay *= 2
+                            continue
+                        return None
+
+                    # If we get here, the upload was successful
+                    if self.debug:
+                        print(
+                            f"Successfully uploaded part {part_number} of {total_parts}"
+                            + (f" on attempt {attempt}" if attempt > 1 else "")
+                        )
+
+                    return {"PartNumber": part_number, "ETag": etag}
+
+                except Exception as e:
+                    if self.debug:
+                        print(f"Attempt {attempt}: Exception uploading part {part_number}: {str(e)}")
+                    if attempt < max_retries:
+                        time.sleep(retry_delay)
+                        retry_delay *= 2
+                        continue
+                    return None
+
+            # If we get here, all retries failed
+            return None
+
+        # Step 4: Upload parts in parallel
+        uploaded_parts = []
+        failed = False
+
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = []
+
+            # Submit all upload tasks
+            for part_number, chunk in chunks:
+                future = executor.submit(upload_part, part_number, chunk)
+                futures.append((part_number, future))
+
+            # Collect results
+            for part_number, future in futures:
+                try:
+                    # For Python 3's ThreadPoolExecutor
+                    result = future.result() if hasattr(future, "result") else executor.result(future)
+
+                    if result is None:
+                        print(f"Failed to upload part {part_number}")
+                        failed = True
+                        break
+
+                    uploaded_parts.append(result)
+                except Exception as e:
+                    print(f"Error uploading part {part_number}: {str(e)}")
+                    failed = True
+                    break
+
+        if failed or len(uploaded_parts) != total_parts:
+            print("Failed to upload all parts successfully. Aborting upload.")
+            # Abort the multipart upload
+            abort_url = f"/uploads/multipart-upload/{upload_id}/abort/"
+            abort_response = self._get_json_response(
+                url=abort_url,
+                method="post",
+                getData={"key": upload_key},
+                raw_response=True,
+            )
+
+            if not abort_response.ok and self.debug:
+                print(f"Failed to abort multipart upload: {abort_response.text}")
+
+            return None
+
+        # Sort parts by part number to ensure correct order
+        uploaded_parts.sort(key=lambda x: x["PartNumber"])
+
+        # Step 5: Complete the multipart upload
+        complete_url = f"/uploads/multipart-upload/{upload_id}/complete/"
+        complete_data = {"parts": uploaded_parts}
+
+        complete_response = self._get_json_response(
+            url=complete_url,
+            method="post",
+            getData={"key": upload_key},
+            postData=complete_data,
+            raw_response=True,
+        )
+
+        if not complete_response.ok:
+            print(f"Failed to complete multipart upload: {complete_response.text}")
+            return None
+
+        # Get the item data
+        return self.get_item(item_id)
+
     def add_media_v2(self, review_id, filepath, file_name="", item_uuid=None, noConvertFlag=False):
         """
         Similar to add_media method, but uploads the media file directly to SyncSketche's internal S3 instead of to
@@ -946,6 +1328,7 @@ class SyncSketchAPI:
         url_response = self._get_s3_signed_url(
             review_id=review_id,
             item_name=file_name,
+            item_uuid=item_uuid,
             content_length=content_length,
             content_type=content_type,
             no_convert=noConvertFlag,
@@ -997,7 +1380,7 @@ class SyncSketchAPI:
         }
         request_data.update(additional_request_data)
 
-        request_url = "/uploads/get-s3-signed-url/".format(host=self.HOST)
+        request_url = "{}/uploads/get-s3-signed-url/".format(self.HOST)
 
         return self._get_json_response(
             url=request_url,
@@ -1070,7 +1453,9 @@ class SyncSketchAPI:
         :return:
         """
         return self._get_json_response(
-            "/api/v1/item/%s/" % item_id, patchData=dict(active=False), raw_response=raw_response
+            "/api/v1/item/{}/".format(item_id),
+            patchData=dict(active=False),
+            raw_response=raw_response,
         )
 
     def bulk_delete_items(self, item_ids, raw_response=True):
@@ -1154,7 +1539,12 @@ class SyncSketchAPI:
             text=text,
         )
 
-        return self._get_json_response("/api/v1/frame/", method="post", postData=post_data, raw_response=raw_response)
+        return self._get_json_response(
+            "/api/v1/frame/",
+            method="post",
+            postData=post_data,
+            raw_response=raw_response,
+        )
 
     def get_annotations(self, item_id, revisionId=False, review_id=False, raw_response=False):
         """
@@ -1179,7 +1569,12 @@ class SyncSketchAPI:
         return self._get_json_response("/api/v1/frame/", getData=get_params, raw_response=raw_response)
 
     def get_flattened_annotations(
-        self, review_id, item_id, with_tracing_paper=False, return_as_base64=False, raw_response=False
+        self,
+        review_id,
+        item_id,
+        with_tracing_paper=False,
+        return_as_base64=False,
+        raw_response=False,
     ):
         """
         Returns a list of sketches either as signed urls from s3 or base64 encoded strings.
@@ -1322,10 +1717,18 @@ class SyncSketchAPI:
         :return: List of users
         :rtype: list[dict]
         """
-        return self._get_json_response("/api/v2/all-project-users/{}/".format(project_id), raw_response=raw_response)
+        return self._get_json_response(
+            "/api/v2/all-project-users/{}/".format(project_id),
+            raw_response=raw_response,
+        )
 
     def get_connections_by_user_id(
-        self, user_id, account_id, include_inactive=None, include_archived=None, raw_response=False
+        self,
+        user_id,
+        account_id,
+        include_inactive=None,
+        include_archived=None,
+        raw_response=False,
     ):
         """
         Get all project and account connections for a user. Good for checking access for a user that might have left...
@@ -1362,7 +1765,9 @@ class SyncSketchAPI:
         get_params = {}
         self._update_params("fields", fields, get_params)
         return self._get_json_response(
-            "/api/v1/simpleperson/%s/" % user_id, getData=get_params, raw_response=raw_response
+            "/api/v1/simpleperson/%s/" % user_id,
+            getData=get_params,
+            raw_response=raw_response,
         )
 
     def get_current_user(self, raw_response=False):
@@ -1498,7 +1903,13 @@ class SyncSketchAPI:
 
         raise DeprecationWarning("DEPRECATED!  Please use Shotgrid's API.")
 
-    def shotgrid_create_config(self, syncsketch_account_id, syncsketch_project_id=None, data=None, raw_response=True):
+    def shotgrid_create_config(
+        self,
+        syncsketch_account_id,
+        syncsketch_project_id=None,
+        data=None,
+        raw_response=True,
+    ):
         """
         Create a new Shotgrid configuration for a SyncSketch workspace and optionally a project
 
@@ -1522,7 +1933,9 @@ class SyncSketchAPI:
         test_data = {"test_settings": post_data}
 
         test_response = self._get_json_response(
-            "/api/v2/shotgun/config/test/", postData=test_data, raw_response=raw_response
+            "/api/v2/shotgun/config/test/",
+            postData=test_data,
+            raw_response=raw_response,
         )
         if test_response.status_code == 200:
             return self._get_json_response("/api/v2/shotgun/config/", postData=post_data, raw_response=raw_response)
@@ -1530,7 +1943,11 @@ class SyncSketchAPI:
             raise Exception("Shotgrid configuration test failed. Please check your Shotgrid config settings.")
 
     def shotgrid_get_playlists(
-        self, syncsketch_account_id, syncsketch_project_id, shotgun_project_id=None, raw_response=False
+        self,
+        syncsketch_account_id,
+        syncsketch_project_id,
+        shotgun_project_id=None,
+        raw_response=False,
     ):
         """
         Returns list of Shotgrid playlists modified in the last 120 days
