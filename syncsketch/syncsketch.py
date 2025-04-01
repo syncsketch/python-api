@@ -2,7 +2,7 @@
 # @Author: floepi
 # @Date:   2015-06-04 17:42:44
 # @Last Modified by: Brady Endres
-# @Last Modified time: 2025-03-14
+# @Last Modified time: 2025-04-01
 
 from __future__ import absolute_import, division, print_function
 
@@ -199,7 +199,15 @@ class SyncSketchAPI:
             r = requests.get(url, params=params, headers=headers)
 
         if self.debug:
-            print(f"{method} URL: {url}, params: {params}, headers: {headers}, status_code: {r.status_code}")
+            print(
+                "{method} URL: {url}, params: {params}, headers: {headers}, status_code: {status_code}".format(
+                    method=method,
+                    url=url,
+                    params=params,
+                    headers=headers,
+                    status_code=r.status_code,
+                )
+            )
 
         if raw_response:
             # Return the whole response object, not {"objects": []}
@@ -1046,7 +1054,11 @@ class SyncSketchAPI:
                 # For network-bound operations, we don't want to overload with too many threads
                 max_workers = max(2, min(cpu_count * 2, 8))
                 if self.debug:
-                    print(f"Auto-detected {max_workers} workers based on {cpu_count} CPU cores")
+                    print(
+                        "Auto-detected {max_workers} workers based on {cpu_count} CPU cores".format(
+                            max_workers=max_workers, cpu_count=cpu_count
+                        )
+                    )
             except (ImportError, NotImplementedError):
                 # Fall back to 4 if we can't determine CPU count
                 max_workers = 4
@@ -1082,7 +1094,7 @@ class SyncSketchAPI:
         )
 
         if not start_upload_response.ok:
-            print(f"Failed to start multipart upload: {start_upload_response.text}")
+            print("Failed to start multipart upload: {}".format(start_upload_response.text))
             return None
 
         start_upload_data = start_upload_response.json()
@@ -1112,7 +1124,7 @@ class SyncSketchAPI:
         )
 
         if not multipart_response.ok:
-            print(f"Failed to initialize multipart upload: {multipart_response.text}")
+            print("Failed to initialize multipart upload: {}".format(multipart_response.text))
             return None
 
         multipart_data = multipart_response.json()
@@ -1138,7 +1150,7 @@ class SyncSketchAPI:
 
         total_parts = len(chunks)
         if self.debug:
-            print(f"Prepared {total_parts} chunks for parallel upload")
+            print("Prepared {total_parts} chunks for parallel upload".format(total_parts=total_parts))
 
         # Define function to upload a single part with retry
         def upload_part(part_number, chunk_data):
@@ -1148,7 +1160,9 @@ class SyncSketchAPI:
             for attempt in range(1, max_retries + 1):
                 try:
                     # Request a signed URL for this part
-                    sign_part_url = f"/uploads/multipart-upload/{upload_id}/sign-part/{part_number}/"
+                    sign_part_url = "/uploads/multipart-upload/{upload_id}/sign-part/{part_number}/".format(
+                        upload_id=upload_id, part_number=part_number
+                    )
 
                     sign_part_response = self._get_json_response(
                         url=sign_part_url,
@@ -1160,7 +1174,11 @@ class SyncSketchAPI:
                     if not sign_part_response.ok:
                         if self.debug:
                             print(
-                                f"Attempt {attempt}: Failed to get signed URL for part {part_number}: {sign_part_response.text}"
+                                "Attempt {attempt}: Failed to get signed URL for part {part_number}: {response_text}".format(
+                                    attempt=attempt,
+                                    part_number=part_number,
+                                    response_text=sign_part_response.text,
+                                )
                             )
                         if attempt < max_retries:
                             time.sleep(retry_delay)
@@ -1171,7 +1189,12 @@ class SyncSketchAPI:
                     part_url = sign_part_response.json().get("url")
                     if not part_url:
                         if self.debug:
-                            print(f"Attempt {attempt}: No signed URL returned for part {part_number}")
+                            print(
+                                "Attempt {attempt}: No signed URL returned for part {part_number}".format(
+                                    attempt=attempt,
+                                    part_number=part_number,
+                                )
+                            )
                         if attempt < max_retries:
                             time.sleep(retry_delay)
                             retry_delay *= 2
@@ -1187,7 +1210,13 @@ class SyncSketchAPI:
 
                     if not part_response.ok:
                         if self.debug:
-                            print(f"Attempt {attempt}: Failed to upload part {part_number}: {part_response.text}")
+                            print(
+                                "Attempt {attempt}: Failed to upload part {part_number}: {response_text}".format(
+                                    attempt=attempt,
+                                    part_number=part_number,
+                                    response_text=part_response.text,
+                                )
+                            )
                         if attempt < max_retries:
                             time.sleep(retry_delay)
                             retry_delay *= 2
@@ -1198,7 +1227,12 @@ class SyncSketchAPI:
                     etag = part_response.headers.get("ETag")
                     if not etag:
                         if self.debug:
-                            print(f"Attempt {attempt}: No ETag returned for part {part_number}")
+                            print(
+                                "Attempt {attempt}: No ETag returned for part {part_number}".format(
+                                    attempt=attempt,
+                                    part_number=part_number,
+                                )
+                            )
                         if attempt < max_retries:
                             time.sleep(retry_delay)
                             retry_delay *= 2
@@ -1208,15 +1242,23 @@ class SyncSketchAPI:
                     # If we get here, the upload was successful
                     if self.debug:
                         print(
-                            f"Successfully uploaded part {part_number} of {total_parts}"
-                            + (f" on attempt {attempt}" if attempt > 1 else "")
+                            "Successfully uploaded part {part_number} of {total_parts}".format(
+                                part_number=part_number, total_parts=total_parts
+                            )
+                            + (" on attempt {}".format(attempt) if attempt > 1 else "")
                         )
 
                     return {"PartNumber": part_number, "ETag": etag}
 
                 except Exception as e:
                     if self.debug:
-                        print(f"Attempt {attempt}: Exception uploading part {part_number}: {str(e)}")
+                        print(
+                            "Attempt {attempt}: Exception uploading part {part_number}: {exc}".format(
+                                attempt=attempt,
+                                part_number=part_number,
+                                exc=str(e),
+                            )
+                        )
                     if attempt < max_retries:
                         time.sleep(retry_delay)
                         retry_delay *= 2
@@ -1245,20 +1287,20 @@ class SyncSketchAPI:
                     result = future.result() if hasattr(future, "result") else executor.result(future)
 
                     if result is None:
-                        print(f"Failed to upload part {part_number}")
+                        print("Failed to upload part {part_number}".format(part_number=part_number))
                         failed = True
                         break
 
                     uploaded_parts.append(result)
                 except Exception as e:
-                    print(f"Error uploading part {part_number}: {str(e)}")
+                    print("Error uploading part {part_number}: {exc}".format(part_number=part_number, exc=str(e)))
                     failed = True
                     break
 
         if failed or len(uploaded_parts) != total_parts:
             print("Failed to upload all parts successfully. Aborting upload.")
             # Abort the multipart upload
-            abort_url = f"/uploads/multipart-upload/{upload_id}/abort/"
+            abort_url = "/uploads/multipart-upload/{upload_id}/abort/".format(upload_id=upload_id)
             abort_response = self._get_json_response(
                 url=abort_url,
                 method="post",
@@ -1267,7 +1309,7 @@ class SyncSketchAPI:
             )
 
             if not abort_response.ok and self.debug:
-                print(f"Failed to abort multipart upload: {abort_response.text}")
+                print("Failed to abort multipart upload: {}".format(abort_response.text))
 
             return None
 
@@ -1275,7 +1317,7 @@ class SyncSketchAPI:
         uploaded_parts.sort(key=lambda x: x["PartNumber"])
 
         # Step 5: Complete the multipart upload
-        complete_url = f"/uploads/multipart-upload/{upload_id}/complete/"
+        complete_url = "/uploads/multipart-upload/{upload_id}/complete/".format(upload_id=upload_id)
         complete_data = {"parts": uploaded_parts}
 
         complete_response = self._get_json_response(
@@ -1287,7 +1329,7 @@ class SyncSketchAPI:
         )
 
         if not complete_response.ok:
-            print(f"Failed to complete multipart upload: {complete_response.text}")
+            print("Failed to complete multipart upload: {}".format(complete_response.text))
             return None
 
         # Get the item data
