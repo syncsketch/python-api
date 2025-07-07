@@ -2,7 +2,7 @@
 # @Author: floepi
 # @Date:   2015-06-04 17:42:44
 # @Last Modified by: Brady Endres
-# @Last Modified time: 2025-04-01
+# @Last Modified time: 2025-07-07
 
 from __future__ import absolute_import, division, print_function
 
@@ -154,6 +154,9 @@ class SyncSketchAPI:
         return "/".join(path_segments)
 
     def _get_unversioned_api_url(self, path):
+        if "http" in path:
+            # If the path is already a full URL, return it as is
+            return path
         return self.join_url_path(self.HOST, path)
 
     def _get_json_response(
@@ -1628,16 +1631,48 @@ class SyncSketchAPI:
         :param bool raw_response: Get whole response from REST API.
         :return: List of sketches as signed urls from s3 or base64 encoded strings
         """
-        getData = {
+        get_data = {
             "include_data": 1,
             "tracingpaper": 1 if with_tracing_paper else 0,
             "base64": 1 if return_as_base64 else 0,
-            "async": 0,
+            "async": 1,
         }
+        get_data.update(self.api_params)
 
-        url = "/api/v2/downloads/flattenedSketches/{}/{}/".format(review_id, item_id)
+        url = "{}/api/v2/downloads/flattenedSketches/{}/{}/".format(self.HOST, review_id, item_id)
 
-        return self._get_json_response(url, method="post", getData=getData, raw_response=raw_response)
+        r = requests.post(url, params=get_data, headers=self.headers)
+        celery_task_id = r.json()
+
+        if self.debug:
+            print("Flattened annotations download started with celery task ID: %s", celery_task_id)
+
+        # check the celery task
+        request_processing = True
+        check_celery_url = "{host}/api/v2/downloads/flattenedSketches/{celery_task_id}/".format(
+            host=self.HOST, celery_task_id=celery_task_id
+        )
+
+        r = requests.get(check_celery_url, params=self.api_params, headers=self.headers)
+
+        while request_processing:
+            if self.debug:
+                print("Checking celery task status at: %s" % check_celery_url)
+
+            result = r.json()
+
+            if result.get("status") == "done":
+                return result
+
+            if result.get("status") == "failed":
+                return None
+
+            # wait a bit
+            time.sleep(1)
+
+            # check the url again
+            r = requests.get(check_celery_url, params=self.api_params, headers=self.headers)
+        return
 
     def get_grease_pencil_overlays(self, review_id, item_id, homedir=None):
         """
@@ -1665,6 +1700,9 @@ class SyncSketchAPI:
         r = requests.post(url, params=self.api_params, headers=self.headers)
         celery_task_id = r.json()
 
+        if self.debug:
+            print("Grease Pencil download started with celery task ID: %s", celery_task_id)
+
         # check the celery task
         request_processing = True
         check_celery_url = "%s/api/v2/downloads/greasePencil/%s/" % (
@@ -1675,6 +1713,9 @@ class SyncSketchAPI:
         r = requests.get(check_celery_url, params=self.api_params, headers=self.headers)
 
         while request_processing:
+            if self.debug:
+                print("Checking celery task status at: %s" % check_celery_url)
+
             result = r.json()
 
             if result.get("status") == "done":
@@ -1702,6 +1743,7 @@ class SyncSketchAPI:
 
             # check the url again
             r = requests.get(check_celery_url, params=self.api_params, headers=self.headers)
+        return
 
     """
     Users
