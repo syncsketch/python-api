@@ -8,3 +8,17 @@ syncsketch.egg-info/SOURCES.txt
 syncsketch.egg-info/dependency_links.txt
 syncsketch.egg-info/requires.txt
 syncsketch.egg-info/top_level.txt
+tests/test_accounts.py
+tests/test_annotations.py
+tests/test_auth.py
+tests/test_backward_compat.py
+tests/test_connection.py
+tests/test_get_json_response.py
+tests/test_items.py
+tests/test_media_upload.py
+tests/test_projects.py
+tests/test_real_file_io.py
+tests/test_reviews.py
+tests/test_shotgrid.py
+tests/test_tree.py
+tests/test_users.py
