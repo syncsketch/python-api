@@ -6,6 +6,18 @@
 
 from __future__ import absolute_import
 
+import sys
+import warnings
+
+if sys.version_info < (3, 8):
+    warnings.warn(
+        "SyncSketch: Python %d.%d is deprecated. "
+        "New features will only target Python 3.8+. "
+        "Please upgrade." % (sys.version_info[0], sys.version_info[1]),
+        DeprecationWarning,
+        stacklevel=2,
+    )
+
 from .syncsketch import SyncSketchAPI
 
 __version__ = "1.0.12.0"

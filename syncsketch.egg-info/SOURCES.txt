@@ -17,6 +17,7 @@ tests/test_get_json_response.py
 tests/test_items.py
 tests/test_media_upload.py
 tests/test_projects.py
+tests/test_py27_smoke.py
 tests/test_real_file_io.py
 tests/test_reviews.py
 tests/test_shotgrid.py

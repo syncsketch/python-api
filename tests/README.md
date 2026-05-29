@@ -37,6 +37,15 @@ tox -e py313
 
 Requires the target Python versions to be installed (e.g. via pyenv). Missing interpreters are skipped automatically.
 
+## Python 2.7 Smoke Test
+
+The full pytest suite requires Python 3.8+. For Python 2.7, a standalone smoke test is provided that verifies import, construction, and core utilities without any test framework dependencies.
+
+```bash
+# Requires only the `requests` package installed for Python 2.7
+python2.7 tests/test_py27_smoke.py
+```
+
 ## Test Structure
 
 | File | Covers |

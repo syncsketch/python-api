@@ -69,15 +69,17 @@ SyncSketch is a synchronized visual review tool for the Film/TV/Games industry.
 
 #### Compatibility
 This library was tested with and confirmed on python versions:
-- 2.7.14+
-- 3.6
-- 3.7
+- 2.7.14+ (see note below)
+- 3.7 (see note below)
 - 3.8
 - 3.9
 - 3.10
 - 3.11
 - 3.12
 - 3.13
+- 3.14
+
+> **Python 2.7 & 3.7 Deprecation Notice:** Python 2.7 and 3.7 have reached end-of-life and are no longer actively supported by the Python community. While existing functionality in this library will continue to work on these versions, new features and improvements will only be tested against Python 3.8 and above. We recommend upgrading to a supported Python version.
 
 #### Installation
 
