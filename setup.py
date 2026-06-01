@@ -44,7 +44,7 @@ setup(
     ],
     extras_require={
         "test": [
-            "pytest>=9.0.3,<10.0",
+            "pytest>=7.0,<10.0",
             "pytest-cov>=4.0",
             "responses>=0.20.0",
         ],

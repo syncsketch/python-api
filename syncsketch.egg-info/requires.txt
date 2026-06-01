@@ -10,6 +10,11 @@ requests>=2.32.0
 urllib3>=2.6.3
 
 [test]
-pytest<10.0,>=9.0.3
 pytest-cov>=4.0
 responses>=0.20.0
+
+[test:python_version < "3.9"]
+pytest<9.0,>=7.0
+
+[test:python_version >= "3.9"]
+pytest<10.0,>=9.0.3
