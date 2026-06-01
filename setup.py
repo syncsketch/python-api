@@ -36,10 +36,15 @@ setup(
     long_description_content_type="text/markdown",
     url="https://github.com/syncsketch/python-api",
     packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
-    install_requires=["requests>=2.20.0"],
+    install_requires=[
+        'requests>=2.20.0,<2.28; python_version < "3.0"',
+        'requests>=2.20.0; python_version >= "3.7" and python_version < "3.9"',
+        'requests>=2.32.0; python_version >= "3.9"',
+        'urllib3>=2.6.3; python_version >= "3.9"',
+    ],
     extras_require={
         "test": [
-            "pytest>=7.0,<9.0",
+            "pytest>=9.0.3,<10.0",
             "pytest-cov>=4.0",
             "responses>=0.20.0",
         ],

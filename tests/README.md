@@ -46,6 +46,20 @@ The full pytest suite requires Python 3.8+. For Python 2.7, a standalone smoke t
 python2.7 tests/test_py27_smoke.py
 ```
 
+### Running via Docker
+
+If you don't have Python 2.7 or 3.7 installed locally, you can use Docker:
+
+```bash
+# Python 2.7 smoke tests
+docker run --rm -v "$(pwd)":/app -w /app python:2.7 sh -c \
+  'pip install "requests>=2.20.0,<2.28.0" && python tests/test_py27_smoke.py'
+
+# Python 3.7+ full test suite (replace tag with desired version)
+docker run --rm -v "$(pwd)":/app -w /app python:3.7 sh -c \
+  'pip install -e ".[test]" && pytest tests/ -v'
+```
+
 ## Test Structure
 
 | File | Covers |
