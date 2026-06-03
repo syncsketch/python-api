@@ -50,7 +50,7 @@ except ImportError:
                 try:
                     task_id, fn, args, kwargs = self.tasks.get(block=False)
                     self.results[task_id] = fn(*args, **kwargs)
-                except:
+                except Exception:
                     pass
 
         def __enter__(self):
@@ -130,6 +130,13 @@ class SyncSketchAPI:
     def get_api_base_url(self, api_version=None):
         return self.join_url_path(self.HOST, "/api/{}/".format(api_version or self.api_version))
 
+    _SENSITIVE_KEYS = frozenset({"api_key", "token", "username", "email", "Authorization"})
+
+    @staticmethod
+    def _redact_dict(d):
+        """Return a copy of dict *d* with sensitive values replaced by '***'."""
+        return {k: ("***" if k in SyncSketchAPI._SENSITIVE_KEYS else v) for k, v in d.items()}
+
     @staticmethod
     def join_url_path(base, *path_segments):
         """Takes one more more strings and returns a properly terminated url path. Handles strings regardless
@@ -206,8 +213,8 @@ class SyncSketchAPI:
                 "{method} URL: {url}, params: {params}, headers: {headers}, status_code: {status_code}".format(
                     method=method,
                     url=url,
-                    params=params,
-                    headers=headers,
+                    params=self._redact_dict(params),
+                    headers=self._redact_dict(headers),
                     status_code=r.status_code,
                 )
             )
@@ -221,8 +228,7 @@ class SyncSketchAPI:
         except Exception as e:
             if self.debug:
                 print(e)
-
-            print("Error: %s" % r.text)
+                print("Error: %s" % r.text)
 
             return {"objects": []}
 
@@ -958,22 +964,22 @@ class SyncSketchAPI:
         if itemParentId:
             get_params.update({"itemParentId": itemParentId})
 
-        uploadURL = "%s/items/uploadToReview/%s/?%s" % (
+        uploadURL = "%s/items/uploadToReview/%s/" % (
             self.HOST,
             review_id,
-            urlencode(get_params),
         )
 
         files = {"reviewFile": open(filepath, "rb")}
         r = requests.post(
             uploadURL,
+            params=get_params,
             files=files,
             data=dict(artist=artist_name, name=file_name),
             headers=self.headers,
         )
 
         if self.debug:
-            print("URL: %s, params: %s" % (uploadURL, get_params))
+            print("URL: %s, params: %s" % (uploadURL, self._redact_dict(get_params)))
 
         try:
             return json.loads(r.text)
@@ -1002,15 +1008,15 @@ class SyncSketchAPI:
         if noConvertFlag:
             get_params.update({"noConvertFlag": 1})
 
-        upload_url = "%s/items/uploadToReview/%s/?%s" % (
+        upload_url = "%s/items/uploadToReview/%s/" % (
             self.HOST,
             review_id,
-            urlencode(get_params),
         )
 
         r = requests.post(
             upload_url,
-            {"media_url": media_url, "artist": artist_name},
+            params=get_params,
+            data={"media_url": media_url, "artist": artist_name},
             headers=self.headers,
         )
 
@@ -1411,8 +1417,7 @@ class SyncSketchAPI:
         """
         Internal method. Use to retrieve s3 signed url for file upload in `add_media_via_s3`.
         """
-        request_data = self.api_params.copy()
-        additional_request_data = {
+        post_data = {
             "review_id": review_id,
             "item_name": item_name,
             "item_data": {
@@ -1422,13 +1427,12 @@ class SyncSketchAPI:
                 "noConvertFlag": no_convert,
             },
         }
-        request_data.update(additional_request_data)
 
         request_url = "{}/uploads/get-s3-signed-url/".format(self.HOST)
 
         return self._get_json_response(
             url=request_url,
-            postData=request_data,
+            postData=post_data,
             raw_response=raw_response,
         )
 
@@ -1721,10 +1725,11 @@ class SyncSketchAPI:
             if result.get("status") == "done":
                 data = result.get("data")
 
-                # storing locally
-                local_filename = "/tmp/%s.zip" % data["fileName"]
+                # storing locally - sanitize fileName to prevent path traversal
+                safe_name = os.path.basename(data["fileName"])
+                local_filename = "/tmp/%s.zip" % safe_name
                 if homedir:
-                    local_filename = os.path.join(homedir, "{}.zip".format(data["fileName"]))
+                    local_filename = os.path.join(homedir, "{}.zip".format(safe_name))
                 r = requests.get(data["s3Path"], stream=True)
                 with open(local_filename, "wb") as f:
                     for chunk in r.iter_content(chunk_size=1024):
@@ -1788,7 +1793,7 @@ class SyncSketchAPI:
         try:
             data = response.json()
             return data.get("objects")[0]
-        except:
+        except Exception:
             return None
 
     def get_users_by_project_id(self, project_id, raw_response=False):

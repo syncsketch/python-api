@@ -26,14 +26,17 @@ SyncSketch is a synchronized visual review tool for the Film/TV/Games industry.
 
 #### Compatibility
 This library was tested with and confirmed on python versions:
-- 2.7.14+
-- 3.6
-- 3.7
+- 2.7.14+ (see note below)
+- 3.7 (see note below)
 - 3.8
 - 3.9
 - 3.10
 - 3.11
 - 3.12
+- 3.13
+- 3.14
+
+> **Python 2.7 & 3.7 Deprecation Notice:** Python 2.7 and 3.7 have reached end-of-life and are no longer actively supported by the Python community. While existing functionality in this library will continue to work on these versions, new features and improvements will only be tested against Python 3.8 and above. We recommend upgrading to a supported Python version.
 
 #### Installation
 
@@ -158,9 +161,7 @@ You can upload a file to the created review with the review id, we provided one 
 item_data = s.upload_file(review['id'], 'examples/test.webm')
 ```
 
-If all steps were successful, you should see the following in the web-app. 
-
-![alt text](https://github.com/syncsketch/python-api/blob/documentation/examples/resources/exampleResult.jpg?raw=true)
+If all steps were successful, you should see the new item under the review in the web-app. 
 
 ### Additional Examples
 
@@ -226,3 +227,29 @@ projects = s.get_projects()
 for project in projects['objects']:
     print(project)
 ```
+
+### Publishing a New Release
+
+1. Update the version in both `setup.py` and `syncsketch/__init__.py` (keep them in sync).
+
+2. Build the distribution:
+```bash
+python -m build
+```
+
+3. Verify the build artifacts in `dist/`:
+```bash
+ls dist/syncsketch-<version>*
+```
+
+4. Upload to PyPI:
+```bash
+python -m twine upload dist/syncsketch-<version>*
+```
+
+To test with TestPyPI first:
+```bash
+python -m twine upload --repository testpypi dist/syncsketch-<version>*
+```
+
+Requires the `build` and `twine` packages (`pip install build twine`).

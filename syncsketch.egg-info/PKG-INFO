@@ -1,6 +1,6 @@
-Metadata-Version: 2.2
+Metadata-Version: 2.4
 Name: syncsketch
-Version: 1.0.11.2
+Version: 1.0.12.0
 Summary: SyncSketch Python API
 Home-page: https://github.com/syncsketch/python-api
 Author: Philip Floetotto
@@ -18,10 +18,20 @@ Classifier: Programming Language :: Python :: 3.9
 Classifier: Programming Language :: Python :: 3.10
 Classifier: Programming Language :: Python :: 3.11
 Classifier: Programming Language :: Python :: 3.12
-Requires-Python: >=2.7, <=3.12
+Classifier: Programming Language :: Python :: 3.13
+Classifier: Programming Language :: Python :: 3.14
+Requires-Python: >=2.7, <3.15
 Description-Content-Type: text/markdown
 License-File: LICENSE
-Requires-Dist: requests>=2.20.0
+Requires-Dist: requests<2.28,>=2.20.0; python_version < "3.0"
+Requires-Dist: requests>=2.20.0; python_version >= "3.7" and python_version < "3.9"
+Requires-Dist: requests>=2.32.0; python_version >= "3.9"
+Requires-Dist: urllib3>=2.6.3; python_version >= "3.9"
+Provides-Extra: test
+Requires-Dist: pytest<9.0,>=7.0; python_version < "3.9" and extra == "test"
+Requires-Dist: pytest<10.0,>=9.0.3; python_version >= "3.9" and extra == "test"
+Requires-Dist: pytest-cov>=4.0; extra == "test"
+Requires-Dist: responses>=0.20.0; extra == "test"
 Dynamic: author
 Dynamic: author-email
 Dynamic: classifier
@@ -29,6 +39,8 @@ Dynamic: description
 Dynamic: description-content-type
 Dynamic: home-page
 Dynamic: license
+Dynamic: license-file
+Dynamic: provides-extra
 Dynamic: requires-dist
 Dynamic: requires-python
 Dynamic: summary
@@ -61,14 +73,17 @@ SyncSketch is a synchronized visual review tool for the Film/TV/Games industry.
 
 #### Compatibility
 This library was tested with and confirmed on python versions:
-- 2.7.14+
-- 3.6
-- 3.7
+- 2.7.14+ (see note below)
+- 3.7 (see note below)
 - 3.8
 - 3.9
 - 3.10
 - 3.11
 - 3.12
+- 3.13
+- 3.14
+
+> **Python 2.7 & 3.7 Deprecation Notice:** Python 2.7 and 3.7 have reached end-of-life and are no longer actively supported by the Python community. While existing functionality in this library will continue to work on these versions, new features and improvements will only be tested against Python 3.8 and above. We recommend upgrading to a supported Python version.
 
 #### Installation
 
@@ -193,9 +208,7 @@ You can upload a file to the created review with the review id, we provided one 
 item_data = s.upload_file(review['id'], 'examples/test.webm')
 ```
 
-If all steps were successful, you should see the following in the web-app. 
-
-![alt text](https://github.com/syncsketch/python-api/blob/documentation/examples/resources/exampleResult.jpg?raw=true)
+If all steps were successful, you should see the new item under the review in the web-app. 
 
 ### Additional Examples
 
@@ -261,3 +274,29 @@ projects = s.get_projects()
 for project in projects['objects']:
     print(project)
 ```
+
+### Publishing a New Release
+
+1. Update the version in both `setup.py` and `syncsketch/__init__.py` (keep them in sync).
+
+2. Build the distribution:
+```bash
+python -m build
+```
+
+3. Verify the build artifacts in `dist/`:
+```bash
+ls dist/syncsketch-<version>*
+```
+
+4. Upload to PyPI:
+```bash
+python -m twine upload dist/syncsketch-<version>*
+```
+
+To test with TestPyPI first:
+```bash
+python -m twine upload --repository testpypi dist/syncsketch-<version>*
+```
+
+Requires the `build` and `twine` packages (`pip install build twine`).

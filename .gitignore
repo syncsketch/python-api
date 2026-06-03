@@ -8,3 +8,6 @@
 local_test.py
 __pycache__/
 *.pyc
+.tox/
+htmlcov/
+.coverage
