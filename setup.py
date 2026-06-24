@@ -10,7 +10,7 @@ with open("README.md", "r") as f:
 
 setup(
     name="syncsketch",
-    version="1.0.12.0",
+    version="1.0.12.1",
     description="SyncSketch Python API",
     author="Philip Floetotto",
     author_email="phil@syncsketch.com",
@@ -39,7 +39,7 @@ setup(
     install_requires=[
         'requests>=2.20.0,<2.28; python_version < "3.0"',
         'requests>=2.20.0; python_version >= "3.7" and python_version < "3.9"',
-        'requests>=2.32.0; python_version >= "3.9"',
+        'requests>=2.33.0; python_version >= "3.9"',
         'urllib3>=2.6.3; python_version >= "3.9"',
     ],
     extras_require={
