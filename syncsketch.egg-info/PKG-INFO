@@ -3,8 +3,7 @@ Name: syncsketch
 Version: 1.0.12.1
 Summary: SyncSketch Python API
 Home-page: https://github.com/syncsketch/python-api
-Author: Philip Floetotto
-Author-email: phil@syncsketch.com
+Author-email: support@syncsketch.com
 License: BSD-3-Clause
 Classifier: Development Status :: 5 - Production/Stable
 Classifier: Intended Audience :: Developers
@@ -31,7 +30,6 @@ Provides-Extra: test
 Requires-Dist: pytest<10.0,>=7.0; extra == "test"
 Requires-Dist: pytest-cov>=4.0; extra == "test"
 Requires-Dist: responses>=0.20.0; extra == "test"
-Dynamic: author
 Dynamic: author-email
 Dynamic: classifier
 Dynamic: description

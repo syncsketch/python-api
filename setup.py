@@ -12,8 +12,7 @@ setup(
     name="syncsketch",
     version="1.0.12.1",
     description="SyncSketch Python API",
-    author="Philip Floetotto",
-    author_email="phil@syncsketch.com",
+    author_email="support@syncsketch.com",
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
