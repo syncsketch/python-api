@@ -38,9 +38,9 @@ setup(
     packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
     install_requires=[
         'requests>=2.20.0,<2.28; python_version < "3.0"',
-        'requests>=2.20.0; python_version >= "3.7" and python_version < "3.9"',
-        'requests>=2.33.0; python_version >= "3.9"',
-        'urllib3>=2.6.3; python_version >= "3.9"',
+        'requests>=2.20.0; python_version >= "3.7" and python_version <= "3.9"',
+        'requests>=2.33.0; python_version > "3.9"',
+        'urllib3>=2.6.3; python_version > "3.9"',
     ],
     extras_require={
         "test": [
